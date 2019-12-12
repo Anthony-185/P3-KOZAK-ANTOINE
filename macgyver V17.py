@@ -1,3 +1,6 @@
+""" _______________________________________________
+# /!\ don't actually work, it's a prototype !!!!!!!
+________________________________________________"""
 import tkinter
 import random
 import time
