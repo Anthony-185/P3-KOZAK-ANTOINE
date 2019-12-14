@@ -10,7 +10,6 @@ import string
 
 class V:
 
-
 	def __init__(self) :
 
 		self.i_verbose = 0
@@ -20,17 +19,15 @@ class V:
 		self.canvas.pack()
 		self.canvas.create_text(40,40,text='===  VERBOSE  ACTIVATED  ===', fill='green', tag='vendetta')
 		self.tk.update()
-		
-		
+				
 	def for_vendetta(self, string, lvl=0) : # clas GRID : 5 '===  '
 	
 		self.canvas.create_text(40,80+self.i*40,text='{0}.{1}'.format(lvl,string), fill='green', tag='verbose')
 		self.i += 1
 		
 	
-
 class Window:
-
+	"""self.width_window, self.height_window, self.tk, self.canvas"""
 
 	def __init__(self):
 	
@@ -51,28 +48,27 @@ class Window:
 		self.tk.update()
 
 
-
 class Grid:
 
 
 	def __init__(self, canvas):
 
-		number_case_x = 15 # number of line
-		number_case_y = 15 # number of column
+		self.number_case_x = 15 # number of line
+		self.number_case_y = 15 # number of column
 		self.canvas = canvas
-		self.line_X = ( f"{i+1:0>2}" for i in range(number_case_x) )
-		# ( a+b for a,b in zip("0102030405"[::2], "0102030405"[1::2]) ) (other way)
-		self.line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
-		self.case = tuple(
-			Case( self.canvas, adjust_coord_for_Canvas((a,b)) ) 
-			for b in range(number_case_y) for a in range(number_case_x) )
-		self.dict_grid = {} i = 0
-		for letter_column in self.line_Y :
-			for number_line in self.line_X :
-				self.dict_grid[letter_column+number_line] = self.case[i]
-				i += 1
 		
-	
+		self.line_X = ( f"{i+1:0>2}" for i in range(number_case_x) )
+		self.line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
+		
+		self.dict_case = {}
+		self.dict_name = {}
+		
+		for x, i in enumerate( self.line_X ) :
+			for y, j in enumerate ( self.line_Y ) :
+			
+				self.dict_case[ x+1,y+1 ] = Case( canvas, (x+1,y+1) )
+				self.dict_name[ x+1,y+1 ] = j+i 
+			
 	def coord_str_To_int(self, coord):
 		""" "A02" >> (1,2) """
 	
@@ -83,50 +79,46 @@ class Grid:
 						return(i1 ,j1)
 		print('error in transform_coord')
 		
-	
 	def coord_int_To_str(self, coord):
 		""" (1,2) >> "A02" """
 		
 		return( self.line_X[coord[0]], self.line_Y[coord[1]] )
-		
 		
 	def adjust_coord_for_Canvas(self, pos):
 		""" (1,2) >> 12,25 """
 	
 		return pos[0] * (width_window//number_case_x) + 1, pos[1] * (height//number_case_y) + 1
 		
-		
 	def check_point_in_grid(self, pos) :
 		""" is (1,2) in grid of the game ? (True or False) """
 	
 		return(	( pos[0] >= 1 and pos[0] <= number_case_x ) and
 				( pos[1] >= 1 and pos[1] <= number_case_y ) )
-	
-	
-	def road(self) : # generate the path to win
-	
-		# use the class Path_generator
 
 
 class Case:
 
-
-	def __init__(self,canvas,coord) :
+	def __init__(self,canvas,pos) :
 		
 		self.canvas = canvas		# main canvas appartenance
-		self.coord = coord			# ex : (3,2) , (14,5) , ......
-		self.color = "blue"			# as you wish ....		
-		self.id = canvas.create_rectangle(
-			self.coord[0]						, self.coord[1]							,
-			self.coord[0] -2+ width_window//15	, self.coord[1] -2+ height_window//15	,
-			fill=self.color, tag = "border")
+		self.pos = pos			# ex : (3,2) , (14,5) , ......
+		self.color = "blue"			# as you wish ....
+
+		self.id = canvas.create_rectangle( self.f_coord_case(), fill=self.color, tag = "free" )
+
+	def f_coord_case(self) :
+	
+		x1, y1 = grid.adjust_coord_for_Canvas(self.pos)
+
+		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
+		y2 = y1 - 2 + ( Window.height_window //	Grid.number_case_y	)
 		
+		return x1, y1, x2, y2
 
-
+		
 class Path_generator:
 
-
-	def __init__(self, mode=1) :
+	def __init__(self, grid, mode=1) :
 	
 		self.start	= (0,0)
 		self.middle	= (0,0)
@@ -143,45 +135,48 @@ class Path_generator:
 
 		
 	def way_one(self) : # --- it's a fucking copy-paste code : improve it !!!!!!
-		
 		""" --- old model ---
-		future_position = random(								# random x for this :
-		( actual_position[0] - 1 , actual_position[1] + 0 ) ,	# 	 [X]
-		( actual_position[0] + 1 , actual_position[1] + 0 ) ,	# [X][O][X]
-		( actual_position[0] + 0 , actual_position[1] + 1 ) ,	#    [X]
-		( actual_position[0] + 0 , actual_position[1] - 1 ) )	# (O actual_position)
+		random x for this :
+		
+			[X]
+		[X]	[O]	[X]
+			[X]
+			
+		(O actual_position)
 		"""
-
-		start = (random.randrange(15)+1,random.randrange(15)+1)
-		self.win_way.append((start,self.return_coord_string(start)))
-		self.canvas.itemconfig( self.dict_grid[self.return_coord_string(start)].id, fill='yellow') 
-		actual_position = start
+		x = random.randrange(grid.number_case_x) + 1
+		y = random.randrange(grid.number_case_y) + 1
+		
+		coord_int = self.start = (x, y)
+		coord_str = grid.coord_int_To_str( coord_int )
+		
+		self.start = coord_int
+		self.path.append( ( coord_str, coord_int ) )
+		self.canvas.itemconfig( grid.dict_grid[ coord_str ].id, fill='yellow')
+		
+		actual_position = old_position = coord_int
+		
 		road_finish = False
 		goal_middle_placed = False
-		reverse_direction = []
+		
 		while road_finish != True :
 		
-			direction = [	# random x like this :
-			( + 1 , + 0 ) ,				# 	 [X]
-			( - 1 , + 0 ) ,				# [X][O][X]
-			( + 0 , + 1 ) ,				#    [X]
-			( + 0 , - 1 ) ]				# (O actual_position)		
-			if reverse_direction in direction :
+			future_position = [
+			( coord_int[0] + 1 , coord_int[1] + 0 ) , # 	[X]
+			( coord_int[0] - 1 , coord_int[1] + 0 ) , # [X]	[O]	[X]
+			( coord_int[0] + 0 , coord_int[1] + 1 ) , # 	[X]
+			( coord_int[0] + 0 , coord_int[1] - 1 ) ] # [0] actual_position
+			
+			if old_position in future_position :
 				direction.remove(reverse_direction)
-			direction = random.choice(direction)
-			range_dir = random.randrange(2,4)
-			future_position = (
-				actual_position[0] + direction[0] * range_dir , 
-				actual_position[1] + direction[1] * range_dir )
-			if self.check_point_in_grid(future_position) :
-
-				reverse_direction = ( - direction[0], - direction[1] )
-				for i in range(range_dir):
 				
-					actual_position = (
-						actual_position[0] + direction[0] , 
-						actual_position[1] + direction[1] )
-					self.win_way.append((actual_position,self.return_coord_string(actual_position)))
+			future_position = [ i for i in future_position if grid.check_point_in_grid(i) ]
+
+			actual_position = random.choice(future_position)
+			
+			self.path.append( (
+			grid.coord_int_To_str()actual_position,
+			self.return_coord_string(actual_position)))
 					self.canvas.itemconfig( self.dict_grid[self.return_coord_string(actual_position)].id, fill='maroon') 
 				
 				actual_position = future_position								
@@ -217,6 +212,8 @@ class Path_generator:
 		 - - - 		 - - -		 - - -
 		
 		"""
+
+
 		
 class MacGyver:
 
@@ -250,6 +247,7 @@ def main():
 	macgyver 	= MacGyver(		path.start)
 	middle_goal = Middle_goal(	path.middle)
 	final_goal	= Final_goal(	path.final)
+	ball		= Ball()
 	
 	playing = True
 	while playing:

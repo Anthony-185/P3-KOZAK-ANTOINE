@@ -56,67 +56,82 @@ il faudrait qu'il mesure le parcours pour mettre les trucs à la fin,
 faut pas qu'il les mette au début.
 
 
-
-
-
-
-
-
-
-class Interface_tkinter
-
-	canvas
-	
-	animation lunch
-	
-	animation over
-	
-	animation Quit
-	
-	
-
-
-class Labyrinthe
-
-	grid
-
-	objectif inter
-
-	ennemi
-
-	mur
-
-	générateur aleatoire
-
-
-
-
-class Game
-
-	mac gyver
-	
-	ball
-
-
-
-
-class Verbose
-
-	deactivate score
-
-	Yes/no affichage
-	
-	print all the informations
-	
-	reponse ! (donne la carte détaillé)
-	
-	
-	
-	
-def main
-
-
-
-main()
+"""
 
 """
+# ------- V17 ------- #
+
+V check all class and all function
+
+main create Window
+	>> Window
+	
+main create Grid
+	< in window
+	Grid create
+		>> Grid
+		>> Cases
+		>> funct for coordinates
+	
+main create Path (Path_generator)
+	< Grid
+	< Cases
+	< funct for coord
+	>> Path
+		>> Pos start (Mac Gyver)
+		>> Pos Middle goal
+		>> Pos Final Goal
+
+main create Macguver
+	< Pos start
+	< Cases
+	>> MacGiver
+		> sac
+
+main create middle
+	< Pos Middle
+	< Cases
+	>> Middle Goal
+
+main create final goal
+	< Final goal
+	< Cases
+	>> Final Goal
+	
+main create ball
+	>> ball
+
+main START MAIN GAME
+	while playing :
+		ball is moving
+		if mac gyver touch wall case -> cant move in this direction
+		if mac gyver touch free case -> move to this direction
+		if mac gyver touch middle goal -> middle goal in backpack + move to this pos
+		if mac gyver touch final goal WITHOUT middle goal -> GAME OVER
+		if mac gyver touch final goal WITH middle goal -> WIN
+		if ball touch macgyver -> HIT
+			if 5 HIT > GAME OVER
+		if quit -> playong = False
+		
+		Update all graphic interface
+"""
+
+class V
+
+
+class Window
+
+
+class Grid
+
+
+class Case
+
+
+class Path Generator
+
+
+class MacGyver
+
+
+class Ball

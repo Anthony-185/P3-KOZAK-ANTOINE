@@ -101,12 +101,12 @@ class Grid:
 			future_position = (
 				actual_position[0] + direction[0] , 
 				actual_position[1] + direction[1] )
-			if self.check_point_in_grid(future_position) :
+			if self.check_point_in_grid(future_position):
 				range_dir = random.randrange(2,4)
 				future_position = (
 					actual_position[0] + direction[0] * range_dir , 
 					actual_position[1] + direction[1] * range_dir )
-				if self.check_point_in_grid(future_position)
+				if self.check_point_in_grid(future_position):
 					reverse_direction = ( - direction[0], - direction[1] )
 					for i in range(range_dir):
 						actual_position = (
