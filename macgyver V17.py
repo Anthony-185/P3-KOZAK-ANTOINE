@@ -61,28 +61,28 @@ class Grid:
 		self.line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
 		
 		self.dict_case = {}
-		self.dict_name = {}
+		self.dict_str_to_int = {}
 		
 		for x, i in enumerate( self.line_X ) :
 			for y, j in enumerate ( self.line_Y ) :
 			
-				self.dict_case[ x+1,y+1 ] = Case( canvas, (x+1,y+1) )
-				self.dict_name[ x+1,y+1 ] = j+i 
+				self.dict_case[ x+1,y+1 ] = Case( canvas, (x+1,y+1) , j+i )
+				self.dict_A2_to_12[ j+i ] = x+1,y+1
 			
 	def coord_str_To_int(self, coord):
 		""" "A02" >> (1,2) """
 	
-		for i1, i2 in enumerate(self.line_X):
-			if i2 == coord[0] :
-				for j1, j2 in enumerate(self.line_Y):
-					if j2 == coord[1] :
-						return(i1 ,j1)
-		print('error in transform_coord')
+		a = self.dict_A2_to_12.get([coord])
+		if a : return a
+		else : print('error in convert str to int')
 		
 	def coord_int_To_str(self, coord):
 		""" (1,2) >> "A02" """
 		
-		return( self.line_X[coord[0]], self.line_Y[coord[1]] )
+		for i,j in self.dict_A2_to_12.items() :
+			if j == coord : return i
+		else : print('error in convert int to str')
+
 		
 	def adjust_coord_for_Canvas(self, pos):
 		""" (1,2) >> 12,25 """
@@ -98,17 +98,20 @@ class Grid:
 
 class Case:
 
-	def __init__(self,canvas,pos) :
+	def __init__(self,canvas,pos, name) :
 		
 		self.canvas = canvas		# main canvas appartenance
 		self.pos = pos			# ex : (3,2) , (14,5) , ......
 		self.color = "blue"			# as you wish ....
+		self.name = name
 
 		self.id = canvas.create_rectangle( self.f_coord_case(), fill=self.color, tag = "free" )
 
-	def f_coord_case(self) :
+	def f_coord_case(self, pos=Fasle) :
 	
-		x1, y1 = grid.adjust_coord_for_Canvas(self.pos)
+		if pos == False : pos = self.pos
+		
+		x1, y1 = grid.adjust_coord_for_Canvas(pos)
 
 		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
 		y2 = y1 - 2 + ( Window.height_window //	Grid.number_case_y	)
@@ -118,16 +121,20 @@ class Case:
 		
 class Path_generator:
 
-	def __init__(self, grid, mode=1) :
+	def __init__(self, grid, canvas, mode=1) :
 	
+		self.mode = mode
+		self.canvas = canvas
+		self.grid = grid
+		
 		self.start	= (0,0)
 		self.middle	= (0,0)
 		self.finish	= (0,0)
 		self.path	= []
 		
-		"""
-		self.mode = mode
 		if	 mode == 1 : way_one()
+		
+		"""
 		elif mode == 2 : way_two()
 		elif mode == 3 : way_three()
 		else : print('error in __init__')
@@ -144,17 +151,13 @@ class Path_generator:
 			
 		(O actual_position)
 		"""
-		x = random.randrange(grid.number_case_x) + 1
-		y = random.randrange(grid.number_case_y) + 1
+		x = random.randrange(self.grid.number_case_x) + 1
+		y = random.randrange(self.grid.number_case_y) + 1
 		
-		coord_int = self.start = (x, y)
-		coord_str = grid.coord_int_To_str( coord_int )
+		self.start = actual_position = old_position = (x, y)
 		
-		self.start = coord_int
-		self.path.append( ( coord_str, coord_int ) )
-		self.canvas.itemconfig( grid.dict_grid[ coord_str ].id, fill='yellow')
-		
-		actual_position = old_position = coord_int
+		self.path.append( self.start )
+		self.canvas.itemconfig( self.grid.dict_case[ self.start ].id, fill='yellow')
 		
 		road_finish = False
 		goal_middle_placed = False
@@ -168,28 +171,27 @@ class Path_generator:
 			( coord_int[0] + 0 , coord_int[1] - 1 ) ] # [0] actual_position
 			
 			if old_position in future_position :
-				direction.remove(reverse_direction)
+				future_position.remove(old_position)
 				
-			future_position = [ i for i in future_position if grid.check_point_in_grid(i) ]
+			future_position = [ i for i in future_position if self.grid.check_point_in_grid(i) ]
 
 			actual_position = random.choice(future_position)
 			
-			self.path.append( (
-			grid.coord_int_To_str()actual_position,
-			self.return_coord_string(actual_position)))
-					self.canvas.itemconfig( self.dict_grid[self.return_coord_string(actual_position)].id, fill='maroon') 
+			self.path.append(actual_position)
+			self.canvas.itemconfig( self.grid.dict_case[ actual_position ].id, fill='maroon') 
 				
-				actual_position = future_position								
-				if random.randrange(6) > 3 : # to create some path				
-					if not goal_middle_placed : 
-											
-						goal_middle_placed = True
-						self.canvas.itemconfig( self.dict_grid[self.return_coord_string(actual_position)].id, fill='grey')
-					else:
-							
-						road_finish = True
-						self.canvas.itemconfig( self.dict_grid[self.return_coord_string(actual_position)].id, fill='red')
-	
+			actual_position = future_position		
+			
+			if random.randrange(10) > 7 : # to create some path				
+				if not goal_middle_placed : 					
+					goal_middle_placed = True
+					self.canvas.itemconfig( self.grid.dict_case[ actual_position].id, fill='grey')
+					self.middle = actual_position
+				else:
+					road_finish = True
+					self.canvas.itemconfig( self.grid.dict_grid[ actual_position ].id, fill='red')
+					self.finish = actual_position
+		
 	
 	def way_two(self) :
 		"""
@@ -212,37 +214,178 @@ class Path_generator:
 		 - - - 		 - - -		 - - -
 		
 		"""
+		
+		def way_for(self):
+		"""
+		genere un path, check sa longueur, et une fois fois assez grand, le place dans la grille
+		"""
+		
 
 
 		
 class MacGyver:
 
 
-	def __init__(self, start):
+	def __init__(self, canvas, start):
 	
-		self.pos = start
+	
+		self.BackPack = "empty"
+		self.canvas = canvas
+		self.id = canvas.create_rectangle( Case.f_coord_case(start), fill="orange")
+		
 		self.x = 0
 		self.y = 0
-		# self image = 
-		self.color = 'orange'
 		
-		canvas.bind_all('<KeyPress-Left>', self.move_left)
+		canvas.bind_all('<KeyPress-Left>', 	self.move_left)
 		canvas.bind_all('<KeyPress-Right>', self.move_right)
-		canvas.bind_all('<KeyPress-Up>', self.move_up)
-		canvas.bind_all('<KeyPress-Down>', self.move_down)
+		canvas.bind_all('<KeyPress-Up>', 	self.move_up)
+		canvas.bind_all('<KeyPress-Down>', 	self.move_down)
 		
 	
 	def draw(self):
 	
-		self.pos = self.pos[0] + self.x, self.pos[1] + self.y
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+		self.x = 0
+		self.y = 0		
+		
+	def move_left(self, event):
+
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+		if not pos[0] <= 0:
+			self.x = -Window.width_window//Grid.number_case_x +1
+			self.y = 0
+		pass
+		
+
+	def move_right(self, event):
+	
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+		if not pos[2] >= Window.width_window - Window.width_window//Grid.number_case_x:
+			self.x = Window.width_window//Grid.number_case_x
+			self.y = 0
+		pass
+		
+
+	def move_down(self, event): # add
+	
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+		if not pos[3] >= self.Window.height_window - Window.height_window//Grid.number_case_y:
+			self.y = Window.height_window//Grid.number_case_y
+			self.x = 0
+		pass
+		
+
+	def move_up(self, event):	# add
+
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+		if not pos[1] <= 0: # height_window//15:
+			self.y = -Window.height_window//Grid.number_case_y +1
+			self.x = 0
+		pass
+
+
+class Middle_goal:
+
+	def __init__(self, canvas, start):
+
+
+class Final_goal:
+
+	def __init__(self, canvas, start):
+
+
+class Ball:
+
+	def __init__(self, canvas, paddle):
+	
+		self.hit = 0
+		self.canvas = canvas
+		self.paddle = paddle
+		self.id = canvas.create_oval(10, 10, 25, 25, fill='yellow')
+		starts = [-3, -2, -1, 1, 2, 3]
+		random.shuffle(starts)
+		self.x = starts[0]
+		self.y = -3
+		self.canvas_height = Window.height_window
+		self.canvas_width = Window.lengt_window
+		self.is_hitting_bottom = False
+		canvas.move(self.id, 245, 100)
+	
+		
+	def draw(self):
+	
+		self.canvas.move(self.id, self.x, self.y)
+		pos = self.canvas.coords(self.id)
+
+		if pos[1] <= 0:
+			self.y = 1
+		if pos[3] >= self.canvas_height//15*15:
+			self.y = -1
+		if pos[0] <= 0:
+			self.x = 3
+		if pos[2] >= self.canvas_width//15*15:
+			self.x = -3
+
+		if self.hit_top_paddle(pos) == True:
+			self.y = -3
+			self.hit += 1
+		if self.hit_bottom_paddle(pos) == True:
+			self.y = 3
+			self.hit += 1
+		if self.hit_left_paddle(pos) == True:
+			self.x = -3
+			self.hit += 1
+		if self.hit_right_paddle(pos) == True:
+			self.x = 3
+			self.hit += 1
+			
+			
+	def hit_top_paddle(self, pos):
+
+		paddle_pos = self.canvas.coords(self.paddle.id)
+		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
+			if pos[3] >= paddle_pos[1] and pos[3] <= paddle_pos[3]:
+				return True
+		return False
 		
 		
+	def hit_bottom_paddle(self, pos):
+	
+		paddle_pos = self.canvas.coords(self.paddle.id)
+		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
+			if pos[1] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
+				return True
+		return False
 		
+	
+	def hit_left_paddle(self, pos):
+
+		paddle_pos = self.canvas.coords(self.paddle.id)
+		if pos[3] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
+			if pos[2] >= paddle_pos[0] and pos[2] <= paddle_pos[2]:
+				return True
+		return False
+
+
+	def hit_right_paddle(self, pos):
+	
+		paddle_pos = self.canvas.coords(self.paddle.id)
+		if pos[3] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
+			if pos[0] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
+				return True
+		return False
+
+
 def main():
 		
 	window = Window()
 	grid = Grid(window.canvas)
-	path = Path_generator()
+	path = Path_generator(grid, window.canvas)
 	
 	macgyver 	= MacGyver(		path.start)
 	middle_goal = Middle_goal(	path.middle)
@@ -251,6 +394,8 @@ def main():
 	
 	playing = True
 	while playing:
+	
+		
 	
 		
 main()
