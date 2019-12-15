@@ -47,8 +47,8 @@ class Window:
 
 	def __init__(self):
 	
-		self.width_window  = Window.height_window = 400
-		self.height_window = Window.width_window = 550
+		self.height_window  = Window.height_window = 400
+		self.width_window = Window.width_window = 550
 		
 		self.tk = tkinter.Tk()
 		# self.tk.geometry('958x404-50+50') # can be improved, link with window geometry
@@ -130,12 +130,9 @@ class Case:
 
 	def f_coord_case(self, pos=False) :
 	
-		print(4*"_"+str(pos)) # --- DEBUG
-		if pos == False : pos = self.pos
-		print(4*"_"+str(pos)) # --- DEBUG
+		if pos == False : pos = self # this is shame ...
 		
 		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
-		print("PASSED !!!!!") # --- DEBUG
 
 		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
 		y2 = y1 - 2 + ( Window.height_window //	Grid.number_case_y	)
@@ -177,33 +174,28 @@ class Path_generator:
 		"""
 		x = random.randrange(self.grid.number_case_x) + 1
 		y = random.randrange(self.grid.number_case_y) + 1
-		x = 1 # remove this after !!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		self.start = actual_position = old_position = (x, y)
 		
 		self.path.append( self.start )
-		print(50*"=")
-		print(3*"_"+str(self.start))
-		print(50*"=")
-		print(3*"_"+str(self.grid.dict_case))
-		print(50*"=")
-		print(3*"_"+str(Grid.dict_case))
-		print(50*"=")
+
 		self.canvas.itemconfig( self.grid.dict_case[ self.start ].id, fill='yellow')
 		
 		road_finish = False
 		goal_middle_placed = False
-		i_debug = 0 # remove this too !!!!!!!!!!!!!!!!!!!
+		
+		i_debug = 0
 		
 		while road_finish != True :
 		
-			print("loop : ",i_debug)	# remove this !!!!!!!!!!!!!!
-			i_debug += 1 				# remove this !!!!!!!!!!!!!!
+			print("loop : ", i_debug) ; i_debug += 1
+			x, y = actual_position[0], actual_position[1]
+			print(x, y)
 			future_position = [
-			( actual_position[0] + 1 , actual_position[1] + 0 ) , # 	[X]
-			( actual_position[0] - 1 , actual_position[1] + 0 ) , # [X]	[O]	[X]
-			( actual_position[0] + 0 , actual_position[1] + 1 ) , # 	[X]
-			( actual_position[0] + 0 , actual_position[1] - 1 ) ] # [0] actual_position
+			( x + 1 , y + 0 ) , # 		[X]
+			( x - 1 , y + 0 ) , # 	[X] [O]	[X]
+			( x + 0 , y + 1 ) , # 		[X]
+			( x + 0 , y - 1 ) ] # 	[0] actual_position
 			
 			if old_position in future_position :
 				future_position.remove(old_position)
@@ -211,12 +203,9 @@ class Path_generator:
 			future_position = [ i for i in future_position if Grid.check_point_in_grid(i) ]
 
 			actual_position = random.choice(future_position)
-			actual_position = 1, actual_position[1] # remove this !!!!!!!!!!!!!!!!!!!!!
 			
 			self.path.append(actual_position)
-			self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='maroon') 
-				
-			actual_position = future_position		
+			self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='maroon') 		
 			
 			if random.randrange(10) > 7 : # to create some path				
 				if not goal_middle_placed : 					
@@ -225,7 +214,7 @@ class Path_generator:
 					self.middle = actual_position
 				else:
 					road_finish = True
-					self.canvas.itemconfig( self.grid.dict_grid[ actual_position ].id, fill='red')
+					self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='red')
 					self.finish = actual_position
 		
 	
@@ -309,7 +298,7 @@ class MacGyver:
 	
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
-		if not pos[3] >= self.Window.height_window - Window.height_window//Grid.number_case_y:
+		if not pos[3] >= Window.height_window - Window.height_window//Grid.number_case_y:
 			self.y = Window.height_window//Grid.number_case_y
 			self.x = 0
 		pass
@@ -331,8 +320,9 @@ class Middle_goal:
 	
 		self.taken = False
 		self.pos = pos
+		coord = Grid.adjust_coord_for_Canvas(pos)
 		self.canvas = canvas
-		self.id = canvas.create_text(adjust_coord_for_Canvas(pos), text = "X", color='red')
+		self.id = canvas.create_text(coord, text = "X", fill='red')
 		
 
 
@@ -342,7 +332,7 @@ class Final_goal:
 
 		self.pos = pos
 		self.canvas = canvas
-		self.id = canvas.create_text(adjust_coord_for_Canvas(pos), text = "X", color='black')
+		self.id = canvas.create_text(Grid.adjust_coord_for_Canvas(pos), text = "X", fill='black')
 
 
 class Ball:
@@ -358,7 +348,7 @@ class Ball:
 		self.x = starts[0]
 		self.y = -3
 		self.canvas_height = Window.height_window
-		self.canvas_width = Window.lengt_window
+		self.canvas_width = Window.width_window
 		self.is_hitting_bottom = False
 		canvas.move(self.id, 245, 100)
 	
@@ -441,10 +431,10 @@ def main():
 	v.for_vendetta(path,2)
 	
 	
-	macgyver 	= MacGyver(		path.start)
-	middle_goal = Middle_goal(	path.middle)
-	final_goal	= Final_goal(	path.final)
-	ball		= Ball()
+	macgyver 	= MacGyver(		window.canvas, path.start)
+	middle_goal = Middle_goal(	window.canvas, path.middle)
+	final_goal	= Final_goal(	window.canvas, path.finish)
+	ball		= Ball(window.canvas, macgyver)
 	v.for_vendetta("help",3)
 	
 	
@@ -452,7 +442,7 @@ def main():
 	while playing:
 		
 		ball.draw()
-		paddle.draw()
+		macgyver.draw()
 		
 		window.tk.update_idletasks()
 		window.tk.update()
