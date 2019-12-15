@@ -1,6 +1,3 @@
-""" _______________________________________________
-# /!\ don't actually work, it's a prototype !!!!!!!
-________________________________________________"""
 import tkinter
 import random
 import time
@@ -63,7 +60,9 @@ class Window:
 
 		self.canvas.grid(row=0,column=0)
 		self.tk.update()
+		
 
+		
 class Grid:
 
 	number_case_x = 15 # number of line
@@ -79,7 +78,6 @@ class Grid:
 		self.dict_case = {}
 		self.dict_A2_to_12 = {}
 		
-		# print([i for i in Grid.line_X])
 		for x, i in enumerate( Grid.line_X ) :
 			for y, j in enumerate( Grid.line_Y ) :
 			
@@ -196,7 +194,6 @@ class Path_generator:
 			( x + 0 , y + 1 ) , # 		[X]
 			( x + 0 , y - 1 ) ] # 	[0] actual_position
 
-
 			future_position = [ i for i in future_position if not i in self.path ]
 			
 			if future_position == [] :
@@ -286,7 +283,7 @@ class MacGyver:
 		canvas.bind_all('<KeyPress-Left>', 	self.move_left)
 		canvas.bind_all('<KeyPress-Right>', self.move_right)
 		canvas.bind_all('<KeyPress-Up>', 	self.move_up)
-		canvas.bind_all('<KeyPress-Down>', 	self.move_down)		
+		canvas.bind_all('<KeyPress-Down>', 	self.move_down)
 	
 	def draw(self):
 	
@@ -468,7 +465,6 @@ class Ball:
 				return True
 		return False
 
-
 def main():
 	
 	window = Window()
@@ -506,7 +502,6 @@ def main():
 		file.write("\n")
 		file.write(str(path.path))
 		file.close()
-	
 	
 	while macgyver.draw():
 		
