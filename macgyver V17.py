@@ -199,6 +199,7 @@ class Path_generator:
 		per group of 2*2, 3*3, or even more,
 		and if possible, link to the size of the grid
 		"""
+		pass
 		
 	def way_three(self) :
 		"""
@@ -214,20 +215,20 @@ class Path_generator:
 		 - - - 		 - - -		 - - -
 		
 		"""
+		pass
 		
-		def way_for(self):
+	def way_for(self):
 		"""
 		genere un path, check sa longueur, et une fois fois assez grand, le place dans la grille
 		"""
+		pass
 		
 
 
 		
 class MacGyver:
 
-
 	def __init__(self, canvas, start):
-	
 	
 		self.BackPack = "empty"
 		self.canvas = canvas
@@ -239,8 +240,7 @@ class MacGyver:
 		canvas.bind_all('<KeyPress-Left>', 	self.move_left)
 		canvas.bind_all('<KeyPress-Right>', self.move_right)
 		canvas.bind_all('<KeyPress-Up>', 	self.move_up)
-		canvas.bind_all('<KeyPress-Down>', 	self.move_down)
-		
+		canvas.bind_all('<KeyPress-Down>', 	self.move_down)		
 	
 	def draw(self):
 	
@@ -257,7 +257,7 @@ class MacGyver:
 			self.x = -Window.width_window//Grid.number_case_x +1
 			self.y = 0
 		pass
-		
+
 
 	def move_right(self, event):
 	
@@ -291,12 +291,22 @@ class MacGyver:
 
 class Middle_goal:
 
-	def __init__(self, canvas, start):
+	def __init__(self, canvas, pos):
+	
+		self.taken = False
+		self.pos = pos
+		self.canvas = canvas
+		self.id = canvas.create_text(adjust_coord_for_Canvas(pos), text = "X", color='red')
+		
 
 
 class Final_goal:
 
-	def __init__(self, canvas, start):
+	def __init__(self, canvas, pos):
+
+		self.pos = pos
+		self.canvas = canvas
+		self.id = canvas.create_text(adjust_coord_for_Canvas(pos), text = "X", color='black')
 
 
 class Ball:
@@ -394,8 +404,17 @@ def main():
 	
 	playing = True
 	while playing:
-	
 		
-	
+		ball.draw()
+		paddle.draw()
 		
-main()
+		window.tk.update_idletasks()
+		window.tk.update()
+		time.sleep(0.01)
+		
+if __name__ == '__main__':
+	main()
+
+# ---------------------------------------------------------------------------- #
+# 							 END OF FILE 									   #
+# ---------------------------------------------------------------------------- #
