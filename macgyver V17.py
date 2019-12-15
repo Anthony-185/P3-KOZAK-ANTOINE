@@ -230,7 +230,8 @@ class Path_generator:
 			tuple(
 				self.canvas.coords( 
 					Grid.dict_case[ i ].id ) ) for i in self.path ) # horrible
-	
+							
+		
 	
 	def way_two(self) :
 		"""
@@ -256,11 +257,17 @@ class Path_generator:
 		"""
 		pass
 		
-	def way_for(self):
+	def way_four(self):
 		"""
 		genere un path, check sa longueur, et une fois fois assez grand, le place dans la grille
 		"""
 		pass
+		
+	def way_five(self):
+		"""
+		use a file
+		"""
+		
 		
 
 
@@ -289,8 +296,13 @@ class MacGyver:
 		self.y = 0
 		if pos == self.canvas.coords('middle_goal') : self.BackPack = True
 		if pos == self.canvas.coords('finish_goal') :
-			if self.BackPack: print("Win !")
-			else : print("Game over")
+			if self.BackPack: 
+				print("Win !")
+				return False
+			else :
+				print("Game over")
+				return False
+		return True
 			
 	def path_ok(self, pos):
 	
@@ -476,9 +488,27 @@ def main():
 	final_goal	= Final_goal(	window.canvas, path.finish)
 	ball		= Ball(window.canvas, macgyver)
 	
+	if True: # if you want to write the path and some info
+		date = time.strftime("map/%Y%m%d_%H%M%S_") + str(time.time())[-6:] + ".txt"
+		file = open(date, 'w+')
+		file.write(date+"\n\n")
+		file.write(str(["start : ",path.start,", middle : ", path.middle,", finish : ", path.finish]))
+		file.write("\n\n")
+		for y in range(1,16):
+			for x in range(1,16):
+				if		(x,y) == path.start		: file.write("|S")
+				elif	(x,y) == path.middle	: file.write("|O")
+				elif	(x,y) == path.finish	: file.write("|X")
+				elif 	(x,y) in path.path		: file.write("| ")
+				elif	(x,y) not in path.path	: file.write("|#")
+				else: file.write("|E") # >>> Error somewhere
+			file.write("|\n")
+		file.write("\n")
+		file.write(str(path.path))
+		file.close()
 	
-	playing = True
-	while playing:
+	
+	while macgyver.draw():
 		
 		ball.draw()
 		macgyver.draw()
@@ -486,6 +516,9 @@ def main():
 		window.tk.update_idletasks()
 		window.tk.update()
 		time.sleep(0.01)
+		
+		
+		
 		
 if __name__ == '__main__':
 	main()
