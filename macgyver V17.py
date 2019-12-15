@@ -180,6 +180,13 @@ class Path_generator:
 		self.start = actual_position = old_position = (x, y)
 		
 		self.path.append( self.start )
+		print(50*"=")
+		print(3*"_"+str(self.start))
+		print(50*"=")
+		print(3*"_"+str(self.grid.dict_case))
+		print(50*"=")
+		print(3*"_"+str(Grid.dict_case))
+		print(50*"=")
 		self.canvas.itemconfig( self.grid.dict_case[ self.start ].id, fill='yellow')
 		
 		road_finish = False
