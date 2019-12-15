@@ -47,8 +47,8 @@ class Window:
 
 	def __init__(self):
 	
-		self.height_window  = Window.height_window = 400
-		self.width_window = Window.width_window = 550
+		self.height_window  = Window.height_window
+		self.width_window = Window.width_window
 		
 		self.tk = tkinter.Tk()
 		# self.tk.geometry('958x404-50+50') # can be improved, link with window geometry
@@ -107,8 +107,9 @@ class Grid:
 	def adjust_coord_for_Canvas(pos):
 		""" (1,2) >> 12,25 """
 		
-		return(	pos[0] * (Window.width_window//Grid.number_case_x) + 1,
-				pos[1] * (Window.height_window//Grid.number_case_y) + 1 )
+		x, y = pos[0] - 1, pos[1] - 1
+		return(	x * (Window.width_window//Grid.number_case_x)  ,
+				y * (Window.height_window//Grid.number_case_y)  )
 		
 	def check_point_in_grid(pos) :
 		""" is (1,2) in grid of the game ? (True or False) """
@@ -122,7 +123,7 @@ class Case:
 	def __init__(self,canvas,pos, name) :
 		
 		self.canvas = canvas		# main canvas appartenance
-		self.pos = pos			# ex : (3,2) , (14,5) , ......
+		self.pos = pos				# ex : (3,2) , (14,5) , ......
 		self.color = "blue"			# as you wish ....
 		self.name = name
 
@@ -141,6 +142,7 @@ class Case:
 
 		
 class Path_generator:
+	Path_set = set()
 
 	def __init__(self, grid, canvas, mode=1) :
 	
@@ -162,7 +164,7 @@ class Path_generator:
 		"""
 
 		
-	def way_one(self) : # --- it's a fucking copy-paste code : improve it !!!!!!
+	def way_one(self) :
 		""" --- old model ---
 		random x for this :
 		
@@ -183,14 +185,11 @@ class Path_generator:
 		
 		road_finish = False
 		goal_middle_placed = False
-		
-		i_debug = 0
+		i_some_path = 0
 		
 		while road_finish != True :
 		
-			print("loop : ", i_debug) ; i_debug += 1
 			x, y = actual_position[0], actual_position[1]
-			print(x, y)
 			future_position = [
 			( x + 1 , y + 0 ) , # 		[X]
 			( x - 1 , y + 0 ) , # 	[X] [O]	[X]
@@ -207,16 +206,28 @@ class Path_generator:
 			self.path.append(actual_position)
 			self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='maroon') 		
 			
-			if random.randrange(10) > 7 : # to create some path				
+			i_some_path += 1
+			if i_some_path > 50 and random.randrange(100) > 70 : # to create some path				
 				if not goal_middle_placed : 					
 					goal_middle_placed = True
-					self.canvas.itemconfig( Grid.dict_case[actual_position].id, fill='grey')
 					self.middle = actual_position
 				else:
 					road_finish = True
-					self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='red')
 					self.finish = actual_position
 		
+
+		self.canvas.itemconfig( Grid.dict_case[ self.middle ].id, tag="middle_goal", fill='darkgreen')
+		self.canvas.itemconfig( Grid.dict_case[ self.finish ].id, tag="finish_goal", fill='red')
+		Path_generator.Path_set = set( 
+			tuple(
+				self.canvas.coords( 
+					Grid.dict_case[ i ].id ) ) for i in self.path ) # horrible
+		"""
+		self.path = tuple( tuple(self.canvas.coords( Grid.dict_case[ i ].id ) ) for i in self.path)
+		print(self.path)
+		Path_generator.Path_set = set(self.path)
+		"""
+	
 	
 	def way_two(self) :
 		"""
@@ -255,7 +266,7 @@ class MacGyver:
 
 	def __init__(self, canvas, start):
 	
-		self.BackPack = "empty"
+		self.BackPack = False
 		self.canvas = canvas
 		self.id = canvas.create_rectangle( Case.f_coord_case(start), fill="orange")
 		
@@ -272,7 +283,20 @@ class MacGyver:
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
 		self.x = 0
-		self.y = 0		
+		self.y = 0
+		if pos == self.canvas.coords('middle_goal') : self.BackPack = True
+		if pos == self.canvas.coords('finish_goal') :
+			if self.BackPack: print("Win !")
+			else : print("Game over")
+			
+	def path_ok(self, pos):
+	
+		future_pos = (
+			pos[0] + self.x, pos[1] + self.y,
+			pos[2] + self.x, pos[3] + self.y)
+		
+		return ( {future_pos} & Path_generator.Path_set ) == {future_pos}
+		
 		
 	def move_left(self, event):
 
@@ -281,6 +305,7 @@ class MacGyver:
 		if not pos[0] <= 0:
 			self.x = -Window.width_window//Grid.number_case_x +1
 			self.y = 0
+			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
 
 
@@ -291,6 +316,7 @@ class MacGyver:
 		if not pos[2] >= Window.width_window - Window.width_window//Grid.number_case_x:
 			self.x = Window.width_window//Grid.number_case_x
 			self.y = 0
+			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
 		
 
@@ -301,6 +327,7 @@ class MacGyver:
 		if not pos[3] >= Window.height_window - Window.height_window//Grid.number_case_y:
 			self.y = Window.height_window//Grid.number_case_y
 			self.x = 0
+			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
 		
 
@@ -311,6 +338,7 @@ class MacGyver:
 		if not pos[1] <= 0: # height_window//15:
 			self.y = -Window.height_window//Grid.number_case_y +1
 			self.x = 0
+			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
 
 
@@ -320,9 +348,13 @@ class Middle_goal:
 	
 		self.taken = False
 		self.pos = pos
-		coord = Grid.adjust_coord_for_Canvas(pos)
 		self.canvas = canvas
-		self.id = canvas.create_text(coord, text = "X", fill='red')
+		coord = Grid.adjust_coord_for_Canvas(pos)
+		coord = (
+			coord[0] + (Window.width_window // Grid.number_case_x) / 2,
+			coord[1] + (Window.height_window// Grid.number_case_y) / 2)
+		self.id = canvas.create_text(coord,
+			text = "X", fill='white', anchor = 'center', font=('Courier', '30'))
 		
 
 
@@ -332,7 +364,12 @@ class Final_goal:
 
 		self.pos = pos
 		self.canvas = canvas
-		self.id = canvas.create_text(Grid.adjust_coord_for_Canvas(pos), text = "X", fill='black')
+		coord = Grid.adjust_coord_for_Canvas(pos)
+		coord = (
+			coord[0] + (Window.width_window // Grid.number_case_x) / 2,
+			coord[1] + (Window.height_window// Grid.number_case_y) / 2)
+		self.id = canvas.create_text(coord,
+			text = "X", fill='black', anchor = 'center', font=('Courier', '30'))
 
 
 class Ball:
