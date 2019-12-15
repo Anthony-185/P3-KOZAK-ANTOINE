@@ -13,21 +13,30 @@ class V:
 	def __init__(self, window) :
 
 		self.font = ('Courier', '10')
+		self.item = []
 		self.i = 0
 		self.tk = window.tk
 		self.canvas = tkinter.Canvas(self.tk, width=400, height=window.height_window, bg='black')
 		self.canvas.grid(row=0,column=1)
-		# self.canvas.pack()
 		self.canvas.create_text(0,0,text='{:=^50}'.format(' VERBOSE ACTIVATED '),
-		fill='green', tag='vendetta', anchor='nw', font = self.font)
+			fill='green', tag='vendetta', anchor='nw', font = self.font)
 		self.tk.update()
-		print( 4*'_'+str( self.canvas.grid_info() ) )
 				
 	def for_vendetta(self, string, lvl=0) : # clas GRID : 5 '===  '
 	
-		self.canvas.create_text(0,40+self.i*40,text=' {0}. >> {1}'.format(lvl,string),
-		fill='green', tag='verbose', anchor='nw', font = self.font)
+		text = self.canvas.create_text(0,40+self.i*40,text=' {0}. >> {1}'.format(lvl,string),
+			fill='green', tag='verbose', anchor='nw', font = self.font)
+		line = self.canvas.create_line(
+			10, 56 + self.i*40,
+			20, 56 + self.i*40, fill = 'cyan' )
+		self.item.append( (text, line) )
 		self.i += 1
+		
+	def progress(self, i, lvl) :
+	
+		coord = self.canvas.coords(self.item[lvl][1])
+		coord = coord[0], coord[1], 20 + i*10 , coord[3]
+		self.canvas.itemconfig(self.item[lvl][1], coord)
 		
 	
 class Window:
@@ -50,57 +59,58 @@ class Window:
 			bg='black')
 
 		self.canvas.grid(row=0,column=0)
-		# self.canvas.pack()
 		self.tk.update()
-		print( 4*'_'+str( self.canvas.grid_info() ) )
-
 
 class Grid:
 
-
+	number_case_x = 15 # number of line
+	number_case_y = 15 # number of column
+	line_X = ( "{:0>2}".format(i+1) for i in range(number_case_x) )
+	line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
+	dict_case = {}
+	dict_A2_to_12 = {}
+	
 	def __init__(self, canvas):
 
-		self.number_case_x = 15 # number of line
-		self.number_case_y = 15 # number of column
-		self.canvas = canvas
-		
-		self.line_X = ( "{:0>2}".format(i+1) for i in range(self.number_case_x) )
-		self.line_Y = ( i for i in string.ascii_uppercase[0:self.number_case_y] )
-		
+		self.canvas = canvas		
 		self.dict_case = {}
-		self.dict_str_to_int = {}
+		self.dict_A2_to_12 = {}
 		
-		for x, i in enumerate( self.line_X ) :
-			for y, j in enumerate ( self.line_Y ) :
+		for x, i in enumerate( Grid.line_X ) :
+			for y, j in enumerate ( Grid.line_Y ) :
 			
 				self.dict_case[ x+1,y+1 ] = Case( canvas, (x+1,y+1) , j+i )
 				self.dict_A2_to_12[ j+i ] = x+1,y+1
+	
+		Grid.dict_case = self.dict_case
+		Grid.dict_A2_to_12 = self.dict_A2_to_12
 			
-	def coord_str_To_int(self, coord):
+	def coord_str_To_int(coord):
 		""" "A02" >> (1,2) """
 	
-		a = self.dict_A2_to_12.get([coord])
+		a = dict_A2_to_12.get([coord])
 		if a : return a
 		else : print('error in convert str to int')
 		
-	def coord_int_To_str(self, coord):
+	def coord_int_To_str(coord):
 		""" (1,2) >> "A02" """
 		
-		for i,j in self.dict_A2_to_12.items() :
+		for i,j in dict_A2_to_12.items() :
 			if j == coord : return i
 		else : print('error in convert int to str')
 
 		
-	def adjust_coord_for_Canvas(self, pos):
+	def adjust_coord_for_Canvas(pos):
 		""" (1,2) >> 12,25 """
-	
-		return pos[0] * (width_window//number_case_x) + 1, pos[1] * (height//number_case_y) + 1
 		
-	def check_point_in_grid(self, pos) :
+		return(	pos[0] * (Window.width_window//Grid.number_case_x) + 1,
+				pos[1] * (Window.height//Grid.number_case_y) + 1 )
+		
+	def check_point_in_grid(pos) :
 		""" is (1,2) in grid of the game ? (True or False) """
 	
-		return(	( pos[0] >= 1 and pos[0] <= number_case_x ) and
-				( pos[1] >= 1 and pos[1] <= number_case_y ) )
+		return(	( pos[0] >= 1 and pos[0] <= Grid.number_case_x ) and
+				( pos[1] >= 1 and pos[1] <= Grid.number_case_y ) )
 
 
 class Case:
@@ -112,13 +122,16 @@ class Case:
 		self.color = "blue"			# as you wish ....
 		self.name = name
 
-		self.id = canvas.create_rectangle( self.f_coord_case(), fill=self.color, tag = "free" )
+		self.id = canvas.create_rectangle( self.f_coord_case(self.pos), fill=self.color, tag = "free" )
 
 	def f_coord_case(self, pos=False) :
 	
+		print(4*"_"+str(pos)) # --- DEBUG
 		if pos == False : pos = self.pos
+		print(4*"_"+str(pos)) # --- DEBUG
 		
-		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
+		x1, y1 = Grid.adjust_coord_for_Canvas(1,1)
+		print("PASSED !!!!!") # --- DEBUG
 
 		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
 		y2 = y1 - 2 + ( Window.height_window //	Grid.number_case_y	)
@@ -403,7 +416,7 @@ def main():
 	window = Window()
 	
 	v = V(window)
-	v.for_vendetta(window,1)
+	v.for_vendetta(window,0)
 	
 	grid = Grid(window.canvas)
 	v.for_vendetta(window.canvas,1)
