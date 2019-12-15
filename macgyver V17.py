@@ -42,10 +42,13 @@ class V:
 class Window:
 	"""self.width_window, self.height_window, self.tk, self.canvas"""
 
+	height_window = 400
+	width_window = 550
+
 	def __init__(self):
 	
-		self.width_window = 550
-		self.height_window = 400
+		self.width_window  = Window.height_window = 400
+		self.height_window = Window.width_window = 550
 		
 		self.tk = tkinter.Tk()
 		# self.tk.geometry('958x404-50+50') # can be improved, link with window geometry
@@ -104,7 +107,7 @@ class Grid:
 		""" (1,2) >> 12,25 """
 		
 		return(	pos[0] * (Window.width_window//Grid.number_case_x) + 1,
-				pos[1] * (Window.height//Grid.number_case_y) + 1 )
+				pos[1] * (Window.height_window//Grid.number_case_y) + 1 )
 		
 	def check_point_in_grid(pos) :
 		""" is (1,2) in grid of the game ? (True or False) """
@@ -130,7 +133,7 @@ class Case:
 		if pos == False : pos = self.pos
 		print(4*"_"+str(pos)) # --- DEBUG
 		
-		x1, y1 = Grid.adjust_coord_for_Canvas(1,1)
+		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
 		print("PASSED !!!!!") # --- DEBUG
 
 		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
@@ -152,7 +155,7 @@ class Path_generator:
 		self.finish	= (0,0)
 		self.path	= []
 		
-		if	 mode == 1 : way_one()
+		if	 mode == 1 : self.way_one()
 		
 		"""
 		elif mode == 2 : way_two()
