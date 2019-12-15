@@ -68,8 +68,8 @@ class Grid:
 
 	number_case_x = 15 # number of line
 	number_case_y = 15 # number of column
-	line_X = ( "{:0>2}".format(i+1) for i in range(number_case_x) )
-	line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
+	line_X = tuple( "{:0>2}".format(i+1) for i in range(number_case_x) ) # remove tuple and we are in deep
+	line_Y = tuple( i for i in string.ascii_uppercase[0:number_case_y] ) # remove tuple and we are in deep
 	dict_case = {}
 	dict_A2_to_12 = {}
 	
@@ -79,8 +79,9 @@ class Grid:
 		self.dict_case = {}
 		self.dict_A2_to_12 = {}
 		
+		# print([i for i in Grid.line_X])
 		for x, i in enumerate( Grid.line_X ) :
-			for y, j in enumerate ( Grid.line_Y ) :
+			for y, j in enumerate( Grid.line_Y ) :
 			
 				self.dict_case[ x+1,y+1 ] = Case( canvas, (x+1,y+1) , j+i )
 				self.dict_A2_to_12[ j+i ] = x+1,y+1
@@ -176,6 +177,7 @@ class Path_generator:
 		"""
 		x = random.randrange(self.grid.number_case_x) + 1
 		y = random.randrange(self.grid.number_case_y) + 1
+		x = 1 # remove this after !!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		self.start = actual_position = old_position = (x, y)
 		
@@ -191,31 +193,35 @@ class Path_generator:
 		
 		road_finish = False
 		goal_middle_placed = False
+		i_debug = 0 # remove this too !!!!!!!!!!!!!!!!!!!
 		
 		while road_finish != True :
 		
+			print("loop : ",i_debug)	# remove this !!!!!!!!!!!!!!
+			i_debug += 1 				# remove this !!!!!!!!!!!!!!
 			future_position = [
-			( coord_int[0] + 1 , coord_int[1] + 0 ) , # 	[X]
-			( coord_int[0] - 1 , coord_int[1] + 0 ) , # [X]	[O]	[X]
-			( coord_int[0] + 0 , coord_int[1] + 1 ) , # 	[X]
-			( coord_int[0] + 0 , coord_int[1] - 1 ) ] # [0] actual_position
+			( actual_position[0] + 1 , actual_position[1] + 0 ) , # 	[X]
+			( actual_position[0] - 1 , actual_position[1] + 0 ) , # [X]	[O]	[X]
+			( actual_position[0] + 0 , actual_position[1] + 1 ) , # 	[X]
+			( actual_position[0] + 0 , actual_position[1] - 1 ) ] # [0] actual_position
 			
 			if old_position in future_position :
 				future_position.remove(old_position)
 				
-			future_position = [ i for i in future_position if self.grid.check_point_in_grid(i) ]
+			future_position = [ i for i in future_position if Grid.check_point_in_grid(i) ]
 
 			actual_position = random.choice(future_position)
+			actual_position = 1, actual_position[1] # remove this !!!!!!!!!!!!!!!!!!!!!
 			
 			self.path.append(actual_position)
-			self.canvas.itemconfig( self.grid.dict_case[ actual_position ].id, fill='maroon') 
+			self.canvas.itemconfig( Grid.dict_case[ actual_position ].id, fill='maroon') 
 				
 			actual_position = future_position		
 			
 			if random.randrange(10) > 7 : # to create some path				
 				if not goal_middle_placed : 					
 					goal_middle_placed = True
-					self.canvas.itemconfig( self.grid.dict_case[ actual_position].id, fill='grey')
+					self.canvas.itemconfig( Grid.dict_case[actual_position].id, fill='grey')
 					self.middle = actual_position
 				else:
 					road_finish = True
