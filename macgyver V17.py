@@ -34,13 +34,13 @@ class Window:
 		self.width_window = 550
 		self.height_window = 400
 		
-		self.tk = Tk()
+		self.tk = tkinter.Tk()
 		self.tk.title("MacGyver's Game")
 		
 		self.canvas = tkinter.Canvas(
 			self.tk, 
-			width=width_window,
-			height=height_window, 
+			width  = self.width_window,
+			height = self.height_window, 
 			bg='black',
 			highlightthickness=0)
 
@@ -57,8 +57,8 @@ class Grid:
 		self.number_case_y = 15 # number of column
 		self.canvas = canvas
 		
-		self.line_X = ( f"{i+1:0>2}" for i in range(number_case_x) )
-		self.line_Y = ( i for i in string.ascii_uppercase[0:number_case_y] )
+		self.line_X = ( "{:0>2}".format(i+1) for i in range(self.number_case_x) )
+		self.line_Y = ( i for i in string.ascii_uppercase[0:self.number_case_y] )
 		
 		self.dict_case = {}
 		self.dict_str_to_int = {}
@@ -107,11 +107,11 @@ class Case:
 
 		self.id = canvas.create_rectangle( self.f_coord_case(), fill=self.color, tag = "free" )
 
-	def f_coord_case(self, pos=Fasle) :
+	def f_coord_case(self, pos=False) :
 	
 		if pos == False : pos = self.pos
 		
-		x1, y1 = grid.adjust_coord_for_Canvas(pos)
+		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
 
 		x2 = x1 - 2 + ( Window.width_window	 //	Grid.number_case_x	)
 		y2 = y1 - 2 + ( Window.height_window //	Grid.number_case_y	)
