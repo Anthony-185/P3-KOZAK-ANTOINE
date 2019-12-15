@@ -10,19 +10,23 @@ import string
 
 class V:
 
-	def __init__(self) :
+	def __init__(self, window) :
 
-		self.i_verbose = 0
-		self.tk = tkinter.Tk()
-		self.tk.title('game')
-		self.canvas = tkinter.Canvas(self.tk, width=400, height=280, bd=0, bg='black', highlightthickness=0)
-		self.canvas.pack()
-		self.canvas.create_text(40,40,text='===  VERBOSE  ACTIVATED  ===', fill='green', tag='vendetta')
+		self.font = ('Courier', '10')
+		self.i = 0
+		self.tk = window.tk
+		self.canvas = tkinter.Canvas(self.tk, width=400, height=window.height_window, bg='black')
+		self.canvas.grid(row=0,column=1)
+		# self.canvas.pack()
+		self.canvas.create_text(0,0,text='{:=^50}'.format(' VERBOSE ACTIVATED '),
+		fill='green', tag='vendetta', anchor='nw', font = self.font)
 		self.tk.update()
+		print( 4*'_'+str( self.canvas.grid_info() ) )
 				
 	def for_vendetta(self, string, lvl=0) : # clas GRID : 5 '===  '
 	
-		self.canvas.create_text(40,80+self.i*40,text='{0}.{1}'.format(lvl,string), fill='green', tag='verbose')
+		self.canvas.create_text(0,40+self.i*40,text=' {0}. >> {1}'.format(lvl,string),
+		fill='green', tag='verbose', anchor='nw', font = self.font)
 		self.i += 1
 		
 	
@@ -35,17 +39,20 @@ class Window:
 		self.height_window = 400
 		
 		self.tk = tkinter.Tk()
+		# self.tk.geometry('958x404-50+50') # can be improved, link with window geometry
+		self.tk.geometry('958x404+0-0')
 		self.tk.title("MacGyver's Game")
 		
 		self.canvas = tkinter.Canvas(
-			self.tk, 
+			self.tk,
 			width  = self.width_window,
 			height = self.height_window, 
-			bg='black',
-			highlightthickness=0)
+			bg='black')
 
-		self.canvas.pack()
+		self.canvas.grid(row=0,column=0)
+		# self.canvas.pack()
 		self.tk.update()
+		print( 4*'_'+str( self.canvas.grid_info() ) )
 
 
 class Grid:
@@ -392,15 +399,25 @@ class Ball:
 
 
 def main():
-		
+	
 	window = Window()
+	
+	v = V(window)
+	v.for_vendetta(window,1)
+	
 	grid = Grid(window.canvas)
+	v.for_vendetta(window.canvas,1)
+	
 	path = Path_generator(grid, window.canvas)
+	v.for_vendetta(path,2)
+	
 	
 	macgyver 	= MacGyver(		path.start)
 	middle_goal = Middle_goal(	path.middle)
 	final_goal	= Final_goal(	path.final)
 	ball		= Ball()
+	v.for_vendetta("help",3)
+	
 	
 	playing = True
 	while playing:
