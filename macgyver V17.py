@@ -24,11 +24,11 @@ class V:
 				
 	def for_vendetta(self, string, lvl=0) : # clas GRID : 5 '===  '
 	
-		text = self.canvas.create_text(0,40+self.i*40,text=' {0}. >> {1}'.format(lvl,string),
+		text = self.canvas.create_text(0,40+self.i*20,text=' {0}. >> {1}'.format(lvl,string),
 			fill='green', tag='verbose', anchor='nw', font = self.font)
 		line = self.canvas.create_line(
-			10, 56 + self.i*40,
-			20, 56 + self.i*40, fill = 'cyan' )
+			10, 56 + self.i*20,
+			20, 56 + self.i*20, fill = 'cyan' )
 		self.item.append( (text, line) )
 		self.i += 1
 		
@@ -195,11 +195,19 @@ class Path_generator:
 			( x - 1 , y + 0 ) , # 	[X] [O]	[X]
 			( x + 0 , y + 1 ) , # 		[X]
 			( x + 0 , y - 1 ) ] # 	[0] actual_position
+
+
+			future_position = [ i for i in future_position if not i in self.path ]
 			
-			if old_position in future_position :
-				future_position.remove(old_position)
+			if future_position == [] :
+				actual_position = random.choice(self.path)
+				continue
 				
 			future_position = [ i for i in future_position if Grid.check_point_in_grid(i) ]
+			
+			if future_position == [] :
+				actual_position = random.choice(self.path)
+				continue
 
 			actual_position = random.choice(future_position)
 			
@@ -222,11 +230,6 @@ class Path_generator:
 			tuple(
 				self.canvas.coords( 
 					Grid.dict_case[ i ].id ) ) for i in self.path ) # horrible
-		"""
-		self.path = tuple( tuple(self.canvas.coords( Grid.dict_case[ i ].id ) ) for i in self.path)
-		print(self.path)
-		Path_generator.Path_set = set(self.path)
-		"""
 	
 	
 	def way_two(self) :
@@ -472,7 +475,6 @@ def main():
 	middle_goal = Middle_goal(	window.canvas, path.middle)
 	final_goal	= Final_goal(	window.canvas, path.finish)
 	ball		= Ball(window.canvas, macgyver)
-	v.for_vendetta("help",3)
 	
 	
 	playing = True
