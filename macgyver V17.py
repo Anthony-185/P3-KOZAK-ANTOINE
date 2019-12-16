@@ -316,79 +316,35 @@ class Ball:
 		self.canvas = canvas
 		self.paddle = paddle
 		self.id = canvas.create_oval(10, 10, 25, 25, fill='yellow')
-		starts = [-3, -2, -1, 1, 2, 3]
-		random.shuffle(starts)
-		self.x = starts[0]
+		self.x = random.choice( [-3, -2, -1, 1, 2, 3] )
 		self.y = -3
 		self.canvas_height = Window.height_window
 		self.canvas_width = Window.width_window
 		self.is_hitting_bottom = False
 		canvas.move(self.id, 245, 100)
-	
 		
 	def draw(self):
 	
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
 
-		if pos[1] <= 0:
-			self.y = 1
-		if pos[3] >= self.canvas_height//15*15:
-			self.y = -1
-		if pos[0] <= 0:
-			self.x = 3
-		if pos[2] >= self.canvas_width//15*15:
-			self.x = -3
-
-		if self.hit_top_paddle(pos) == True:
-			self.y = -3
-			self.hit += 1
-		if self.hit_bottom_paddle(pos) == True:
-			self.y = 3
-			self.hit += 1
-		if self.hit_left_paddle(pos) == True:
-			self.x = -3
-			self.hit += 1
-		if self.hit_right_paddle(pos) == True:
-			self.x = 3
-			self.hit += 1
+		if pos[1] <= 0:	self.y = 1
+		if pos[0] <= 0:	self.x = 3
+		if pos[3] >= self.canvas_height//15*15:	self.y = -1
+		if pos[2] >= self.canvas_width//15*15:	self.x = -3
 			
+		paddle_pos = self.canvas.coords(self.paddle.id)		
+		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
+			if pos[3] >= paddle_pos[1] and pos[3] <= paddle_pos[3]: #top
+				self.y = -3 ; self.hit += 1
+			if pos[1] >= paddle_pos[1] and pos[1] <= paddle_pos[3]: #bottom
+				self.y = 3  ; self.hit += 1
+		elif pos[3] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
+			if pos[2] >= paddle_pos[0] and pos[2] <= paddle_pos[2]: #left
+				self.x = -3 ; self.hit += 1
+			if pos[0] >= paddle_pos[0] and pos[0] <= paddle_pos[2]: #right
+				self.x = 3  ; self.hit += 1
 			
-	def hit_top_paddle(self, pos):
-
-		paddle_pos = self.canvas.coords(self.paddle.id)
-		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
-			if pos[3] >= paddle_pos[1] and pos[3] <= paddle_pos[3]:
-				return True
-		return False
-		
-		
-	def hit_bottom_paddle(self, pos):
-	
-		paddle_pos = self.canvas.coords(self.paddle.id)
-		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
-			if pos[1] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
-				return True
-		return False
-		
-	
-	def hit_left_paddle(self, pos):
-
-		paddle_pos = self.canvas.coords(self.paddle.id)
-		if pos[3] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
-			if pos[2] >= paddle_pos[0] and pos[2] <= paddle_pos[2]:
-				return True
-		return False
-
-
-	def hit_right_paddle(self, pos):
-	
-		paddle_pos = self.canvas.coords(self.paddle.id)
-		if pos[3] >= paddle_pos[1] and pos[1] <= paddle_pos[3]:
-			if pos[0] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
-				return True
-		return False
-
 def main():
 	
 	window = Window()
