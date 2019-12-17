@@ -55,7 +55,9 @@ class Window:
 class Grid:
 	""" where the magic happen """
 	
-	number_case_x = 15 ; number_case_y = 15 # row and column
+	number_case_x = 15 ; number_case_y = 15 # nb of row, column
+	DX = Window.width_window // number_case_x
+	DY = Window.height_window // number_case_y
 	line_X = tuple( "{:0>2}".format(i+1) for i in range(number_case_x) ) # remove tuple and we are in deep
 	line_Y = tuple( i for i in string.ascii_uppercase[0:number_case_y] ) # remove tuple and we are in deep
 	dict_case = dict_A2_to_12 = {}
@@ -71,13 +73,11 @@ class Grid:
 		return dict_A2_to_12.get([coord])
 		
 	def coord_int_To_str(coord): # (1,2) >> "A02" """
-		for i,j in dict_A2_to_12.items() :
-			if j == coord : return i
+		return dict_case.get([coord]).name
 		
 	def adjust_coord_for_Canvas(pos): # (1,2) >> 12,25 """
-		x, y = pos[0] - 1, pos[1] - 1
-		return(	x * (Window.width_window //Grid.number_case_x) ,
-				y * (Window.height_window//Grid.number_case_y) )
+		return(	( pos[0]-1 ) * (Grid.DX) ,
+				( pos[1]-1 ) * (Grid.DY) )
 
 	def check_point_in_grid(pos) : # is (1,2) in grid of the game ? (True or False)
 		return(	( pos[0] >= 1 and pos[0] <= Grid.number_case_x ) and
@@ -90,14 +90,15 @@ class Case:
 		self.canvas = canvas		# main canvas appartenance
 		self.pos = pos				# ex : (3,2) , (14,5) , ......
 		self.color = "blue"			# as you wish ....
+		self.name = name			# B05, E14
 		self.id = canvas.create_rectangle( self.f_coord_case(self.pos), fill=self.color, tag = "free" )
 
 	def f_coord_case(self, pos=False) :
 	
 		if pos == False : pos = self # this is shame ...
 		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
-		deltaX =  - 2 + ( Window.width_window // Grid.number_case_x	)
-		deltaY =  - 2 + ( Window.height_window // Grid.number_case_y	)
+		deltaX =  - 2 + Grid.DX
+		deltaY =  - 2 + Grid.DY
 		return x1, y1, x1 + deltaX, y1 + deltaY
 
 		
@@ -239,7 +240,7 @@ class MacGyver:
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
 		if not pos[0] <= 0:
-			self.x = -Window.width_window//Grid.number_case_x +1
+			self.x = - Grid.DX
 			self.y = 0
 			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
@@ -249,8 +250,8 @@ class MacGyver:
 	
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
-		if not pos[2] >= Window.width_window - Window.width_window//Grid.number_case_x:
-			self.x = Window.width_window//Grid.number_case_x
+		if not pos[2] >= Window.width_window - Grid.DX:
+			self.x = Grid.DX
 			self.y = 0
 			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
@@ -260,8 +261,8 @@ class MacGyver:
 	
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
-		if not pos[3] >= Window.height_window - Window.height_window//Grid.number_case_y:
-			self.y = Window.height_window//Grid.number_case_y
+		if not pos[3] >= Window.height_window - Grid.DY:
+			self.y = Grid.DY
 			self.x = 0
 			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
@@ -272,7 +273,7 @@ class MacGyver:
 		self.canvas.move(self.id, self.x, self.y)
 		pos = self.canvas.coords(self.id)
 		if not pos[1] <= 0: # height_window//15:
-			self.y = -Window.height_window//Grid.number_case_y +1
+			self.y = - Grid.DY
 			self.x = 0
 			if not self.path_ok(pos) : self.x = self.y = 0
 		pass
@@ -287,8 +288,8 @@ class Middle_goal:
 		self.canvas = canvas
 		coord = Grid.adjust_coord_for_Canvas(pos)
 		coord = (
-			coord[0] + (Window.width_window // Grid.number_case_x) / 2,
-			coord[1] + (Window.height_window// Grid.number_case_y) / 2)
+			coord[0] + Grid.DX / 2,
+			coord[1] + Grid.DY / 2)
 		self.id = canvas.create_text(coord,
 			text = "X", fill='white', anchor = 'center', font=('Courier', '30'))
 		
@@ -302,8 +303,8 @@ class Final_goal:
 		self.canvas = canvas
 		coord = Grid.adjust_coord_for_Canvas(pos)
 		coord = (
-			coord[0] + (Window.width_window // Grid.number_case_x) / 2,
-			coord[1] + (Window.height_window// Grid.number_case_y) / 2)
+			coord[0] + Grid.DX / 2,
+			coord[1] + Grid.DY / 2)
 		self.id = canvas.create_text(coord,
 			text = "X", fill='black', anchor = 'center', font=('Courier', '30'))
 
@@ -350,15 +351,9 @@ def main():
 	window = Window()
 	
 	v = V(window)
-	# v.for_vendetta(window,0)
-	
 	grid = Grid(window.canvas)
-	# v.for_vendetta(window.canvas,1)
-	
 	path = Path_generator(grid, window.canvas)
-	# v.for_vendetta(path,2)
-	
-	
+
 	macgyver 	= MacGyver(		window.canvas, path.start)
 	middle_goal = Middle_goal(	window.canvas, path.middle)
 	final_goal	= Final_goal(	window.canvas, path.finish)
