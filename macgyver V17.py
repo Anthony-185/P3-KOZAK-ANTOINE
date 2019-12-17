@@ -228,55 +228,27 @@ class MacGyver:
 				return False
 		return True
 			
-	def path_ok(self, pos):
-	
+	def check_path(self):
+		pos = self.canvas.coords(self.id)
 		future_pos = (	pos[0] + self.x, pos[1] + self.y,
 						pos[2] + self.x, pos[3] + self.y)
-		return ( {future_pos} & Path_generator.Path_set ) == {future_pos}
+		if not {future_pos} & Path_generator.Path_set == {future_pos}: self.x = self.y = 0
 
 	def move_left(self, event):
-
-		self.canvas.move(self.id, self.x, self.y)
-		pos = self.canvas.coords(self.id)
-		if not pos[0] <= 0:
-			self.x = - Grid.DX
-			self.y = 0
-			if not self.path_ok(pos) : self.x = self.y = 0
-		pass
-
+		if not self.canvas.coords(self.id)[0] <= 0:
+			self.x = - Grid.DX ; self.check_path()
 
 	def move_right(self, event):
-	
-		self.canvas.move(self.id, self.x, self.y)
-		pos = self.canvas.coords(self.id)
-		if not pos[2] >= Window.width_window - Grid.DX:
-			self.x = Grid.DX
-			self.y = 0
-			if not self.path_ok(pos) : self.x = self.y = 0
-		pass
+		if not self.canvas.coords(self.id)[2] >= Window.width_window - Grid.DX:
+			self.x = Grid.DX ; self.check_path()
 		
-
-	def move_down(self, event): # add
+	def move_down(self, event):
+		if not self.canvas.coords(self.id)[3] >= Window.height_window - Grid.DY:
+			self.y = Grid.DY ; self.check_path()
 	
-		self.canvas.move(self.id, self.x, self.y)
-		pos = self.canvas.coords(self.id)
-		if not pos[3] >= Window.height_window - Grid.DY:
-			self.y = Grid.DY
-			self.x = 0
-			if not self.path_ok(pos) : self.x = self.y = 0
-		pass
-		
-
-	def move_up(self, event):	# add
-
-		self.canvas.move(self.id, self.x, self.y)
-		pos = self.canvas.coords(self.id)
-		if not pos[1] <= 0: # height_window//15:
-			self.y = - Grid.DY
-			self.x = 0
-			if not self.path_ok(pos) : self.x = self.y = 0
-		pass
-
+	def move_up(self, event):
+		if not self.canvas.coords(self.id)[1] <= 0:
+			self.y = - Grid.DY ; self.check_path()
 
 class Middle_goal:
 
