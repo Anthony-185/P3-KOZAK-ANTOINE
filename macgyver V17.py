@@ -17,7 +17,7 @@ class V:
 		self.canvas.create_text(0,0,text='{:=^50}'.format(' VERBOSE ACTIVATED '),
 			fill='green', tag='vendetta', anchor='nw', font = self.font)
 		self.tk.update()
-				
+
 	def for_vendetta(self, string, lvl=0) : # clas GRID : 5 '===  '
 	
 		text = self.canvas.create_text(0,40+self.i*20,text=' {0}. >> {1}'.format(lvl,string),
@@ -50,8 +50,7 @@ class Window:
 			height = Window.height_window, bg='black')
 		self.canvas.grid(row=0,column=0)
 		self.tk.update()
-		
-		
+			
 class Grid:
 	""" where the magic happen """
 	
@@ -327,14 +326,14 @@ class Ball:
 	def draw(self):
 	
 		self.canvas.move(self.id, self.x, self.y)
-		pos = self.canvas.coords(self.id)
-
+		
+		pos = self.canvas.coords(self.id) #wall collision
 		if pos[1] <= 0:	self.y = 1
 		if pos[0] <= 0:	self.x = 3
 		if pos[3] >= self.canvas_height//15*15:	self.y = -1
 		if pos[2] >= self.canvas_width//15*15:	self.x = -3
 			
-		paddle_pos = self.canvas.coords(self.paddle.id)		
+		paddle_pos = self.canvas.coords(self.paddle.id)		 #Macgyver collision
 		if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
 			if pos[3] >= paddle_pos[1] and pos[3] <= paddle_pos[3]: #top
 				self.y = -3 ; self.hit += 1
