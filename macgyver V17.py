@@ -96,9 +96,7 @@ class Case:
 	
 		if pos == False : pos = self # this is shame ...
 		x1, y1 = Grid.adjust_coord_for_Canvas(pos)
-		deltaX =  - 2 + Grid.DX
-		deltaY =  - 2 + Grid.DY
-		return x1, y1, x1 + deltaX, y1 + deltaY
+		return x1, y1, x1-2 + Grid.DX, y1-2 + Grid.DY
 
 		
 class Path_generator:
@@ -176,17 +174,38 @@ class Path_generator:
 		"""
 		the system check if possible to subdivise in 3*3 the gird,
 		and we generate 3*3 case gard
-		
-		 - - - 		 - - -		 - - -
 		|X| |X|		|X| |X|		|X| |X|
-		 - - - 		 - - -		 - - -
 		|X| | |		| | | |		| | | |
-		 - - - 		 - - -		 - - -
-		|X|X|X|		|X|X|X|		|X| |X|
-		 - - - 		 - - -		 - - -
+		|X|X|X|		|X|X|X|		|X| |X|"""
+		if not Grid.number_case_x % 3 == Grid.number_case_y % 3 == 0:
+			print("Grid not powered by 3")
+			break
+
+		class Card:
 		
+			def __init__(self):
+				self.model =  [ ( (0,) * 3 ) for i in (1,2,3) ]
+				self.way = ["up", "right", "down", "left"]
+				pass
+				
+		class Corner(Card): # 4 rotated model
+				pass
+				
+		class T_intersection(Card):  # 4 rotated model
+				pass
+				
+		class Cross_path(Card):  # 1 rotate model
+				pass
+				
+		class I_path(Card):   # 2 rotated model
+				pass
+				
+		def path():
+			pass
 		"""
-		pass
+		"""
+			
+		
 		
 	def way_four(self):
 		"""
