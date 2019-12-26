@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 	grid = Grid()
 	path = grid.Path()
-	Grid.Path.by_path_generator(path)
+	Grid.path.by_path_generator(path)
 	Mac = path.start
 	
 	playing = True
