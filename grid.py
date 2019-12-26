@@ -41,6 +41,13 @@ class Grid:
 			
 			
 	class Path:
+	"""
+	/////////////////////////////////////////////////////////
+	Path generer par grid directement
+	mettre les valeurs number case lié à GRID, faire en sorte que ca se modifie facilement
+	generer la map, puis la load, ca serait cool
+	la faire en json ou sql, ca serait cool aussi !!!
+	"""
 	
 		def __init__(self):
 		
