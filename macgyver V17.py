@@ -179,7 +179,7 @@ class Path_generator:
 		|X|X|X|		|X|X|X|		|X| |X|"""
 		if not Grid.number_case_x % 3 == Grid.number_case_y % 3 == 0:
 			print("Grid not powered by 3")
-			break
+
 
 		class Card:
 		

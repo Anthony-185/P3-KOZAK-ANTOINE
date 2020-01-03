@@ -41,13 +41,12 @@ class Grid:
 			
 			
 	class Path:
-	"""
-	/////////////////////////////////////////////////////////
-	Path generer par grid directement
-	mettre les valeurs number case lié à GRID, faire en sorte que ca se modifie facilement
-	generer la map, puis la load, ca serait cool
-	la faire en json ou sql, ca serait cool aussi !!!
-	"""
+	
+	# /////////////////////////////////////////////////////////
+	# Path generer par grid directement
+	# mettre les valeurs number case lié à GRID, faire en sorte que ca se modifie facilement
+	# generer la map, puis la load, ca serait cool
+	# la faire en json ou sql, ca serait cool aussi !!!
 	
 		def __init__(self):
 		
@@ -62,7 +61,7 @@ class Grid:
 		
 			x = random.randrange(15) + 1 # how to link to number_case
 			y = random.randrange(15) + 1 # how to link to number_case
-			self.start = actual_position = old_position = (x, y)
+			self.start = actual_position = (x, y)
 			self.path.add( self.start )
 			road_finish = goal_middle_placed = False
 			i_some_path = 0	
