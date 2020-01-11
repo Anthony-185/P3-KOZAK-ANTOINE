@@ -72,7 +72,7 @@ class Grid:
     def check_point_in_grid(pos) : # is (1,2) in grid of the game ?
         return( ( pos[0] >= 1 and pos[0] <= Grid.COLUMN ) and
                 ( pos[1] >= 1 and pos[1] <= Grid.ROW ) )
-
+# ___________________________________________________________________________ #
 class Case:
 
     def __init__(self,canvas,pos, name) :
@@ -87,7 +87,7 @@ class Case:
         x1, y1 = Grid.adjust_coord_for_Canvas(pos)
         return x1, y1, x1-2 + Grid.DX, y1-2 + Grid.DY
 
-
+# ___________________________________________________________________________ #
 class Path_generator:
 
     Path_set = set()
@@ -147,7 +147,7 @@ class Path_generator:
                 self.canvas.coords( 
                     Grid.dict_case[ i ].id ) ) for i in self.path ) # horrible
     
-
+# ___________________________________________________________________________ #
 class MacGyver:
 
     def __init__(self, canvas, start):
@@ -198,7 +198,7 @@ class MacGyver:
     def move_up(self, event):
         if not self.canvas.coords(self.id)[1] <= 0:
             self.y = - Grid.DY ; self.check_path()
-
+# ___________________________________________________________________________ #
 class Middle_goal:
 
     def __init__(self, canvas, pos):
@@ -214,7 +214,7 @@ class Middle_goal:
             text = "X", fill='white', anchor = 'center', font=('Courier', '30'))
         
 
-
+# ___________________________________________________________________________ #
 class Final_goal:
 
     def __init__(self, canvas, pos):
@@ -228,7 +228,7 @@ class Final_goal:
         self.id = canvas.create_text(coord,
             text = "X", fill='black', anchor = 'center', font=('Courier', '30'))
 
-
+# ___________________________________________________________________________ #
 class Ball:
 
     def __init__(self, canvas, paddle):
@@ -265,7 +265,7 @@ class Ball:
                 self.x = -3 ; self.hit += 1
             elif pos[0] >= paddle_pos[0] and pos[0] <= paddle_pos[2]: #right
                 self.x = 3  ; self.hit += 1
-
+# ___________________________________________________________________________ #
 def write_in_file(path):
     date = time.strftime("map/%Y%m%d_%H%M%S_") + str(time.time())[-6:] + ".txt"
     file = open(date, 'w+')
@@ -285,6 +285,7 @@ def write_in_file(path):
     file.write(str(path.path))
     file.close()
 
+# ___________________________________________________________________________ #
 def main():
     
     window = Window()
