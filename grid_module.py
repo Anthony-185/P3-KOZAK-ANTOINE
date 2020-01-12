@@ -5,6 +5,14 @@ console version of the game
 import random
 import string
 
+# _____________________________________________________________________________
+# MUST BE THE MAIN MODULE
+# [ ] ALL class Game --- run the game, with or wthout tkinter or pygame
+# [ ] Add Pygame module
+# [ ] Add Tkinter module
+# [ ] Redefine Case and Path, outside Grid
+# _____________________________________________________________________________
+
 class Grid:
     ROW = 0
     COLUMN = 0
@@ -12,15 +20,17 @@ class Grid:
     def __init__(self, x = 15, y = 15):
         ''' init grid, accept optional arguments x or y,
             to define the size of the grid,
-            only if 15 <= x <= 38 and 15 <= y <= 26
+            only if 15 <= x <= 39 and 15 <= y <= 23
+            (for normal prompt size)
         '''
-        if not 15 <= x <= 39:
-            x = 15 if x < 15 else 39
-        if not 15 <= y <= 23:
-            y = 15 if y < 15 else 23
+        if not 15 <= x <= 39: x = 15 if x < 15 else 39
+        if not 15 <= y <= 23: y = 15 if y < 15 else 23
+
         number_case_x, number_case_y = Grid.ROW, Grid.COLUMN = x, y
+        
         line_X = tuple( "{:0>2}".format(i+1) for i in range(number_case_x) )
         line_Y = tuple( i for i in string.ascii_uppercase[0:number_case_y] )
+        
         dict_all_case = dict_str_to_int = {}
         
         for x,i in enumerate( line_X ) :
@@ -35,28 +45,25 @@ class Grid:
     def coord_int_To_str(coord): # (1,2) >> "A02" """
         return dict_all_case.get([coord]).name
         
-    def check_point_in_grid(pos) : # is (1,2) in grid of the game ? (True or False)
-        return( ( pos[0] >= 1 and pos[0] <= Grid.ROW ) and # Grid.number_case_x
-                ( pos[1] >= 1 and pos[1] <= Grid.COLUMN ) )   # Grid.number_case_y
+    def check_point_in_grid(pos) : # is (1,2) in grid of the game ? return bool
+        return( ( pos[0] >= 1 and pos[0] <= Grid.ROW ) and 
+                ( pos[1] >= 1 and pos[1] <= Grid.COLUMN ) )
 
 
     class Case:
-    
+        ''' For graphic use, like Tkinter, or Pygame
+        '''
         def __init__(self, name, status, coord):
-        
             self.name = name
             self.status = status
             self.coord = coord
             
-            
-    class Path:
-    
-    # /////////////////////////////////////////////////////////
-    # Path generer par grid directement
-    # generer la map, puis la load, ca serait cool
-    # la faire en json ou sql, ca serait cool aussi !!!
-    # /////////////////////////////////////////////////////////
-    
+    class Path: # TO IMPROVE __________________________________________________
+        ''' Define generate the path
+        Path generer par grid directement
+        generer la map, puis la load, ca serait cool
+        la faire en json ou sql, ca serait cool aussi
+        '''
         def __init__(self):
             ''' define two objects to keep track of the path
             self.dict_obj_pos >>> { start: (2, 3), item_1: (12, 7), ... }
@@ -70,7 +77,6 @@ class Grid:
             pass
             
         def by_path_generator(self):
-        
             x = random.randrange(Grid.ROW) + 1 
             y = random.randrange(Grid.COLUMN) + 1
             self.dict_obj_pos['start'] = actual_position = (x, y)
@@ -80,7 +86,7 @@ class Grid:
             
             while not road_finish :
                 
-                x, y = actual_position[0], actual_position[1]
+                x, y = actual_position
                 future_position = [
                 ( x + 1 , y + 0 ) , #       [X]
                 ( x - 1 , y + 0 ) , #   [X] [O] [X]
@@ -101,7 +107,7 @@ class Grid:
                 
                 if i_some_path > 17 and random.randrange(117) > 77 :
                     i_some_path = 0
-                    for i in self.dict_obj_pos.keys():
+                    for i in self.dict_obj_pos.keys(): # generator faster here
                         if 'item' in i and not self.dict_obj_pos[i]:
                             self.dict_obj_pos[i] = actual_position
                             break
@@ -111,10 +117,8 @@ class Grid:
                         road_finish = True
 
 if __name__ == '__main__':
-
     restart = True ; size = []
     while restart:
-        
         if size: grid = Grid(x = size[0], y = size[1]) ; size = []
         else: grid = Grid()
         path = grid.Path()
@@ -125,10 +129,8 @@ if __name__ == '__main__':
         item_taken=[0] * 3
 
         while playing:
-
             print(4*"\n" + 80*"_" + "\n\n")
             for y in range(1,Grid.COLUMN+1):
-                # print(2*" ", end ="")
                 for x in range(1,Grid.ROW+1):
                     if (x,y) == Mac:                               symbol="|."
                     elif (x,y) == path.dict_obj_pos['start']:      symbol="|S"
@@ -153,7 +155,7 @@ if __name__ == '__main__':
                 playing = False
                 continue
 
-            move = input("z: up, d: right, s: down, q: left, exit to quit\n>>> ")
+            move = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
 
             if move == 'exit' : playing = False ; new_Mac = (0,0)
             elif move == 'z' : new_Mac = ( Mac[0], Mac[1] - 1 )
@@ -171,5 +173,4 @@ if __name__ == '__main__':
                     Mac = new_Mac
                     
         else: restart = not input('press enter to resart: ')
-    print('last line')
-
+    exit()
