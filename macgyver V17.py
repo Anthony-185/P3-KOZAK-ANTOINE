@@ -349,7 +349,7 @@ def main():
 	final_goal	= Final_goal(	window.canvas, path.finish)
 	ball		= Ball(window.canvas, macgyver)
 	
-	if True: # if you want to write the path and some info
+	if False: # if you want to write the path and some info
 		date = time.strftime("map/%Y%m%d_%H%M%S_") + str(time.time())[-6:] + ".txt"
 		file = open(date, 'w+')
 		file.write(date+"\n\n")
