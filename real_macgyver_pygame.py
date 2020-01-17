@@ -97,40 +97,60 @@ class game():
         
         self.grid = Grid()# .init_Path()
         self.gameObjects = []
+        for name, pos in self.grid.dict_obj_pos.items():
+            self.gameObjects.append(Object(name, pos))
         for i in self.grid.all:
             if i in self.grid.path: name = 'path '
             else: name = 'wall '
             self.gameObjects.append(Object(name+str(i), i))
-        for name, pos in self.grid.dict_obj_pos.items():
-            self.gameObjects.append(Object(name, pos))
         for i in self.gameObjects: 
             print(i.name)
             time.sleep(0.001)
             
     def handleEvents(self):
-        for event in pygame.event.get():
+        List_event = pygame.event.get()
+        for event in List_event:
             if event.type == QUIT: pygame.quit()
+        return List_event
+    
+    def key_pressed(self, old = [[]]):
         pressed_keys = pygame.key.get_pressed()
-        if   pressed_keys[K_LEFT]:  self.move('left')
-        elif pressed_keys[K_RIGHT]: self.move('right')
-        elif pressed_keys[K_UP]:    self.move('up')
-        elif pressed_keys[K_DOWN]:  self.move('down')
+        if not old[0] == pressed_keys:
+            if   pressed_keys[K_LEFT]:  self.move('left')
+            elif pressed_keys[K_RIGHT]: self.move('right')
+            elif pressed_keys[K_UP]:    self.move('up')
+            elif pressed_keys[K_DOWN]:  self.move('down')
+        old.pop() ; old.append(pressed_keys)
+        return pressed_keys
 
     def move(self, direction):
         ''' call the Hero class '''
+        if   direction=='left': x, y = -1, 0
+        elif direction=='right': x, y = 1, 0
+        elif direction=='up': x, y = 0, -1
+        elif direction=='down': x, y = 0, +1
+        self.gameObjects[0].x += x
+        self.gameObjects[0].y += y
+        X, Y = self.gameObjects[0].x, self.gameObjects[0].y
+        self.gameObjects[0].pos = X * DX, Y * DY, DX, DY
 
+    def update_screen(self):
+        self.screen.fill(black)         
+        for gameObj in self.gameObjects[::-1]:
+            gameObj.update()
+            gameObj.draw(self.screen)
+            pygame.display.flip()
+                    
     def run(self):
-        old_event = False
+        old_key = new_key = self.key_pressed()
+        self.update_screen()
         while True:
-            new_event = self.handleEvents()
-            if new_event != old_event:
-                self.screen.fill(black)         
-                for gameObj in self.gameObjects:
-                    gameObj.update()
-                    gameObj.draw(self.screen)
-                    pygame.display.flip()
+            new_key = self.key_pressed()
+            self.handleEvents()
+            if any(new_key) and not any(old_key):
+                self.update_screen()
             self.clock.tick(60)
-            old_event = new_event
+            old_key = new_key
 
 if __name__ == '__main__':
     game().run()
