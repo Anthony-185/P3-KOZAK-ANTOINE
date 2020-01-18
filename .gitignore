@@ -2,3 +2,4 @@
 *.txt
 intro_ball.gif
 other_pygame_exemple.py
+/__pycache__/

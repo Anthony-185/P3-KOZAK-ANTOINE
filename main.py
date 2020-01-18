@@ -64,14 +64,14 @@ class Game:
     def run(self):
         while self.playing:
             if CONSOLE: 
-                self.c.run()
-                self.c.handle()
-        
+                self.console.run()
+                self.console.handle()
+
     
 if __name__ == '__main__':
 
     game = Game()
     Mac = Hero('Mac Gyver', Grid.dic['start'])
-    game.c = Mode_console()    
+    game.console = Mode_console()    
     game.run()
     
