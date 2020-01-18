@@ -1,14 +1,14 @@
 import random
 import string
 
-class Grid:
+class Grid: # transform this in a iterator
     row, column = 15, 15
     dic   = dict()
     all   = set()
     path  = set()
     object= set()
 
-class Case:
+class Case: # add __add__ and compare function !!!
     def __init__(self,name, pos):
         self.name = name
         self.pos  = pos

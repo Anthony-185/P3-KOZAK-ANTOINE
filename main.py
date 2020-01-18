@@ -1,4 +1,5 @@
 from grid_module import *
+from pygame_module import *
 # _____________________________________________________________________________
 # MUST BE THE MAIN MODULE
 # [ ] ALL class Game --- run the game, with or wthout tkinter or pygame
