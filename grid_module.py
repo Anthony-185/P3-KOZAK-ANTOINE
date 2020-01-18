@@ -9,16 +9,34 @@ class Grid:
     object= set()
 
 class Case:
-    def __init__(self, name):
+    def __init__(self,name, pos):
         self.name = name
-        self.attribute = None
+        self.pos  = pos
 
 class Object(Case):
-    pass
+    taken = False
     
-class Hero(Object):
+class Hero(Case):
     bag = 3 * [0]
-    pass
+    def move(self, mov):
+        new_pos = [0, 0]
+        new_pos[0] = self.pos[0] + mov[0]
+        new_pos[1] = self.pos[1] + mov[1]
+        new_pos = tuple(new_pos)
+        if new_pos in Grid.path:
+            self.pos = new_pos
+            if new_pos in Grid.object:
+                self.interact(new_pos)
+            
+    def interact(self, new_pos):
+        if   new_pos == Grid.dic['start']: return None
+        elif new_pos == Grid.dic['item_1']: self.bag[0] = True
+        elif new_pos == Grid.dic['item_2']: self.bag[1] = True
+        elif new_pos == Grid.dic['item_3']: self.bag[2] = True
+        elif new_pos == Grid.dic['final_goal']:
+            if all(self.bag): print(12*'\n'+f'{"WIN": ^79}'+'\n')
+            else: print(f'{"Game Over":X^79}'+3*'\n')
+
 
 class Path:
     ''' path creator (~ map generator) '''    
@@ -31,7 +49,7 @@ class Path:
     def by_load_defaut_map(self):
         pass
 
-    @staticmethod   # [0] : x, y ---> return [X] like that:  #     [X]
+    @staticmethod   # [0] : x, y ---> return [X] like that:   #     [X]
     def near_position(x, y):                                  # [X] [O] [X]
         return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) #     [X]
 
@@ -56,9 +74,9 @@ class Path:
             actual_position = random.choice(future_position)
             Grid.path |= {actual_position}
             if self.some_space():
-                Grid.dic[next(obj)] = actual_position        
+                Grid.dic[next(obj)] = actual_position
         assert all(Grid.dic.values())
- 
+        Grid.object = set(Grid.dic.values())
   
 if __name__ == '__main__':
 
@@ -66,8 +84,7 @@ if __name__ == '__main__':
     path.by_path_generator()
     print(Grid.object < Grid.path < Grid.all)
 
-    Mac = Hero('Mac Gyver')
-    Mac.pos = Grid.dic['start']
+    Mac = Hero('Mac Gyver', Grid.dic['start'])
     
     def console_print():
         print(4*"\n" + 80*"_" + "\n\n")
@@ -87,23 +104,12 @@ if __name__ == '__main__':
     playing = True
     while playing:
         console_print()
-
-        if   Mac.pos == Grid.dic['item_1']: Mac.bag[0] = True
-        elif Mac.pos == Grid.dic['item_2']: Mac.bag[1] = True
-        elif Mac.pos == Grid.dic['item_3']: Mac.bag[2] = True
-        elif Mac.pos == Grid.dic['final_goal']:
-            if all(Mac.bag): print(80*'='+'{:!^80}'.format(' WIN ')+22*'\n')
-            else: print(80*'='+'{:x^80}'.format(" Game Over :'( ")+22*'\n')
-    
         print(79*'_')
-        move = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
+        command = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
     
-        if move == 'exit': playing = False ; new_pos = (0,0)
-        elif move == 'z' : new_pos = ( Mac.pos[0], Mac.pos[1] - 1 )
-        elif move == 'd' : new_pos = ( Mac.pos[0] + 1, Mac.pos[1] )
-        elif move == 's' : new_pos = ( Mac.pos[0], Mac.pos[1] + 1 )
-        elif move == 'q' : new_pos = ( Mac.pos[0] - 1, Mac.pos[1] )
+        if command == 'exit': playing = False
+        elif command == 'z' : Mac.move((0, -1))
+        elif command == 'd' : Mac.move((+1, 0))
+        elif command == 's' : Mac.move((0, +1))
+        elif command == 'q' : Mac.move((-1, 0))
         else: continue
-    
-        if new_pos in Grid.path: 
-            Mac.pos = new_pos
