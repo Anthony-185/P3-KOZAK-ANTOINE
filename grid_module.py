@@ -1,176 +1,109 @@
-"""
-if __name__ == '__main__'
-console version of the game
-"""
 import random
 import string
 
-# _____________________________________________________________________________
-# MUST BE THE MAIN MODULE
-# [ ] ALL class Game --- run the game, with or wthout tkinter or pygame
-# [ ] Add Pygame module
-# [ ] Add Tkinter module
-# [ ] Redefine Case and Path, outside Grid
-# _____________________________________________________________________________
-
 class Grid:
-    ROW = 0
-    COLUMN = 0
+    row, column = 15, 15
+    dic   = dict()
+    all   = set()
+    path  = set()
+    object= set()
+
+class Case:
+    def __init__(self, name):
+        self.name = name
+        self.attribute = None
+
+class Object(Case):
+    pass
     
-    def __init__(self, x = 15, y = 15):
-        ''' init grid, accept optional arguments x or y,
-            to define the size of the grid,
-            only if 15 <= x <= 39 and 15 <= y <= 23
-            (for normal prompt size)
-        '''
-        if not 15 <= x <= 39: x = 15 if x < 15 else 39
-        if not 15 <= y <= 23: y = 15 if y < 15 else 23
+class Hero(Object):
+    bag = 3 * [0]
+    pass
 
-        number_case_x, number_case_y = Grid.ROW, Grid.COLUMN = x, y
+class Path:
+    ''' path creator (~ map generator) '''    
+    def __init__(self, column=15, row=15):
+        Grid.dic = {x: 0
+            for x in "start item_1 item_2 item_3 final_goal".split()}
+        Grid.column = column ; Grid.row = row
+        Grid.all = {(x+1, y+1) for y in range(column) for x in range(row)}
         
-        line_X = tuple( "{:0>2}".format(i+1) for i in range(number_case_x) )
-        line_Y = tuple( i for i in string.ascii_uppercase[0:number_case_y] )
+    def by_load_defaut_map(self):
+        pass
+
+    @staticmethod   # [0] : x, y ---> return [X] like that:  #     [X]
+    def near_position(x, y):                                  # [X] [O] [X]
+        return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) #     [X]
+
+    @staticmethod
+    def some_space():
+        return random.randrange(100) > 97
+
+    def by_path_generator(self):
+        obj = iter(Grid.dic.keys())
         
-        dict_all_case = dict_str_to_int = {}
-        
-        for x,i in enumerate( line_X ) :
-            for y,j in enumerate( line_Y ) :
-                
-                dict_all_case[x+1, y+1] = self.Case( j+i, "free", (x+1, y+1))
-                dict_str_to_int[j+i] = x+1, y+1
-                
-    def coord_str_To_int(coord): # "A02" >> (1,2)
-        return dict_str_to_int.get([coord])
-        
-    def coord_int_To_str(coord): # (1,2) >> "A02" """
-        return dict_all_case.get([coord]).name
-        
-    def check_point_in_grid(pos) : # is (1,2) in grid of the game ? return bool
-        return( ( pos[0] >= 1 and pos[0] <= Grid.ROW ) and 
-                ( pos[1] >= 1 and pos[1] <= Grid.COLUMN ) )
+        actual_position: 'x, y' = random.choice(list(Grid.all))
+        Grid.dic[next(obj)] = actual_position
+        Grid.path |= {actual_position}
+        while not Grid.dic['final_goal'] :
+            future_position = [i for i in self.near_position(*actual_position)
+                if i in Grid.all and i not in Grid.path]
 
-
-    class Case:
-        ''' For graphic use, like Tkinter, or Pygame
-        '''
-        def __init__(self, name, status, coord):
-            self.name = name
-            self.status = status
-            self.coord = coord
-            
-    class Path: # TO IMPROVE __________________________________________________
-        ''' Define generate the path
-        Path generer par grid directement
-        generer la map, puis la load, ca serait cool
-        la faire en json ou sql, ca serait cool aussi
-        '''
-        def __init__(self):
-            ''' define two objects to keep track of the path
-            self.dict_obj_pos >>> { start: (2, 3), item_1: (12, 7), ... }
-            self.path >>> { (2, 3), (4,12), (12, 12), ... }
-            '''
-            self.dict_obj_pos = {x: 0
-                for x in "start item_1 item_2 item_3 final_goal".split() }
-            self.path = set()
-            
-        def by_load_defaut_map(self):
-            pass
-            
-        def by_path_generator(self):
-            x = random.randrange(Grid.ROW) + 1 
-            y = random.randrange(Grid.COLUMN) + 1
-            self.dict_obj_pos['start'] = actual_position = (x, y)
-            self.path.add( actual_position )
-            road_finish = False
-            i_some_path = 0
-            
-            while not road_finish :
-                
-                x, y = actual_position
-                future_position = [
-                ( x + 1 , y + 0 ) , #       [X]
-                ( x - 1 , y + 0 ) , #   [X] [O] [X]
-                ( x + 0 , y + 1 ) , #       [X]
-                ( x + 0 , y - 1 ) ] #   [0] actual_position
-    
-                future_position = [ i for i in future_position
-                    if not i in self.path
-                    and Grid.check_point_in_grid(i) ]
-    
-                if not future_position :
-                    actual_position = random.sample(self.path, 1)[0]
-                    continue
-    
-                actual_position = random.choice(future_position)
-                self.path.add(actual_position)
-                i_some_path += 1
-                
-                if i_some_path > 17 and random.randrange(117) > 77 :
-                    i_some_path = 0
-                    for i in self.dict_obj_pos.keys(): # generator faster here
-                        if 'item' in i and not self.dict_obj_pos[i]:
-                            self.dict_obj_pos[i] = actual_position
-                            break
-                    else: 
-                        self.dict_obj_pos['final_goal'] = actual_position
-                        assert all(self.dict_obj_pos.values())
-                        road_finish = True
-
-if __name__ == '__main__':
-    restart = True ; size = []
-    while restart:
-        if size: grid = Grid(x = size[0], y = size[1]) ; size = []
-        else: grid = Grid()
-        path = grid.Path()
-        path.by_path_generator()
-        Mac = path.dict_obj_pos['start']
-
-        playing = True
-        item_taken=[0] * 3
-
-        while playing:
-            print(4*"\n" + 80*"_" + "\n\n")
-            for y in range(1,Grid.COLUMN+1):
-                for x in range(1,Grid.ROW+1):
-                    if (x,y) == Mac:                               symbol="|."
-                    elif (x,y) == path.dict_obj_pos['start']:      symbol="|S"
-                    elif (x,y) == path.dict_obj_pos['item_1']:     symbol="|o"
-                    elif (x,y) == path.dict_obj_pos['item_2']:     symbol="|o"
-                    elif (x,y) == path.dict_obj_pos['item_3']:     symbol="|o"
-                    elif (x,y) == path.dict_obj_pos['final_goal']: symbol="|X"
-                    elif (x,y) in path.path:                       symbol="| "
-                    elif (x,y) not in path.path:                   symbol="|~"
-                    print(symbol, end="")
-                print("|")
-
-            if   Mac == path.dict_obj_pos['item_1']: item_taken[0] = True
-            elif Mac == path.dict_obj_pos['item_2']: item_taken[1] = True
-            elif Mac == path.dict_obj_pos['item_3']: item_taken[2] = True
-
-            if   Mac == path.dict_obj_pos['final_goal']:
-                if all(item_taken):
-                    print(80*'='+'{:!^80}'.format(' WIN ')+22*'\n')
-                else:
-                    print(80*'='+'{:x^80}'.format(" Game Over :'( ")+22*'\n')
-                playing = False
+            if not future_position :
+                actual_position = random.choice(list(Grid.path))
                 continue
 
-            move = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
+            actual_position = random.choice(future_position)
+            Grid.path |= {actual_position}
+            if self.some_space():
+                Grid.dic[next(obj)] = actual_position        
+        assert all(Grid.dic.values())
+ 
+  
+if __name__ == '__main__':
 
-            if move == 'exit' : playing = False ; new_Mac = (0,0)
-            elif move == 'z' : new_Mac = ( Mac[0], Mac[1] - 1 )
-            elif move == 'd' : new_Mac = ( Mac[0] + 1, Mac[1] )
-            elif move == 's' : new_Mac = ( Mac[0], Mac[1] + 1 )
-            elif move == 'q' : new_Mac = ( Mac[0] - 1, Mac[1] )
-            elif move == 're':
-                size.append( int(input('x : ')) )
-                size.append( int(input('y : ')) )
-                break
-            else: new_Mac = (0,0)
+    path = Path()
+    path.by_path_generator()
+    print(Grid.object < Grid.path < Grid.all)
 
-            if Grid.check_point_in_grid(new_Mac): 
-                if new_Mac in path.path:
-                    Mac = new_Mac
-                    
-        else: restart = not input('press enter to resart: ')
-    exit()
+    Mac = Hero('Mac Gyver')
+    Mac.pos = Grid.dic['start']
+    
+    def console_print():
+        print(4*"\n" + 80*"_" + "\n\n")
+        for y in range(1,Grid.column+1):
+            for x in range(1,Grid.row+1):
+                if (x,y) == Mac.pos:                  symbol="|."
+                elif (x,y) == Grid.dic['start']:      symbol="|S"
+                elif (x,y) == Grid.dic['item_1']:     symbol="|o"
+                elif (x,y) == Grid.dic['item_2']:     symbol="|o"
+                elif (x,y) == Grid.dic['item_3']:     symbol="|o"
+                elif (x,y) == Grid.dic['final_goal']: symbol="|X"
+                elif (x,y) in Grid.path:              symbol="| "
+                elif (x,y) not in Grid.path:          symbol="|~"
+                print(symbol, end="")
+            print("|")
+
+    playing = True
+    while playing:
+        console_print()
+
+        if   Mac.pos == Grid.dic['item_1']: Mac.bag[0] = True
+        elif Mac.pos == Grid.dic['item_2']: Mac.bag[1] = True
+        elif Mac.pos == Grid.dic['item_3']: Mac.bag[2] = True
+        elif Mac.pos == Grid.dic['final_goal']:
+            if all(Mac.bag): print(80*'='+'{:!^80}'.format(' WIN ')+22*'\n')
+            else: print(80*'='+'{:x^80}'.format(" Game Over :'( ")+22*'\n')
+    
+        print(79*'_')
+        move = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
+    
+        if move == 'exit': playing = False ; new_pos = (0,0)
+        elif move == 'z' : new_pos = ( Mac.pos[0], Mac.pos[1] - 1 )
+        elif move == 'd' : new_pos = ( Mac.pos[0] + 1, Mac.pos[1] )
+        elif move == 's' : new_pos = ( Mac.pos[0], Mac.pos[1] + 1 )
+        elif move == 'q' : new_pos = ( Mac.pos[0] - 1, Mac.pos[1] )
+        else: continue
+    
+        if new_pos in Grid.path: 
+            Mac.pos = new_pos
