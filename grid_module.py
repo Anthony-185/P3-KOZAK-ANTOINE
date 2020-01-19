@@ -1,27 +1,60 @@
 import random
 import string
 
-class Grid: # transform this in a iterator
-    row, column = 15, 15
-    dic   = dict()
-    all   = set()
-    path  = set()
-    object= set()
-
-class Case: # add __add__ and compare function !!!
-    def __init__(self,name, pos):
-        self.name = name
-        self.pos  = pos
-
-class Object(Case):
-    taken = False
+class Grid(set):
+    def __init__(self, x = 15, y = 15):
+        self.x = x if (x > 0 and int(x) == x) else 15
+        self.y = y if (y > 0 and int(y) == y) else 15
+        self.frozen = frozenset(
+            (i, j) for i in range(self.x) for j in range(self.y))
+        self.dic = {i: Case(i) for i in self.frozen}
+        self.index = [0, 0]
     
+    def __iter__(self):
+        self.index[0] = -1
+        return self
+
+    def __next__(self): # not pep-8, yeah i know, but better to read for me
+        self.index[0] += 1
+        if self.index[0] >= self.x:
+           self.index[0] = 0
+           self.index[1] += 1
+           if self.index[1] >= self.y:
+              self.index[1] = 0
+              raise StopIteration
+        return self.dic[tuple(self.index)]
+    
+    def __call__(self, x, y):
+        if 0 < x < self.x and 0 < y < self.y:
+            return self.dic[x, y]
+        return False
+    
+    def __getitem__(self, type):
+        list = []
+        for key, value in self.dic.items():
+            if value.type == type: list.append(key)
+        return list
+    
+    def __len__(self):
+        return self.x * self.y
+    
+    def __contains__(self, other):
+        return other in self.frozen
+
+    def __repr__(self):
+        return repr(self.frozen)
+    
+
+class Case(tuple):
+    def __init__(self, pos):
+        self.type = 'wall'   
+
 class Hero(Case):
     bag = 3 * [0]
     def move(self, mov):
         new_pos = [0, 0]
-        new_pos[0] = self.pos[0] + mov[0]
-        new_pos[1] = self.pos[1] + mov[1]
+        new_pos[0] = self[0] + mov[0]
+        new_pos[1] = self[1] + mov[1]
         new_pos = tuple(new_pos)
         if new_pos in Grid.path:
             self.pos = new_pos
@@ -38,13 +71,10 @@ class Hero(Case):
             else: print(f'{"Game Over":X^79}'+3*'\n')
 
 
-class Path:
+class Path(list):
     ''' path creator (~ map generator) '''    
-    def __init__(self, column=15, row=15):
-        Grid.dic = {x: 0
-            for x in "start item_1 item_2 item_3 final_goal".split()}
-        Grid.column = column ; Grid.row = row
-        Grid.all = {(x+1, y+1) for y in range(column) for x in range(row)}
+    def __init__(self):
+        pass
         
     def by_load_defaut_map(self):
         pass
@@ -57,25 +87,29 @@ class Path:
     def some_space():
         return random.randrange(100) > 97
 
-    def by_path_generator(self):
-        obj = iter(Grid.dic.keys())
+    def by_path_generator(self, grid):
+        path = set()
+        obj = iter('start item_1 item_2 item_3 final_goal'.split())
         
-        actual_position: 'x, y' = random.choice(list(Grid.all))
-        Grid.dic[next(obj)] = actual_position
-        Grid.path |= {actual_position}
-        while not Grid.dic['final_goal'] :
-            future_position = [i for i in self.near_position(*actual_position)
-                if i in Grid.all and i not in Grid.path]
+        actual_position: 'x, y' = random.sample(grid, 1)
+        path |= {actual_position}
+        grid(actual_position) = next(obj)
+        road_finished = False
+        while not road_finished:
+            future_position = [i for i in self.near_position(actual_position)
+                if i in grid and i not in path]
 
             if not future_position :
-                actual_position = random.choice(list(Grid.path))
+                actual_position = random.sample(path, 1)
                 continue
 
             actual_position = random.choice(future_position)
-            Grid.path |= {actual_position}
+            path |= {actual_position}
             if self.some_space():
-                Grid.dic[next(obj)] = actual_position
-        assert all(Grid.dic.values())
+                try:
+                    Grid.dic[next(obj)] = actual_position
+                except StopIteration:
+                    road_finished = True
         Grid.object = set(Grid.dic.values())
   
 if __name__ == '__main__':
