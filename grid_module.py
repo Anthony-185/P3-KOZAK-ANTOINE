@@ -23,6 +23,7 @@ class Hero(Case):
         new_pos = tuple(new_pos)
         if new_pos in Grid.path:
             Hero.pos = new_pos
+            C.console_print()
             if new_pos in Grid.object:
                 Hero.interact(new_pos)
     @staticmethod

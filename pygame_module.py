@@ -58,31 +58,22 @@ class Py_game_1():
             if pos == Hero.pos: color = (0,128,128)
             if pos == Grid.dic['final_goal']: color = (0,0,255)
             self.draw(pos[0] - 1, pos[1] - 1, color)
-            pygame.display.flip()
-        print('screen update - ', end = '')
+        pygame.display.flip()
 
     def draw(self, x, y, color):
         ''' just draw a rectangle, take x, y, and color 
             it's x - 1 and y - 1 already converted /!\ '''
         pygame.draw.rect(self.screen, color,(x * DX, y * DY, DX, DY))
-        print('*', end = '')
                     
-    def run(self, running = [1]):
+    def run(self, old_key = [0]):
         ''' main function of the game,
             run everything in game '''
-        old_key = new_key = self.key_pressed()
-        i = 0
-        while running[0]:
-            new_key = self.key_pressed()
-            self.handleEvents()
-            if any(new_key) and not any(old_key):
-                self.update_screen()
-                C.console_print()
-                print('loop executed '+str(i))
-            i += 1
-            self.clock.tick(60)
-            old_key = new_key
-            if running[0] == 2 : running[0] = 0
+        new_key = self.key_pressed()
+        self.handleEvents()
+        # if any(new_key) and not any(old_key[0]) and new_key != old_key[0]:
+        self.update_screen()
+        self.clock.tick(60)
+        old_key[0] = new_key
 
 if __name__ == '__main__':
     print('- - in main - -')
@@ -95,4 +86,6 @@ if __name__ == '__main__':
     path.by_path_generator()
     Hero.pos = Grid.dic['start']
     print('GRID ENABLE = STARTING MAIN LOOP')
-    Py_game_1().run()
+    game = Py_game_1()
+    while 1:
+        game.run()

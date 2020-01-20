@@ -1,5 +1,6 @@
 from grid_module import *
 from pygame_module import *
+from tkinter_module import *
 # _____________________________________________________________________________
 # [X] MUST BE THE MAIN MODULE
 # [ ] run the game, with or wthout tkinter or pygame
@@ -11,11 +12,8 @@ from pygame_module import *
 # _____________________________________________________________________________
 
 CONSOLE = True
-TKINTER = False
+TKINTER = True
 PYGAME = True
-if not TKINTER and not PYGAME: CONSOLE = True
-MODE = 'pygame' * PYGAME or 'tkinter' * TKINTER or 'console' * CONSOLE
-
 
 def V(func=None, i = [0], *args):
     i[0] += 1
@@ -24,14 +22,19 @@ def V(func=None, i = [0], *args):
 
 class Mode_tkinter:
     pass
-    
+
 class Mode_pygame:
     def __init__(self):
-        self.game = Py_game_1()
-        
+        self.game1 = Py_game_1()
+        self.game2 = Game()
+
     def run(self):
-        self.game.run(running = [2])
-    
+        self.game1.run()
+        self.game2.funny_color()
+        self.game2.hero_move_in_canvas()
+        self.game2.tk.update_idletasks()
+        self.game2.tk.update()
+        
 class Mode_console:
     def __init__(self):
         pass
@@ -79,4 +82,4 @@ if __name__ == '__main__':
     
     pygame1 = Mode_pygame()
     while 1:
-        pygame1.game.run()
+        pygame1.run()

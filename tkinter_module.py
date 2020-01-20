@@ -11,8 +11,6 @@ CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
 # ___________________________________________________________________________ #
 class Game:
     def __init__(self):
-        Path().by_path_generator()
-        Hero.pos = Grid.dic['start']
         self.tk = tkinter.Tk()
         self.tk.geometry('958x404+0-100') # --------------------------> Window size
         self.tk.title("MacGyver's Game")
@@ -64,6 +62,8 @@ class Game:
 print('-- every function defines --\n== starting main loop ==')
 # ___________________________________________________________________________ #
 if __name__ == '__main__':
+    Path().by_path_generator()
+    Hero.pos = Grid.dic['start']
     game = Game()
     while True:
         game.funny_color()
