@@ -1,6 +1,8 @@
 print('importing')
 import pygame
 from pygame.locals import *
+from grid_module import *
+
 
 RESOLUTION = (400,300)
 ROW = 15 ; COLUMN = 15
@@ -11,6 +13,7 @@ screen = pygame.display.set_mode(RESOLUTION)
 class Py_game_1():
     def __init__(self):
         print('py_game_1_init')
+        print('Grid in init ', Grid)
         pygame.init() # Pygame init =======
         print('pygame_initiated')
         self.screen = pygame.display.set_mode(RESOLUTION)
@@ -33,10 +36,10 @@ class Py_game_1():
             it's a list so it can be keep in memory inside the function '''
         pressed_keys = pygame.key.get_pressed()
         if not hold[0] == pressed_keys:
-            if   pressed_keys[K_LEFT]:  Mac.move((-1, 0))
-            elif pressed_keys[K_RIGHT]: Mac.move((+1, 0))
-            elif pressed_keys[K_UP]:    Mac.move((0, -1))
-            elif pressed_keys[K_DOWN]:  Mac.move((0, +1))
+            if   pressed_keys[K_LEFT]:  Hero.move((-1, 0))
+            elif pressed_keys[K_RIGHT]: Hero.move((+1, 0))
+            elif pressed_keys[K_UP]:    Hero.move((0, -1))
+            elif pressed_keys[K_DOWN]:  Hero.move((0, +1))
         hold.pop() ; hold.append(pressed_keys)
         print('key_pressed - ', end = '')
         return pressed_keys
@@ -46,12 +49,13 @@ class Py_game_1():
             are at the start of the list '''
         self.screen.fill(black)
         print('last command before bugging')
+        # global Grid
         print(Grid)
         for pos in Grid.all:
             color = black
             if pos in Grid.path: color = red
             if pos in Grid.object: color = white
-            if pos == Mac.pos: color = (0,128,128)
+            if pos == Hero.pos: color = (0,128,128)
             if pos == Grid.dic['final_goal']: color = (0,0,255)
             self.draw(pos[0] - 1, pos[1] - 1, color)
             pygame.display.flip()
@@ -80,7 +84,6 @@ class Py_game_1():
 
 if __name__ == '__main__':
     print('- - in main - -')
-    from grid_module import *
     import random
     import time
     
@@ -88,6 +91,6 @@ if __name__ == '__main__':
     print('=== starting ===')
     path = Path()
     path.by_path_generator()
-    Mac = Hero('Mac Gyver', Grid.dic['start'])
+    Hero.pos = Grid.dic['start']
     print('GRID ENABLE = STARTING MAIN LOOP')
     Py_game_1().run()

@@ -17,24 +17,27 @@ class Object(Case):
     taken = False
     
 class Hero(Case):
+    name = 'Mac_gyver'
+    pos = [1, 1]
     bag = 3 * [0]
-    def move(self, mov):
+    @staticmethod
+    def move(mov):
         new_pos = [0, 0]
-        new_pos[0] = self.pos[0] + mov[0]
-        new_pos[1] = self.pos[1] + mov[1]
+        new_pos[0] = Hero.pos[0] + mov[0]
+        new_pos[1] = Hero.pos[1] + mov[1]
         new_pos = tuple(new_pos)
         if new_pos in Grid.path:
-            self.pos = new_pos
+            Hero.pos = new_pos
             if new_pos in Grid.object:
-                self.interact(new_pos)
-            
-    def interact(self, new_pos):
+                Hero.interact(new_pos)
+    @staticmethod
+    def interact(new_pos):
         if   new_pos == Grid.dic['start']: return None
-        elif new_pos == Grid.dic['item_1']: self.bag[0] = True
-        elif new_pos == Grid.dic['item_2']: self.bag[1] = True
-        elif new_pos == Grid.dic['item_3']: self.bag[2] = True
+        elif new_pos == Grid.dic['item_1']: Hero.bag[0] = True
+        elif new_pos == Grid.dic['item_2']: Hero.bag[1] = True
+        elif new_pos == Grid.dic['item_3']: Hero.bag[2] = True
         elif new_pos == Grid.dic['final_goal']:
-            if all(self.bag): print(12*'\n'+f'{"WIN": ^79}'+'\n')
+            if all(Hero.bag): print(12*'\n'+f'{"WIN": ^79}'+'\n')
             else: print(f'{"Game Over":X^79}'+3*'\n')
 
 
@@ -100,7 +103,7 @@ if __name__ == '__main__':
         print(4*"\n" + 80*"_" + "\n\n")
         for y in range(1,Grid.column+1):
             for x in range(1,Grid.row+1):
-                if (x,y) == Mac.pos:                  symbol="|."
+                if (x,y) == Hero.pos:                  symbol="|."
                 elif (x,y) == Grid.dic['start']:      symbol="|S"
                 elif (x,y) == Grid.dic['item_1']:     symbol="|o"
                 elif (x,y) == Grid.dic['item_2']:     symbol="|o"
@@ -115,8 +118,7 @@ if __name__ == '__main__':
     path.by_path_generator()
     print(Grid.object < Grid.path < Grid.all)
 
-    Mac = Hero('Mac Gyver', Grid.dic['start'])
-    
+    Hero.pos = Grid.dic['start']
 
     playing = True
     while playing:
@@ -125,8 +127,8 @@ if __name__ == '__main__':
         command = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
     
         if command == 'exit': playing = False
-        elif command == 'z' : Mac.move((0, -1))
-        elif command == 'd' : Mac.move((+1, 0))
-        elif command == 's' : Mac.move((0, +1))
-        elif command == 'q' : Mac.move((-1, 0))
+        elif command == 'z' : Hero.move((0, -1))
+        elif command == 'd' : Hero.move((+1, 0))
+        elif command == 's' : Hero.move((0, +1))
+        elif command == 'q' : Hero.move((-1, 0))
         else: continue
