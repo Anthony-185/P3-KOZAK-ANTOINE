@@ -10,9 +10,13 @@ screen = pygame.display.set_mode(RESOLUTION)
 
 class Py_game_1():
     def __init__(self):
+        print('py_game_1_init')
         pygame.init() # Pygame init =======
+        print('pygame_initiated')
         self.screen = pygame.display.set_mode(RESOLUTION)
-        self.clock = pygame.time.Clock()        
+        print('screen_initiated')
+        self.clock = pygame.time.Clock()
+        print('clock_initied')
         self.update_screen()
         print('init done')
             
@@ -21,7 +25,7 @@ class Py_game_1():
         List_event = pygame.event.get()
         for event in List_event:
             if event.type == QUIT: pygame.quit()
-        print('handleEvents - ', end = '')
+        print('handleEvent - ', end = '')
         return List_event
     
     def key_pressed(self, hold = [[]]):
@@ -40,7 +44,9 @@ class Py_game_1():
     def update_screen(self):
         ''' draw all objects, in reverse because all specials items
             are at the start of the list '''
-        self.screen.fill(black)         
+        self.screen.fill(black)
+        print('last command before bugging')
+        print(Grid)
         for pos in Grid.all:
             color = black
             if pos in Grid.path: color = red
@@ -57,12 +63,12 @@ class Py_game_1():
         pygame.draw.rect(self.screen, color,(x * DX, y * DY, DX, DY))
         print('*', end = '')
                     
-    def run(self):
+    def run(self, running = [1]):
         ''' main function of the game,
             run everything in game '''
         old_key = new_key = self.key_pressed()
         i = 0
-        while True:
+        while running[0]:
             new_key = self.key_pressed()
             self.handleEvents()
             if any(new_key) and not any(old_key):
@@ -70,6 +76,7 @@ class Py_game_1():
             self.clock.tick(60)
             old_key = new_key
             print('loop '+str(i)) ; i += 1
+            if running[0] == 2 : running[0] == 0
 
 if __name__ == '__main__':
     print('- - in main - -')

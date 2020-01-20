@@ -8,7 +8,7 @@ from pygame_module import *
 # [ ] Redefine Case and Path, outside Grid
 # _____________________________________________________________________________
 
-CONSOLE = False
+CONSOLE = True
 TKINTER = False
 PYGAME = True
 if not TKINTER and not PYGAME: CONSOLE = True
@@ -25,12 +25,10 @@ class Mode_tkinter:
     
 class Mode_pygame:
     def __init__(self):
-        pygame.init() # Pygame init =======
-        self.screen = pygame.display.set_mode(RESOLUTION)
-        self.clock = pygame.time.Clock()        
+        self.game = Py_game_1()
         
     def run(self):
-        pass
+        self.game.run(running = [2])
     
 class Mode_console:
     def __init__(self):
@@ -69,16 +67,22 @@ class Game:
         self.playing = True
     
     def run(self):
+        if PYGAME:
+            print('launching pygame')
+            self.pygame1.run()
         while self.playing:
+            print('playing', end ='')
             if CONSOLE: 
-                self.console.run()
-                self.console.handle()
+                self.console.run() ; print('runned', end='')
+                self.console.handle() ; print('handeled', end='')
     
 if __name__ == '__main__':
 
-    game = Game()
-    Mac = Hero('Mac Gyver', Grid.dic['start'])
+    print(' - in Main - ')
+    game = Game() ; print('\n --- GAME INITIATED --- ')
+    Mac = Hero('Mac Gyver', Grid.dic['start']) ; print('hero created')
     game.console = Mode_console()
     game.pygame1 = Mode_pygame()
+    print('==== STARTING MAIN GAME LOOP ====')
     game.run()
     
