@@ -2,6 +2,10 @@ print('importing')
 import pygame
 from pygame.locals import *
 from grid_module import *
+# ___________________________________________________________________________ #
+# [ ] Bug: if one key maintain pressed and pressing others, doing mayhem !
+# ___________________________________________________________________________ #
+
 
 
 RESOLUTION = (400,300)

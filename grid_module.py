@@ -8,14 +8,9 @@ class Grid: # transform this in a iterator
     path  = set()
     object= set()
 
-class Case: # add __add__ and compare function !!!
-    def __init__(self,name, pos):
-        self.name = name
-        self.pos  = pos
+class Case(tuple): # add __add__ and compare function !!!
+    pass
 
-class Object(Case):
-    taken = False
-    
 class Hero(Case):
     name = 'Mac_gyver'
     pos = [1, 1]
@@ -48,7 +43,7 @@ class Path:
         Grid.dic = {x: 0
             for x in "start item_1 item_2 item_3 final_goal".split()}
         Grid.column = column ; Grid.row = row
-        Grid.all = {(x+1, y+1) for y in range(column) for x in range(row)}
+        Grid.all = {Case((x+1, y+1)) for y in range(column) for x in range(row)}
         print('init path done')
         
     def by_load_defaut_map(self):
@@ -62,8 +57,7 @@ class Path:
     def some_space():
         return random.randrange(100) > 97
 
-    def by_path_generator(self, failed = [-1], all_loop = [-1]):
-        failed[0] += 1
+    def by_path_generator(self, failed = [0], all_loop = [0]):
         print('by path starting')
         obj = iter(Grid.dic.keys())
         
@@ -73,10 +67,13 @@ class Path:
         print('starting path generator main loop'); loop = 0
         while not Grid.dic['final_goal'] :
             if Grid.all == Grid.path:
-                print('path failed -> all walls deleted > restarting now')
+                failed[0] += 1
+                print(79*'-')
+                print('path failed -> all walls deleted -> restarting now')
                 Grid.path = set() ; all_loop[0] += loop
                 self.by_path_generator()
                 break
+            
             future_position = [i for i in self.near_position(*actual_position)
                 if i in Grid.all and i not in Grid.path]
 
@@ -95,7 +92,9 @@ class Path:
             print('failed : ',failed[0], '- all loop ', all_loop[0])
             assert all(Grid.dic.values())
             Grid.object = set(Grid.dic.values())
-        print('closing loop ', end='-')
+        print(' - closing loop', failed[0], end ='')
+        if not failed[0]: print(' -\n -- all path loop closed -- ')
+        else: failed[0] -= 1
 
 class C:
     def console_print():
@@ -117,7 +116,6 @@ if __name__ == '__main__':
 
     path = Path()
     path.by_path_generator()
-    print(Grid.object < Grid.path < Grid.all)
 
     Hero.pos = Grid.dic['start']
 

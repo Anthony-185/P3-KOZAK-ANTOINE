@@ -7,22 +7,6 @@ COLUMN = 15 ; ROW = 15
 
 
 
-"""
-class Trace(object):
-
-    def __init__(self, f):
-        self.f =f
-
-    def __call__(self, *args, **kwargs):
-        print("entering function " + self.f.__name__)
-        i=0
-        for arg in args:
-            print("arg {0}: {1}".format(i, arg) )
-            i =i+1
-            
-        return self.f(*args, **kwargs)
-"""		
-
 		
 class Window:
     """self.WIDTH, self.HEIGHT, self.tk, self.canvas"""
@@ -297,7 +281,8 @@ def main():
     middle_goal = Middle_goal(  window.canvas, path.middle)
     final_goal  = Final_goal(   window.canvas, path.finish)
     ball        = Ball(window.canvas, macgyver)
-    if True: write_in_file(path)
+    
+    if False: write_in_file(path)
     
     while macgyver.draw():
         
@@ -311,7 +296,4 @@ def main():
         
 if __name__ == '__main__':
     main()
-
-# --------------------------------------------------------------------------- #
-#                            END OF FILE                                      #
 # --------------------------------------------------------------------------- #

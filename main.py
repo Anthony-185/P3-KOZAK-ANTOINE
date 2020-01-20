@@ -1,11 +1,13 @@
 from grid_module import *
 from pygame_module import *
 # _____________________________________________________________________________
-# MUST BE THE MAIN MODULE
-# [ ] ALL class Game --- run the game, with or wthout tkinter or pygame
-# [ ] Add Pygame module
+# [X] MUST BE THE MAIN MODULE
+# [ ] run the game, with or wthout tkinter or pygame
+# [X] Add Pygame module
 # [ ] Add Tkinter module
-# [ ] Redefine Case and Path, outside Grid
+# [X] Redefine Case and Path, outside Grid
+# [ ] external file for variable
+# [ ] log function
 # _____________________________________________________________________________
 
 CONSOLE = True
