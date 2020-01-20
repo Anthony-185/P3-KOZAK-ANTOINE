@@ -10,7 +10,7 @@ from pygame_module import *
 
 CONSOLE = False
 TKINTER = False
-PYGAME = False
+PYGAME = True
 if not TKINTER and not PYGAME: CONSOLE = True
 MODE = 'pygame' * PYGAME or 'tkinter' * TKINTER or 'console' * CONSOLE
 
@@ -24,7 +24,13 @@ class Mode_tkinter:
     pass
     
 class Mode_pygame:
-    pass
+    def __init__(self):
+        pygame.init() # Pygame init =======
+        self.screen = pygame.display.set_mode(RESOLUTION)
+        self.clock = pygame.time.Clock()        
+        
+    def run(self):
+        pass
     
 class Mode_console:
     def __init__(self):
@@ -67,12 +73,12 @@ class Game:
             if CONSOLE: 
                 self.console.run()
                 self.console.handle()
-
     
 if __name__ == '__main__':
 
     game = Game()
     Mac = Hero('Mac Gyver', Grid.dic['start'])
-    game.console = Mode_console()    
+    game.console = Mode_console()
+    game.pygame1 = Mode_pygame()
     game.run()
     

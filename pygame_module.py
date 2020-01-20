@@ -1,3 +1,4 @@
+print('importing')
 import pygame
 from pygame.locals import *
 
@@ -13,12 +14,14 @@ class Py_game_1():
         self.screen = pygame.display.set_mode(RESOLUTION)
         self.clock = pygame.time.Clock()        
         self.update_screen()
+        print('init done')
             
     def handleEvents(self):
         ''' only handle quit pygame, not working well... '''
         List_event = pygame.event.get()
         for event in List_event:
             if event.type == QUIT: pygame.quit()
+        print('handleEvents - ', end = '')
         return List_event
     
     def key_pressed(self, hold = [[]]):
@@ -31,6 +34,7 @@ class Py_game_1():
             elif pressed_keys[K_UP]:    Mac.move((0, -1))
             elif pressed_keys[K_DOWN]:  Mac.move((0, +1))
         hold.pop() ; hold.append(pressed_keys)
+        print('key_pressed - ', end = '')
         return pressed_keys
 
     def update_screen(self):
@@ -45,16 +49,19 @@ class Py_game_1():
             if pos == Grid.dic['final_goal']: color = (0,0,255)
             self.draw(pos[0] - 1, pos[1] - 1, color)
             pygame.display.flip()
+        print('screen update - ', end = '')
 
     def draw(self, x, y, color):
         ''' just draw a rectangle, take x, y, and color 
             it's x - 1 and y - 1 already converted /!\ '''
         pygame.draw.rect(self.screen, color,(x * DX, y * DY, DX, DY))
+        print('*', end = '')
                     
     def run(self):
         ''' main function of the game,
             run everything in game '''
         old_key = new_key = self.key_pressed()
+        i = 0
         while True:
             new_key = self.key_pressed()
             self.handleEvents()
@@ -62,13 +69,18 @@ class Py_game_1():
                 self.update_screen()
             self.clock.tick(60)
             old_key = new_key
+            print('loop '+str(i)) ; i += 1
 
 if __name__ == '__main__':
+    print('- - in main - -')
     from grid_module import *
     import random
     import time
-
+    
+    
+    print('=== starting ===')
     path = Path()
     path.by_path_generator()
     Mac = Hero('Mac Gyver', Grid.dic['start'])
+    print('GRID ENABLE = STARTING MAIN LOOP')
     Py_game_1().run()

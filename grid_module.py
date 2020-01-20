@@ -41,10 +41,12 @@ class Hero(Case):
 class Path:
     ''' path creator (~ map generator) '''    
     def __init__(self, column=15, row=15):
+        print('--- init path ---')
         Grid.dic = {x: 0
             for x in "start item_1 item_2 item_3 final_goal".split()}
         Grid.column = column ; Grid.row = row
         Grid.all = {(x+1, y+1) for y in range(column) for x in range(row)}
+        print('init path done')
         
     def by_load_defaut_map(self):
         pass
@@ -57,13 +59,21 @@ class Path:
     def some_space():
         return random.randrange(100) > 97
 
-    def by_path_generator(self):
+    def by_path_generator(self, failed = [-1], all_loop = [-1]):
+        failed[0] += 1
+        print('by path starting')
         obj = iter(Grid.dic.keys())
         
         actual_position: 'x, y' = random.choice(list(Grid.all))
         Grid.dic[next(obj)] = actual_position
         Grid.path |= {actual_position}
+        print('starting path generator main loop'); loop = 0
         while not Grid.dic['final_goal'] :
+            if Grid.all == Grid.path:
+                print('path failed -> all walls deleted > restarting now')
+                Grid.path = set() ; all_loop[0] += loop
+                self.by_path_generator()
+                break
             future_position = [i for i in self.near_position(*actual_position)
                 if i in Grid.all and i not in Grid.path]
 
@@ -75,17 +85,17 @@ class Path:
             Grid.path |= {actual_position}
             if self.some_space():
                 Grid.dic[next(obj)] = actual_position
-        assert all(Grid.dic.values())
-        Grid.object = set(Grid.dic.values())
+            print('path generator loop n°'+str(loop)) ; loop += 1
+        else: 
+            all_loop[0] += loop
+            print('loop generator successfully finish with ', end='')
+            print('failed : ',failed[0], '- all loop ', all_loop[0])
+            assert all(Grid.dic.values())
+            Grid.object = set(Grid.dic.values())
+        print('closing loop ', end='-')
   
 if __name__ == '__main__':
 
-    path = Path()
-    path.by_path_generator()
-    print(Grid.object < Grid.path < Grid.all)
-
-    Mac = Hero('Mac Gyver', Grid.dic['start'])
-    
     def console_print():
         print(4*"\n" + 80*"_" + "\n\n")
         for y in range(1,Grid.column+1):
@@ -100,6 +110,13 @@ if __name__ == '__main__':
                 elif (x,y) not in Grid.path:          symbol="|~"
                 print(symbol, end="")
             print("|")
+
+    path = Path()
+    path.by_path_generator()
+    print(Grid.object < Grid.path < Grid.all)
+
+    Mac = Hero('Mac Gyver', Grid.dic['start'])
+    
 
     playing = True
     while playing:
