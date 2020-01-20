@@ -76,5 +76,5 @@ if __name__ == '__main__':
     
     
     pygame1 = Mode_pygame()
-    pygame1.run()
-        
+    while 1:
+        pygame1.game.run()

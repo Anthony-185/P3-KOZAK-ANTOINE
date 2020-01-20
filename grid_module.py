@@ -96,9 +96,8 @@ class Path:
             assert all(Grid.dic.values())
             Grid.object = set(Grid.dic.values())
         print('closing loop ', end='-')
-  
-if __name__ == '__main__':
 
+class C:
     def console_print():
         print(4*"\n" + 80*"_" + "\n\n")
         for y in range(1,Grid.column+1):
@@ -113,6 +112,8 @@ if __name__ == '__main__':
                 elif (x,y) not in Grid.path:          symbol="|~"
                 print(symbol, end="")
             print("|")
+            
+if __name__ == '__main__':
 
     path = Path()
     path.by_path_generator()
@@ -122,7 +123,7 @@ if __name__ == '__main__':
 
     playing = True
     while playing:
-        console_print()
+        C.console_print()
         print(79*'_')
         command = input("z: up, d: right, s: down, q: left, exit to quit\n> ")
     

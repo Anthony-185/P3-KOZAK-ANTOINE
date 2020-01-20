@@ -28,7 +28,6 @@ class Py_game_1():
         List_event = pygame.event.get()
         for event in List_event:
             if event.type == QUIT: pygame.quit()
-        print('handleEvent - ', end = '')
         return List_event
     
     def key_pressed(self, hold = [[]]):
@@ -40,17 +39,14 @@ class Py_game_1():
             elif pressed_keys[K_RIGHT]: Hero.move((+1, 0))
             elif pressed_keys[K_UP]:    Hero.move((0, -1))
             elif pressed_keys[K_DOWN]:  Hero.move((0, +1))
+            print('key_pressed - ', end = '')
         hold.pop() ; hold.append(pressed_keys)
-        print('key_pressed - ', end = '')
         return pressed_keys
 
     def update_screen(self):
         ''' draw all objects, in reverse because all specials items
             are at the start of the list '''
         self.screen.fill(black)
-        print('last command before bugging')
-        # global Grid
-        print(Grid)
         for pos in Grid.all:
             color = black
             if pos in Grid.path: color = red
@@ -77,10 +73,12 @@ class Py_game_1():
             self.handleEvents()
             if any(new_key) and not any(old_key):
                 self.update_screen()
+                C.console_print()
+                print('loop executed '+str(i))
+            i += 1
             self.clock.tick(60)
             old_key = new_key
-            print('loop '+str(i)) ; i += 1
-            if running[0] == 2 : running[0] == 0
+            if running[0] == 2 : running[0] = 0
 
 if __name__ == '__main__':
     print('- - in main - -')
