@@ -1,10 +1,11 @@
-print('importing')
 import pygame
 from pygame.locals import *
 from grid_module import *
 # ___________________________________________________________________________ #
 # [X] Bug: if one key maintain pressed and pressing others, doing mayhem !
 # [ ] Ugly !!!!!
+# [ ] use the near function to know the case to draw
+#     so you dont have to draw all the grid, just the near cases
 # ___________________________________________________________________________ #
 
 
@@ -12,21 +13,15 @@ from grid_module import *
 RESOLUTION = (400,300)
 ROW = 15 ; COLUMN = 15
 DX = RESOLUTION[0] // ROW ; DY = RESOLUTION[1] // COLUMN
-white, black, red = (255,255,255), (0,0,0), (255,0,0)
+white, black, red, blue = (255,)*3, (0,)*3, (255,0,0), (0,0,255)
 screen = pygame.display.set_mode(RESOLUTION)
 
 class Py_game_1():
     def __init__(self):
-        print('py_game_1_init')
-        print('Grid in init ', Grid)
         pygame.init() # Pygame init =======
-        print('pygame_initiated')
         self.screen = pygame.display.set_mode(RESOLUTION)
-        print('screen_initiated')
         self.clock = pygame.time.Clock()
-        print('clock_initied')
         self.update_screen()
-        print('init done')
             
     def handleEvents(self):
         ''' only handle quit pygame, not working well... '''
@@ -44,7 +39,6 @@ class Py_game_1():
             elif pressed_keys[K_RIGHT]: Hero.move((+1, 0))
             elif pressed_keys[K_UP]:    Hero.move((0, -1))
             elif pressed_keys[K_DOWN]:  Hero.move((0, +1))
-            print('key_pressed - ', end = '')
         hold.pop() ; hold.append(pressed_keys)
         return pressed_keys
 
@@ -54,10 +48,12 @@ class Py_game_1():
         self.screen.fill(black)
         for pos in Grid.all:
             color = black
-            if pos in Grid.path: color = red
             if pos in Grid.object: color = white
-            if pos == Hero.pos: color = (0,128,128)
-            if pos == Grid.dic['final_goal']: color = (0,0,255)
+            elif pos in Grid.path: color = (50,50,255)
+            if pos == Hero.pos: color = (0,0,200)
+            elif pos == Grid.dic['final_goal']: color = red
+            elif pos == Grid.dic['start']: color = (0, 255, 0)
+            
             self.draw(pos[0] - 1, pos[1] - 1, color)
         pygame.display.flip()
 
@@ -78,6 +74,5 @@ if __name__ == '__main__':
     
     Path().by_path_generator()
     Hero.pos = Grid.dic['start']
-    print('GRID ENABLE = STARTING MAIN LOOP')
     game = Py_game_1()
     while 1: game.run()
