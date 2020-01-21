@@ -3,7 +3,8 @@ import pygame
 from pygame.locals import *
 from grid_module import *
 # ___________________________________________________________________________ #
-# [ ] Bug: if one key maintain pressed and pressing others, doing mayhem !
+# [X] Bug: if one key maintain pressed and pressing others, doing mayhem !
+# [ ] Ugly !!!!!
 # ___________________________________________________________________________ #
 
 
@@ -65,27 +66,18 @@ class Py_game_1():
             it's x - 1 and y - 1 already converted /!\ '''
         pygame.draw.rect(self.screen, color,(x * DX, y * DY, DX, DY))
                     
-    def run(self, old_key = [0]):
+    def run(self):
         ''' main function of the game,
             run everything in game '''
-        new_key = self.key_pressed()
+        self.key_pressed()
         self.handleEvents()
-        # if any(new_key) and not any(old_key[0]) and new_key != old_key[0]:
         self.update_screen()
         self.clock.tick(60)
-        old_key[0] = new_key
 
 if __name__ == '__main__':
-    print('- - in main - -')
-    import random
-    import time
     
-    
-    print('=== starting ===')
-    path = Path()
-    path.by_path_generator()
+    Path().by_path_generator()
     Hero.pos = Grid.dic['start']
     print('GRID ENABLE = STARTING MAIN LOOP')
     game = Py_game_1()
-    while 1:
-        game.run()
+    while 1: game.run()

@@ -1,13 +1,12 @@
-print('=== === starting first line === ===')
 import tkinter
-import random
-import time
-import string
 from grid_module import *
-print(' --- import done --- \n== enable tkinter ==')
+
 WIDTH = 550 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
 DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
 CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
+# _____________________________________________________________________________
+# [ ] the area on the right as a useful verbose mode !!!!
+# [ ] log function
 # ___________________________________________________________________________ #
 class Game:
     def __init__(self):
@@ -59,15 +58,17 @@ class Game:
     def move_xx0x(self, event): Hero.move((0, -1))
     def move_xxx0(self, event): Hero.move((0, +1))
 
+    def run(self):
+        self.funny_color()
+        self.hero_move_in_canvas()
+        self.tk.update_idletasks()
+        self.tk.update()        
+
 print('-- every function defines --\n== starting main loop ==')
 # ___________________________________________________________________________ #
 if __name__ == '__main__':
+
     Path().by_path_generator()
     Hero.pos = Grid.dic['start']
     game = Game()
-    while True:
-        game.funny_color()
-        game.hero_move_in_canvas()
-        game.tk.update_idletasks()
-        game.tk.update()
-        time.sleep(0.001)
+    while 1: game.run()
