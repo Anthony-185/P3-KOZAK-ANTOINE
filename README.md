@@ -40,6 +40,7 @@ Tasks by me:
 - [ ] multi generator functions (only one actually)
 - [ ] map load from a file ( a Defaut map)
 - [x] items position random
+- [x] verbose mode -incomplete
 
 ## Description task by openClassroom:
 ### The goal is to create a small game, in pygame, with a small map, (15x15)

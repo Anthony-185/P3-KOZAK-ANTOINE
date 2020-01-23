@@ -12,6 +12,24 @@ import time
 # [ ] improve console print (shorter and faster program) Case.symbole = '.' ?
 # _____________________________________________________________________________
 
+
+class V: 
+    '''class log, used to log called function
+        used by macgyver V17'''
+    a = {'All + Last':['total', 'last called']} ; i = [0] ; last = [0]
+    @staticmethod
+    def for_vendetta(func, *args, **kvargs):
+        V.a['All + Last'][0] = V.i[0] = V.i[0] + 1
+        V.a['All + Last'][1] = V.last[0] = [func.__name__, args, kvargs]
+        if func.__name__ in V.a: V.a[func.__name__][0] += 1
+        else: V.a[func.__name__] = [0,'msg']
+        to_add = func, args, kvargs
+        if not to_add in V.a[func.__name__]:
+            V.a[func.__name__].append( to_add)
+        V.a[func.__name__][1] = to_add
+        return func(*args, **kvargs)
+
+
 class Grid: # transform this in a iterator
     row, column = 15, 15
     dic   = dict()
@@ -37,7 +55,7 @@ class Hero(Case):
             Hero.pos = new_pos
             C.console_print() ; time.sleep(0)
             if new_pos in Grid.object:
-                Hero.interact(new_pos)
+                V.for_vendetta(Hero.interact, new_pos)
 
     @staticmethod
     def interact(new_pos):
@@ -51,7 +69,7 @@ class Hero(Case):
 
 
 class Path:
-    ''' path creator (~ map generator) '''    
+    ''' path creator (~ map generator) '''
     def __init__(self, column=15, row=15):
         Grid.dic = {x: 0
             for x in "start item_1 item_2 item_3 final_goal".split()}
@@ -66,7 +84,7 @@ class Path:
         return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) #       [X]
 
     @staticmethod # create to define some space between the differents element
-    def some_space(chance = 97):
+    def some_space(chance = 99):
         return random.randrange(1, 100+1) >= chance # -> 97% chance to be True
 
     def by_path_generator(self, failed = [0], all_loop = [0]):
@@ -82,7 +100,7 @@ class Path:
                 print(79*'-')
                 print('path failed -> all walls deleted -> restarting now')
                 Grid.path = set() ; all_loop[0] += loop
-                self.by_path_generator()
+                V.for_vendetta(self.by_path_generator)
                 break
             
             future_position = [i for i in self.near_position(*actual_position)
@@ -111,6 +129,7 @@ class C:
     
     @staticmethod
     def console_print():
+        if Grid.row >=60 or Grid.column >= 28: return None
         print(4*"\n" + 80*"_" + "\n\n")
         for y in range(1,Grid.column+1):
             for x in range(1,Grid.row+1):
@@ -130,14 +149,14 @@ class C:
         print(79*'_')
         command = input("z: up, d: right, s: down, q: left, exit to quit\n> ")    
         if command == 'exit': playing = False
-        elif command == 'z' : Hero.move((0, -1))
-        elif command == 'd' : Hero.move((+1, 0))
-        elif command == 's' : Hero.move((0, +1))
-        elif command == 'q' : Hero.move((-1, 0))
+        elif command == 'z' : V.for_vendetta(Hero.move, (0, -1))
+        elif command == 'd' : V.for_vendetta(Hero.move, (+1, 0))
+        elif command == 's' : V.for_vendetta(Hero.move, (0, +1))
+        elif command == 'q' : V.for_vendetta(Hero.move, (-1, 0))
 
 if __name__ == '__main__':
 
-    Path().by_path_generator()
+    Path(27,59).by_path_generator()
     Hero.pos = Grid.dic['start']
     playing = True
     while playing:

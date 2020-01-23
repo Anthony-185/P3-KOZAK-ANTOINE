@@ -11,11 +11,6 @@ from tkinter_module import *
 # [ ] log function
 # _____________________________________________________________________________
 
-def log(func=None, i = [0], *args):
-    i[0] += 1
-    i.append((i[0], func, args))
-    return func    
-
 class MAIN:
     def __init__(self):
         self.game1 = Py_game_1()

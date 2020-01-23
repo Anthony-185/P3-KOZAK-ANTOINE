@@ -1,22 +1,25 @@
 import tkinter
 from grid_module import *
 
-WIDTH = 550 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
-DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
-CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
 # _____________________________________________________________________________
 # [ ] the area on the right as a useful verbose mode !!!!
 # [ ] log function
-# ___________________________________________________________________________ #
+# [X] lag with 100x100 cases : escape funny_color if Gird > 1117
+# _____________________________________________________________________________
 class Game:
     def __init__(self):
+        WIDTH = 550 ; HEIGHT = 400 # ----------------------------> CANVAS SIZE
+        Game.DX = WIDTH // Grid.row # ------+--------------------> case lenght
+        Game.DY = HEIGHT // Grid.column # --+
+        Game.CX = WIDTH % Grid.row // 2 # ------+-------------> removing marge
+        Game.CY = HEIGHT % Grid.column // 2 # --+
         self.tk = tkinter.Tk()
-        self.tk.geometry('958x404+0-100') # --------------------------> Window size
+        self.tk.geometry('958x404+0-100') # ---------------------> Window size
         self.tk.title("MacGyver's Game")
         self.canvas = tkinter.Canvas(self.tk,
             width  = WIDTH,
             height = HEIGHT, bg='black')
-        self.canvas.grid(row=0,column=0) # --------> place the canvas in the window
+        self.canvas.grid(row=0,column=0) # ---> place the canvas in the window
         for case in Grid.all:
             if   case == Grid.dic['start']:     color, TAG= 'green', 'start'
             elif case == Grid.dic['item_1']:    color, TAG= 'white', 'item'
@@ -30,45 +33,47 @@ class Game:
             self.tk.update()
         pos = self.calcul_canvas_position(Hero.pos)
         Hero.tk = self.canvas.create_rectangle(pos, fill='lightblue')
-        self.canvas.bind_all('<KeyPress-Left>',  self.move_0xxx)
-        self.canvas.bind_all('<KeyPress-Right>', self.move_x0xx)
-        self.canvas.bind_all('<KeyPress-Up>',    self.move_xx0x)
-        self.canvas.bind_all('<KeyPress-Down>',  self.move_xxx0)
+        self.canvas.bind_all('<KeyPress-Left>',  self.move__left) # + 1
+        self.canvas.bind_all('<KeyPress-Right>', self.move_right) # + 2
+        self.canvas.bind_all('<KeyPress-Up>',    self.move____up) # + 3
+        self.canvas.bind_all('<KeyPress-Down>',  self.move__down) # + 4
+    # ====================================== LINKED : +-------------+
+    def move__left(self, event): Hero.move((-1, 0)) # + 1
+    def move_right(self, event): Hero.move((+1, 0)) # + 2
+    def move____up(self, event): Hero.move((0, -1)) # + 3
+    def move__down(self, event): Hero.move((0, +1)) # + 4
 
     @staticmethod
     def calcul_canvas_position(case):
-        pos  = [case[0] * DX, case[1] * DY] # ------------------> general position
-        pos  = pos[0] - DX + 2 + CX, pos[1] - DY + 2 + CY # -------> center calcul
-        pos += pos[0] + DX - 1, pos[1] + DY - 1 # -----> adding lenght of the case
+        pos  = [case[0] * Game.DX, case[1] * Game.DY] # ----> general position
+        pos  = [pos[0] - Game.DX + 2 + Game.CX,  # pos - case corner up-left
+                pos[1] - Game.DY + 2 + Game.CY]  # small space + window marge
+        pos += [pos[0] + Game.DX - 1, pos[1] + Game.DY - 1] # -> add end coord
         return pos
 
     def funny_color(self, i = [0]):
-        i[0] = i[0] + 128 if i[0] < 16**3-2047 else -16**3+2048
-        x = hex( abs( i[0])) [2:] ; x = f'{x:0>3}'
+        i[0] = i[0] + 32 if i[0] < 16**3-2047 else -16**3+2048
+        x = V.for_vendetta(hex,  abs( i[0]))[2:] ; x = f'{x:0>3}'
         self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 6)
-        self.canvas.itemconfig('wall', fill= '#0ff0ff' + x)
         self.canvas.itemconfig('item', fill= '#' + x * 3)
+        if Grid.row * Grid.column >= 1117: return
+        # pass this if big Grid
+        self.canvas.itemconfig('wall', fill= '#0ff0ff' + x)
+
 
     def hero_move_in_canvas(self):
-        pos = self.calcul_canvas_position(Hero.pos)
-        self.canvas.coords(Hero.tk, pos)
-
-    def move_0xxx(self, event): Hero.move((-1, 0))
-    def move_x0xx(self, event): Hero.move((+1, 0))
-    def move_xx0x(self, event): Hero.move((0, -1))
-    def move_xxx0(self, event): Hero.move((0, +1))
+        pos = V.for_vendetta(self.calcul_canvas_position, Hero.pos)
+        V.for_vendetta(self.canvas.coords, Hero.tk, pos)
 
     def run(self):
         self.funny_color()
         self.hero_move_in_canvas()
         self.tk.update_idletasks()
-        self.tk.update()        
-
-print('-- every function defines --\n== starting main loop ==')
+        self.tk.update()
 # ___________________________________________________________________________ #
 if __name__ == '__main__':
 
-    Path().by_path_generator()
+    Path(50,50).by_path_generator()
     Hero.pos = Grid.dic['start']
     game = Game()
     while 1: game.run()
