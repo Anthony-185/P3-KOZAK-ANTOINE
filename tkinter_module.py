@@ -7,6 +7,8 @@ from grid_module import *
 # [X] lag with 100x100 cases : escape funny_color if Gird > 1117
 # _____________________________________________________________________________
 class Game:
+
+    @V.for_vendetta
     def __init__(self):
         WIDTH = 550 ; HEIGHT = 400 # ----------------------------> CANVAS SIZE
         Game.DX = WIDTH // Grid.row # ------+--------------------> case lenght
@@ -37,13 +39,19 @@ class Game:
         self.canvas.bind_all('<KeyPress-Right>', self.move_right) # + 2
         self.canvas.bind_all('<KeyPress-Up>',    self.move____up) # + 3
         self.canvas.bind_all('<KeyPress-Down>',  self.move__down) # + 4
-    # ====================================== LINKED : +-------------+
+    # =============================== LINKED :        +-------------+
+    #                                                 |
+    @V.for_vendetta #                                 |
     def move__left(self, event): Hero.move((-1, 0)) # + 1
+    @V.for_vendetta #                                 |
     def move_right(self, event): Hero.move((+1, 0)) # + 2
+    @V.for_vendetta #                                 |
     def move____up(self, event): Hero.move((0, -1)) # + 3
+    @V.for_vendetta #                                 |
     def move__down(self, event): Hero.move((0, +1)) # + 4
 
     @staticmethod
+    @V.for_vendetta
     def calcul_canvas_position(case):
         pos  = [case[0] * Game.DX, case[1] * Game.DY] # ----> general position
         pos  = [pos[0] - Game.DX + 2 + Game.CX,  # pos - case corner up-left
@@ -51,20 +59,22 @@ class Game:
         pos += [pos[0] + Game.DX - 1, pos[1] + Game.DY - 1] # -> add end coord
         return pos
 
+    @V.for_vendetta
     def funny_color(self, i = [0]):
         i[0] = i[0] + 32 if i[0] < 16**3-2047 else -16**3+2048
-        x = V.for_vendetta(hex,  abs( i[0]))[2:] ; x = f'{x:0>3}'
+        x = hex( abs( i[0]))[2:] ; x = f'{x:0>3}'
         self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 6)
         self.canvas.itemconfig('item', fill= '#' + x * 3)
         if Grid.row * Grid.column >= 1117: return
         # pass this if big Grid
         self.canvas.itemconfig('wall', fill= '#0ff0ff' + x)
 
-
+    @V.for_vendetta
     def hero_move_in_canvas(self):
-        pos = V.for_vendetta(self.calcul_canvas_position, Hero.pos)
-        V.for_vendetta(self.canvas.coords, Hero.tk, pos)
+        pos = self.calcul_canvas_position(Hero.pos)
+        self.canvas.coords(Hero.tk, pos)
 
+    @V.for_vendetta
     def run(self):
         self.funny_color()
         self.hero_move_in_canvas()

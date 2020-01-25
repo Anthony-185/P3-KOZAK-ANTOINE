@@ -11,7 +11,7 @@ from tkinter_module import *
 # [X] log function in V in other canvas (can be improved)
 # [ ] a oblivion style, can be cool
 # _____________________________________________________________________________
-path = Path(30,30)
+path = Path(45,45)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
@@ -64,9 +64,9 @@ while 1:
             game.canvas2.itemconfig( j, text=i)
     old_a = a
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
-        
     
-    loop_prog = m / limit * WIDTH - 20
+    loop_prog = m / limit * (WIDTH - 20)
     game.canvas2.coords(end_canvas[1],
         10, HEIGHT-10, 10 + loop_prog, HEIGHT-10)
+    
     game.run()

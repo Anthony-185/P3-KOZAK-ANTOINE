@@ -9,6 +9,8 @@ from grid_module import *
 # ___________________________________________________________________________ #
 white, black, red, blue = (255,)*3, (0,)*3, (255,0,0), (0,0,255)
 class Py_game_1():
+
+    @V.for_vendetta
     def __init__(self):
         RESOLUTION = (400,300)
         self.DX = RESOLUTION[0] // Grid.row
@@ -21,13 +23,17 @@ class Py_game_1():
         self.clock = pygame.time.Clock()
         self.update_screen()
             
+    @V.for_vendetta
     def handleEvents(self):
         ''' only handle quit pygame, not working well... '''
         List_event = pygame.event.get()
         for event in List_event:
-            if event.type == QUIT: pygame.quit()
+            if event.type == QUIT:
+                pygame.quit()
+                quit()
         return List_event
     
+    @V.for_vendetta
     def key_pressed(self, hold = [[]]):
         ''' hold is here to prevent multi case deplacement
             it's a list so it can be keep in memory inside the function '''
@@ -40,6 +46,7 @@ class Py_game_1():
         hold.pop() ; hold.append(pressed_keys)
         return pressed_keys
 
+    @V.for_vendetta
     def update_screen(self):
         ''' draw all objects, in reverse because all specials items
             are at the start of the list '''
@@ -54,6 +61,7 @@ class Py_game_1():
             self.draw(pos[0] - 1, pos[1] - 1, color)
         pygame.display.flip()
 
+    @V.for_vendetta
     def draw(self, x, y, color):
         ''' just draw a rectangle, take x, y, and color 
             it's x - 1 and y - 1 already converted /!\ '''
@@ -62,7 +70,8 @@ class Py_game_1():
                self.DX - 2, 
                self.DY - 2)
         pygame.draw.rect(self.screen, color, pos)
-                    
+                   
+    @V.for_vendetta
     def run(self):
         ''' main function of the game,
             run everything in game '''

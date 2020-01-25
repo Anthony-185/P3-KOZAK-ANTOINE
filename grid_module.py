@@ -14,20 +14,26 @@ import time
 
 
 class V: 
-    '''class log, used to log called function
+    ''' class log, used to log called function
         used by macgyver V17'''
+
     a = {'All + Last':['total', 'last called']} ; i = [0] ; last = [0]
     @staticmethod
-    def for_vendetta(func, *args, **kvargs):
-        V.a['All + Last'][0] = V.i[0] = V.i[0] + 1
-        V.a['All + Last'][1] = V.last[0] = [func.__name__, args, kvargs]
-        if func.__name__ in V.a: V.a[func.__name__][0] += 1
-        else: V.a[func.__name__] = [0,'msg']
-        to_add = func, args, kvargs
-        if not to_add in V.a[func.__name__]:
-            V.a[func.__name__].append( to_add)
-        V.a[func.__name__][1] = to_add
-        return func(*args, **kvargs)
+    def for_vendetta(func):
+
+        def f(*args, **kvargs):
+
+            V.a['All + Last'][0] = V.i[0] = V.i[0] + 1
+            V.a['All + Last'][1] = V.last[0] = [func.__name__, args, kvargs]
+            if func.__name__ in V.a: V.a[func.__name__][0] += 1
+            else: V.a[func.__name__] = [0,'msg']
+            to_add = func, args, kvargs
+            if not to_add in V.a[func.__name__]:
+                V.a[func.__name__].append( to_add)
+            V.a[func.__name__][1] = to_add
+            return func(*args, **kvargs)
+
+        return f
 
 
 class Grid: # transform this in a iterator
@@ -46,6 +52,7 @@ class Hero(Case):
     bag = 3 * [0]
 
     @staticmethod
+    @V.for_vendetta
     def move(mov):
         new_pos = [0, 0]
         new_pos[0] = Hero.pos[0] + mov[0]
@@ -55,9 +62,10 @@ class Hero(Case):
             Hero.pos = new_pos
             C.console_print() ; time.sleep(0)
             if new_pos in Grid.object:
-                V.for_vendetta(Hero.interact, new_pos)
+                Hero.interact(new_pos)
 
     @staticmethod
+    @V.for_vendetta
     def interact(new_pos):
         if   new_pos == Grid.dic['start']: return None
         elif new_pos == Grid.dic['item_1']: Hero.bag[0] = True
@@ -70,6 +78,7 @@ class Hero(Case):
 
 class Path:
     ''' path creator (~ map generator) '''
+    @V.for_vendetta
     def __init__(self, column=15, row=15):
         Grid.dic = {x: 0
             for x in "start item_1 item_2 item_3 final_goal".split()}
@@ -80,13 +89,16 @@ class Path:
         pass
 
     @staticmethod # take x, y as [0] --> return [X] like that #       [X]
+    @V.for_vendetta
     def near_position(x, y):                                  #   [X] [O] [X]
         return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) #       [X]
 
     @staticmethod # create to define some space between the differents element
+    @V.for_vendetta
     def some_space(chance = 99):
         return random.randrange(1, 100+1) >= chance # -> 97% chance to be True
 
+    @V.for_vendetta
     def by_path_generator(self, failed = [0], all_loop = [0]):
         obj = iter(Grid.dic.keys())
         
@@ -100,7 +112,7 @@ class Path:
                 print(79*'-')
                 print('path failed -> all walls deleted -> restarting now')
                 Grid.path = set() ; all_loop[0] += loop
-                V.for_vendetta(self.by_path_generator)
+                self.by_path_generator()
                 break
             
             future_position = [i for i in self.near_position(*actual_position)
@@ -128,6 +140,7 @@ class Path:
 class C:
     
     @staticmethod
+    @V.for_vendetta
     def console_print():
         if Grid.row >=60 or Grid.column >= 28: return None
         print(4*"\n" + 80*"_" + "\n\n")
@@ -145,18 +158,19 @@ class C:
             print("|")
     
     @staticmethod
+    @V.for_vendetta
     def handle():
         print(79*'_')
         command = input("z: up, d: right, s: down, q: left, exit to quit\n> ")    
         if command == 'exit': playing = False
-        elif command == 'z' : V.for_vendetta(Hero.move, (0, -1))
-        elif command == 'd' : V.for_vendetta(Hero.move, (+1, 0))
-        elif command == 's' : V.for_vendetta(Hero.move, (0, +1))
-        elif command == 'q' : V.for_vendetta(Hero.move, (-1, 0))
+        elif command == 'z' : Hero.move((0, -1))
+        elif command == 'd' : Hero.move((+1, 0))
+        elif command == 's' : Hero.move((0, +1))
+        elif command == 'q' : Hero.move((-1, 0))
 
 if __name__ == '__main__':
 
-    Path(27,59).by_path_generator()
+    Path(20,59).by_path_generator()
     Hero.pos = Grid.dic['start']
     playing = True
     while playing:
