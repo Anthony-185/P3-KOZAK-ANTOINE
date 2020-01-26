@@ -48,23 +48,24 @@ while 1:
     
     m = m + 1 if m <= limit else 0 
     a = [] ; all = []
-    for i,j in V.a.items():
+    for i,j in V.a.items(): # all messgages to show
         text = str(j[1])
         all += [str(j[0])]
-        if len(text) > 50:
-            if m > len(text) - 50: 
+        if len(text) > 50: # if msg > width canvas
+            if m > len(text) - 50:  # to stop for 50 loop the msh show
                 a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
-            else:
+            else: # to advance the msg
                 a.append(f'{i[:10]: <10} : {text[m:m+50]:.>50}')
-
+        # if msg < width canvas
         else: a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
-        limit = max(limit, len(text))   
-    if a[1:] != old_a[1:]:
+        limit = max(limit, len(text)) # limit = bigger msg
+    if a[1:] != old_a[1:]: # if all msg the same, don't update the canvas
         for i, j in zip(a, list_text_canvas):
             game.canvas2.itemconfig( j, text=i)
     old_a = a
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
     
+    # show progress of m
     loop_prog = m / limit * (WIDTH - 20)
     game.canvas2.coords(end_canvas[1],
         10, HEIGHT-10, 10 + loop_prog, HEIGHT-10)

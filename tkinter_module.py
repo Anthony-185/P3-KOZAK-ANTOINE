@@ -11,10 +11,10 @@ class Game:
     @V.for_vendetta
     def __init__(self):
         WIDTH = 550 ; HEIGHT = 400 # ----------------------------> CANVAS SIZE
-        Game.DX = WIDTH // Grid.row # ------+--------------------> case lenght
-        Game.DY = HEIGHT // Grid.column # --+
-        Game.CX = WIDTH % Grid.row // 2 # ------+-------------> removing marge
-        Game.CY = HEIGHT % Grid.column // 2 # --+
+        Game.DX = WIDTH // Grid.row # - 2 # ------+--------------------> case lenght
+        Game.DY = HEIGHT // Grid.column # - 2 # --+
+        Game.CX = WIDTH % Grid.row // 2 # + Grid.row * 1 # ------+-------------> removing marge
+        Game.CY = HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
         self.tk = tkinter.Tk()
         self.tk.geometry('958x404+0-100') # ---------------------> Window size
         self.tk.title("MacGyver's Game")
@@ -23,15 +23,21 @@ class Game:
             height = HEIGHT, bg='black')
         self.canvas.grid(row=0,column=0) # ---> place the canvas in the window
         for case in Grid.all:
-            if   case == Grid.dic['start']:     color, TAG= 'green', 'start'
-            elif case == Grid.dic['item_1']:    color, TAG= 'white', 'item'
-            elif case == Grid.dic['item_2']:    color, TAG= 'white', 'item'
-            elif case == Grid.dic['item_3']:    color, TAG= 'white', 'item'
-            elif case == Grid.dic['final_goal']:color, TAG= 'red', 'final_goal'
-            elif case in Grid.path:             color, TAG= 'blue', 'path'
-            else:                               color, TAG= 'darkblue', 'wall'
+            if   case == Grid.dic['start']:
+                a = {'fill':'green', 'tag': 'start'}
+            elif case == Grid.dic['item_1'] \
+              or case == Grid.dic['item_2'] \
+              or case == Grid.dic['item_3']:
+                a = {'fill':'white', 'tag': 'item'}
+            elif case == Grid.dic['final_goal']:
+                a = {'fill':'red', 'tag': 'final_goal'}
+            elif case in Grid.path:
+                a = {'fill':'blue', 'tag': 'path', 'outline': 'lightblue'}
+            else:
+                a = {'fill':'orange', 'tag': 'wall', 'outline': 'darkorange'}
+            a['activefill']='white'
             pos = self.calcul_canvas_position(case)
-            case.tk = self.canvas.create_rectangle(pos, fill=color, tag = TAG)
+            case.tk = self.canvas.create_rectangle(pos, a)
             self.tk.update()
         pos = self.calcul_canvas_position(Hero.pos)
         Hero.tk = self.canvas.create_rectangle(pos, fill='lightblue')
@@ -54,9 +60,9 @@ class Game:
     @V.for_vendetta
     def calcul_canvas_position(case):
         pos  = [case[0] * Game.DX, case[1] * Game.DY] # ----> general position
-        pos  = [pos[0] - Game.DX + 2 + Game.CX,  # pos - case corner up-left
-                pos[1] - Game.DY + 2 + Game.CY]  # small space + window marge
-        pos += [pos[0] + Game.DX - 1, pos[1] + Game.DY - 1] # -> add end coord
+        pos  = [pos[0] - Game.DX + 2 + Game.CX + 1,  # pos - case corner up-left
+                pos[1] - Game.DY + 2 + Game.CY + 1]  # small space + window marge
+        pos += [pos[0] + Game.DX - 1 - 1, pos[1] + Game.DY - 1 - 1] # -> add end coord
         return pos
 
     @V.for_vendetta
