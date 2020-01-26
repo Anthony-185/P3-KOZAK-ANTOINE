@@ -87,7 +87,7 @@ class Path:
         
     def by_load_defaut_map(self):
         pass
-
+                
     @staticmethod # take x, y as [0] --> return [X] like that #       [X]
     @V.for_vendetta
     def near_position(x, y):                                  #   [X] [O] [X]
@@ -136,6 +136,7 @@ class Path:
         print(' - closing loop', failed[0] + 1, end ='')
         if not failed[0]: print(' -\n -- all path loop closed -- ')
         else: failed[0] -= 1
+        
 
 class C:
     
@@ -170,7 +171,7 @@ class C:
 
 if __name__ == '__main__':
 
-    Path(20,59).by_path_generator()
+    Path(10,10).by_path_generator()
     Hero.pos = Grid.dic['start']
     playing = True
     while playing:

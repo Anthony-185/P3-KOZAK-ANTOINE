@@ -16,7 +16,7 @@ class Game:
         Game.CX = WIDTH % Grid.row // 2 # + Grid.row * 1 # ------+-------------> removing marge
         Game.CY = HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
         self.tk = tkinter.Tk()
-        self.tk.geometry('958x404+0-100') # ---------------------> Window size
+        self.tk.geometry('958x404+0-270') # ---------------------> Window size
         self.tk.title("MacGyver's Game")
         self.canvas = tkinter.Canvas(self.tk,
             width  = WIDTH,
@@ -86,6 +86,33 @@ class Game:
         self.hero_move_in_canvas()
         self.tk.update_idletasks()
         self.tk.update()
+        
+    @V.for_vendetta
+    def restart_tk(self):
+        for case in Grid.all: self.canvas.delete(case.tk)
+        Grid.path = set() # better ;)
+        Path(45,45).by_path_generator()
+        for case in Grid.all:
+            if   case == Grid.dic['start']:
+                a = {'fill':'green', 'tag': 'start'}
+                Hero.pos = case
+            elif case == Grid.dic['item_1'] \
+              or case == Grid.dic['item_2'] \
+              or case == Grid.dic['item_3']:
+                a = {'fill':'white', 'tag': 'item'}
+            elif case == Grid.dic['final_goal']:
+                a = {'fill':'red', 'tag': 'final_goal'}
+            elif case in Grid.path:
+                a = {'fill':'blue', 'tag': 'path', 'outline': 'lightblue'}
+            else:
+                a = {'fill':'orange', 'tag': 'wall', 'outline': 'darkorange'}
+            a['activefill']='white'
+            pos = self.calcul_canvas_position(case)
+            case.tk = self.canvas.create_rectangle(pos, a)
+            self.tk.update()
+        pos = self.calcul_canvas_position(Hero.pos)
+        Hero.tk = self.canvas.create_rectangle(pos, fill='lightblue')
+
 # ___________________________________________________________________________ #
 if __name__ == '__main__':
 

@@ -11,7 +11,7 @@ from tkinter_module import *
 # [X] log function in V in other canvas (can be improved)
 # [ ] a oblivion style, can be cool
 # _____________________________________________________________________________
-path = Path(45,45)
+path = Path(50,50)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
@@ -43,6 +43,12 @@ end_canvas = [
         fill='cyan')
     ]
 old_a = [] ; m = 0 ; limit = 100 ; all = []
+# _____________________________________________________________________________
+path_button = tkinter.Button(
+    game.canvas2, command=game.restart_tk,
+    text='regenerate_path',
+    activebackground='black', activeforeground='white')
+game.canvas2.create_window(10, HEIGHT-50, anchor='nw', window=path_button)
 while 1:
 
     
