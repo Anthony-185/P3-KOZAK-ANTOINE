@@ -95,8 +95,16 @@ class Path:
 
     @staticmethod # create to define some space between the differents element
     @V.for_vendetta
-    def some_space(chance = 99):
-        return random.randrange(1, 100+1) >= chance # -> 97% chance to be True
+    def some_space(chance = 97):
+        '''
+        chance function which take size of the grid in internal parameter
+        
+        97 = 15 * 15 good chance value for grid size
+        99 = 25 * 25 good chance value for grid size
+        '''
+        grid_size = Grid.row * Grid.column
+        if grid_size < 225: return random.randrange(1, 101) >= 97
+        return random.randrange(0, grid_size) <= 17
 
     @V.for_vendetta
     def by_path_generator(self, failed = [0], all_loop = [0]):
@@ -136,6 +144,8 @@ class Path:
         print(' - closing loop', failed[0] + 1, end ='')
         if not failed[0]: print(' -\n -- all path loop closed -- ')
         else: failed[0] -= 1
+        all_loop[0] = 0
+        assert failed[0] == 0
         
 
 class C:

@@ -25,7 +25,7 @@ game.canvas2 = tkinter.Canvas(game.tk,
             height = HEIGHT, bg='black')
 game.canvas2.grid(row=0, column=1)
 # _____________________________________________________________________________
-list_text_canvas = [] ; 
+list_text_canvas = [] ;
 for y_space in range(0, WIDTH ,20):
     list_text_canvas.append( \
         game.canvas2.create_text( 10, y_space + 10,
