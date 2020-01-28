@@ -7,20 +7,26 @@ from grid_module import *
 # [X] lag with 100x100 cases : escape funny_color if Gird > 1117
 # _____________________________________________________________________________
 class Game:
+    DX = 0
+    DY = 0
+    CX = 0
+    CY = 0
+    WIDTH = 0
+    HEIGHT = 0
 
     @V.for_vendetta
     def __init__(self):
-        WIDTH = 550 ; HEIGHT = 400 # ----------------------------> CANVAS SIZE
-        Game.DX = WIDTH // Grid.row # - 2 # ------+--------------------> case lenght
-        Game.DY = HEIGHT // Grid.column # - 2 # --+
-        Game.CX = WIDTH % Grid.row // 2 # + Grid.row * 1 # ------+-------------> removing marge
-        Game.CY = HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
+        Game.WIDTH = 550 ; Game.HEIGHT = 400 # ----------------> CANVAS SIZE
+        Game.DX = Game.WIDTH // Grid.row # - 2 # ------+--------> case lenght
+        Game.DY = Game.HEIGHT // Grid.column # - 2 # --+
+        Game.CX = Game.WIDTH % Grid.row // 2 # + Grid.row * 1 # -> removing marge
+        Game.CY = Game.HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
         self.tk = tkinter.Tk()
         self.tk.geometry('958x404+0-270') # ---------------------> Window size
         self.tk.title("MacGyver's Game")
         self.canvas = tkinter.Canvas(self.tk,
-            width  = WIDTH,
-            height = HEIGHT, bg='black')
+            width  = Game.WIDTH,
+            height = Game.HEIGHT, bg='black')
         self.canvas.grid(row=0,column=0) # ---> place the canvas in the window
         for case in Grid.all:
             if   case == Grid.dic['start']:
@@ -34,7 +40,7 @@ class Game:
             elif case in Grid.path:
                 a = {'fill':'blue', 'tag': 'path', 'outline': 'lightblue'}
             else:
-                a = {'fill':'orange', 'tag': 'wall', 'outline': 'darkorange'}
+                a = {'fill':'black', 'tag': 'wall', 'outline': 'darkorange'}
             a['activefill']='white'
             pos = self.calcul_canvas_position(case)
             case.tk = self.canvas.create_rectangle(pos, a)
@@ -71,7 +77,7 @@ class Game:
         x = hex( abs( i[0]))[2:] ; x = f'{x:0>3}'
         self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 6)
         self.canvas.itemconfig('item', fill= '#' + x * 3)
-        if Grid.row * Grid.column >= 1117: return
+        if Grid.row * Grid.column >= 666: return
         # pass this if big Grid
         self.canvas.itemconfig('wall', fill= '#0ff0ff' + x)
 
@@ -89,9 +95,10 @@ class Game:
         
     @V.for_vendetta
     def restart_tk(self):
-        for case in Grid.all: self.canvas.delete(case.tk)
-        Grid.path = set() # better ;)
-        Path(45,45).by_path_generator()
+        Game.DX = Game.WIDTH // Grid.row # - 2 # ------+--------------------> case lenght
+        Game.DY = Game.HEIGHT // Grid.column # - 2 # --+
+        Game.CX = Game.WIDTH % Grid.row // 2 # + Grid.row * 1 # ------+-------------> removing marge
+        Game.CY = Game.HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
         for case in Grid.all:
             if   case == Grid.dic['start']:
                 a = {'fill':'green', 'tag': 'start'}

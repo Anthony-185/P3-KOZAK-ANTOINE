@@ -44,11 +44,34 @@ end_canvas = [
     ]
 old_a = [] ; m = 0 ; limit = 100 ; all = []
 # _____________________________________________________________________________
+def restart_grid():
+    for case in Grid.all: game.canvas.delete(case.tk)
+    Grid.path = set() # better ;)
+    x = random.randrange(15,50)
+    y = random.randrange(15,50)
+    Path( x, y).by_path_generator()
+    game.restart_tk()
+
+def restart_grid_in_square():
+    for case in Grid.all: game.canvas.delete(case.tk)
+    Grid.path = set() # better ;)
+    x = y = random.randrange(15,50)
+    Path( x, y).by_path_generator()
+    game.restart_tk()
+
 path_button = tkinter.Button(
-    game.canvas2, command=game.restart_tk,
-    text='regenerate_path',
-    activebackground='black', activeforeground='white')
-game.canvas2.create_window(10, HEIGHT-50, anchor='nw', window=path_button)
+    game.canvas2, command=restart_grid,
+    text='random path',
+    background='cyan',
+    activebackground='black', activeforeground='cyan')
+game.canvas2.create_window(10, HEIGHT-60, anchor='nw', window=path_button)
+path_button = tkinter.Button(
+    game.canvas2, command=restart_grid_in_square,
+    text='random uniform grid',
+    background='cyan',
+    activebackground='black', activeforeground='cyan')
+game.canvas2.create_window(270, HEIGHT-60, anchor='nw', window=path_button)
+
 while 1:
 
     
