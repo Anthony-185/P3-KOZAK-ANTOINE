@@ -75,7 +75,7 @@ class Game:
     def funny_color(self, i = [0]):
         i[0] = i[0] + 32 if i[0] < 16**3-2047 else -16**3+2048
         x = hex( abs( i[0]))[2:] ; x = f'{x:0>3}'
-        self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 6)
+        self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 3 + 'fff')
         self.canvas.itemconfig('item', fill= '#' + x * 3)
         if Grid.row * Grid.column >= 666: return
         # pass this if big Grid

@@ -1,5 +1,6 @@
 from grid_module import *
 from tkinter_module import *
+from pygame_module import *
 # from collection
 # _____________________________________________________________________________
 # [ ] MUST BE COOL
@@ -15,6 +16,7 @@ path = Path(50,50)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
+game_py = Py_game_1()
 # _____________________________________________________________________________
 WIDTH = 400 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
 DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
@@ -103,3 +105,4 @@ while 1:
         10, HEIGHT-10, 10 + loop_prog, HEIGHT-10)
     
     game.run()
+    game_py.run()
