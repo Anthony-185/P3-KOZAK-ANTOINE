@@ -78,8 +78,8 @@ class Hero(Case):
 class Path:
     ''' path creator (~ map generator) '''
     @V.for_vendetta
-    def __init__(self, column=15, row=15):
-        list_item = [ 'item_'+str(i + 1) for i in range(3) ]
+    def __init__(self, column=15, row=15, nb_item=3):
+        list_item = [ 'item_'+str(i + 1) for i in range(nb_item) ]
         Grid.dic = {x: 0
             for x in ['start'] + list_item + ['final_goal']}
         Grid.column = column ; Grid.row = row
@@ -160,9 +160,10 @@ class C:
             for x in range(1,Grid.row+1):
                 if (x,y) == Hero.pos:                 symbol="|."
                 elif (x,y) == Grid.dic['start']:      symbol="|S"
-                elif (x,y) == Grid.dic['item_1']:     symbol="|o"
-                elif (x,y) == Grid.dic['item_2']:     symbol="|o"
-                elif (x,y) == Grid.dic['item_3']:     symbol="|o"
+                elif (x,y) in Grid.object:            symbol="|o"
+                # elif (x,y) == Grid.dic['item_1']:     symbol="|o"
+                # elif (x,y) == Grid.dic['item_2']:     symbol="|o"
+                # elif (x,y) == Grid.dic['item_3']:     symbol="|o"
                 elif (x,y) == Grid.dic['final_goal']: symbol="|X"
                 elif (x,y) in Grid.path:              symbol="| "
                 elif (x,y) not in Grid.path:          symbol="|~"

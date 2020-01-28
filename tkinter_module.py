@@ -103,9 +103,7 @@ class Game:
             if   case == Grid.dic['start']:
                 a = {'fill':'green', 'tag': 'start'}
                 Hero.pos = case
-            elif case == Grid.dic['item_1'] \
-              or case == Grid.dic['item_2'] \
-              or case == Grid.dic['item_3']:
+            elif case in Grid.object:
                 a = {'fill':'white', 'tag': 'item'}
             elif case == Grid.dic['final_goal']:
                 a = {'fill':'red', 'tag': 'final_goal'}

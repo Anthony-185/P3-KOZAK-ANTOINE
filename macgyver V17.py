@@ -50,14 +50,15 @@ def restart_grid():
     Grid.path = set() # better ;)
     x = random.randrange(15,50)
     y = random.randrange(15,50)
-    Path( x, y).by_path_generator()
+    item = random.randrange(3,10)
+    Path( x, y, item).by_path_generator()
     game.restart_tk()
 
 def restart_grid_in_square():
     Hero.bag = set()
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;)
-    x = y = random.randrange(15,50)
+    x = y = 15
     Path( x, y).by_path_generator()
     game.restart_tk()
 
@@ -69,7 +70,7 @@ path_button = tkinter.Button(
 game.canvas2.create_window(10, HEIGHT-60, anchor='nw', window=path_button)
 path_button = tkinter.Button(
     game.canvas2, command=restart_grid_in_square,
-    text='random uniform grid',
+    text='15*15 grid',
     background='cyan',
     activebackground='black', activeforeground='cyan')
 game.canvas2.create_window(270, HEIGHT-60, anchor='nw', window=path_button)
