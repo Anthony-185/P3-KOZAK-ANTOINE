@@ -41,7 +41,7 @@ class Grid: # transform this in a iterator
     dic   = dict()
     all   = set()
     path  = set()
-    object= set()
+    object= {}
 
 class Case(tuple): # add __add__ and compare function !!!
     pass
@@ -49,7 +49,7 @@ class Case(tuple): # add __add__ and compare function !!!
 class Hero(Case):
     name = 'Mac_gyver'
     pos = [1, 1]
-    bag = 3 * [0]
+    bag = set()
 
     @staticmethod
     @V.for_vendetta
@@ -61,18 +61,17 @@ class Hero(Case):
         if new_pos in Grid.path:
             Hero.pos = new_pos
             C.console_print() ; time.sleep(0)
-            if new_pos in Grid.object:
+            if new_pos in Grid.object or new_pos == Grid.dic['final_goal']:
                 Hero.interact(new_pos)
 
     @staticmethod
     @V.for_vendetta
     def interact(new_pos):
         if   new_pos == Grid.dic['start']: return None
-        elif new_pos == Grid.dic['item_1']: Hero.bag[0] = True
-        elif new_pos == Grid.dic['item_2']: Hero.bag[1] = True
-        elif new_pos == Grid.dic['item_3']: Hero.bag[2] = True
+        elif new_pos in Grid.object:
+            Hero.bag |= {new_pos}
         elif new_pos == Grid.dic['final_goal']:
-            if all(Hero.bag): print(12*'\n'+f'{"WIN": ^79}'+'\n')
+            if Hero.bag == Grid.object: print(12*'\n'+f'{"WIN": ^79}'+'\n')
             else: print(f'{"Game Over":X^79}'+3*'\n')
 
 
@@ -80,8 +79,9 @@ class Path:
     ''' path creator (~ map generator) '''
     @V.for_vendetta
     def __init__(self, column=15, row=15):
+        list_item = [ 'item_'+str(i + 1) for i in range(3) ]
         Grid.dic = {x: 0
-            for x in "start item_1 item_2 item_3 final_goal".split()}
+            for x in ['start'] + list_item + ['final_goal']}
         Grid.column = column ; Grid.row = row
         Grid.all = {Case((x+1, y+1)) for y in range(column) for x in range(row)}
         
@@ -140,12 +140,13 @@ class Path:
             print('loop generator successfully finish with ', end='')
             print(f'{failed[0]} failed and {all_loop[0]} loop ' )
             assert all(Grid.dic.values())
-            Grid.object = set(Grid.dic.values())
+            Grid.object = { Grid.dic['item_'+str(i+1)] \
+                for i in range(len(Grid.dic)-2) }
         print(' - closing loop', failed[0] + 1, end ='')
         if not failed[0]: print(' -\n -- all path loop closed -- ')
         else: failed[0] -= 1
         all_loop[0] = 0
-        assert failed[0] == 0
+        # assert failed[0] == 0
         
 
 class C:

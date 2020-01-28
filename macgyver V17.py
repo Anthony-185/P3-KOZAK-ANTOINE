@@ -45,6 +45,7 @@ end_canvas = [
 old_a = [] ; m = 0 ; limit = 100 ; all = []
 # _____________________________________________________________________________
 def restart_grid():
+    Hero.bag = set()
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;)
     x = random.randrange(15,50)
@@ -53,6 +54,7 @@ def restart_grid():
     game.restart_tk()
 
 def restart_grid_in_square():
+    Hero.bag = set()
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;)
     x = y = random.randrange(15,50)
