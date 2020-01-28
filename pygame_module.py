@@ -9,17 +9,19 @@ from grid_module import *
 # ___________________________________________________________________________ #
 white, black, red, blue = (255,)*3, (0,)*3, (255,0,0), (0,0,255)
 class Py_game_1():
+    row = column = 0
+    RESOLUTION = (400,300)
 
     @V.for_vendetta
     def __init__(self):
-        RESOLUTION = (400,300)
-        self.DX = RESOLUTION[0] // Grid.row
-        self.DY = RESOLUTION[1] // Grid.column
-        self.CX = RESOLUTION[0] % Grid.row // 2 # -----+
-        self.CY = RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
-        screen = pygame.display.set_mode(RESOLUTION)
+        self.DX = Py_game_1.RESOLUTION[0] // Grid.row
+        self.DY = Py_game_1.RESOLUTION[1] // Grid.column
+        self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
+        self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
+        Py_game_1.row, Py_game_1.column = Grid.row, Grid.column
+        screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
         pygame.init() # Pygame init =======
-        self.screen = pygame.display.set_mode(RESOLUTION)
+        self.screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
         self.clock = pygame.time.Clock()
         self.update_screen()
             
@@ -72,6 +74,21 @@ class Py_game_1():
         pygame.draw.rect(self.screen, color, pos)
                    
     @V.for_vendetta
+    def check_secure(self):
+        '''
+        in case of restarting game, redefine the variables which
+        defines x and y alinement (purely graphics adjustement) '''
+        if  Py_game_1.row    == Grid.row \
+        and Py_game_1.column == Grid.column:
+            return None # must be fast if all ok
+        else:
+            self.DX = Py_game_1.RESOLUTION[0] // Grid.row
+            self.DY = Py_game_1.RESOLUTION[1] // Grid.column
+            self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
+            self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
+            
+    
+    @V.for_vendetta
     def run(self):
         ''' main function of the game,
             run everything in game '''
@@ -79,6 +96,7 @@ class Py_game_1():
         self.handleEvents()
         self.update_screen()
         self.clock.tick(60)
+        self.check_secure()
 
 if __name__ == '__main__':
 

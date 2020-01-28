@@ -12,7 +12,7 @@ from pygame_module import *
 # [X] log function in V in other canvas (can be improved)
 # [ ] a oblivion style, can be cool
 # _____________________________________________________________________________
-path = Path(50,50)
+path = Path(42,42)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
@@ -28,7 +28,7 @@ game.canvas2 = tkinter.Canvas(game.tk,
 game.canvas2.grid(row=0, column=1)
 # _____________________________________________________________________________
 list_text_canvas = [] ;
-for y_space in range(0, WIDTH ,20):
+for y_space in range(0, WIDTH - 70 ,20):
     list_text_canvas.append( \
         game.canvas2.create_text( 10, y_space + 10,
             text='', fill='cyan', anchor='nw', activefill='white',
@@ -48,6 +48,7 @@ old_a = [] ; m = 0 ; limit = 100 ; all = []
 # _____________________________________________________________________________
 def restart_grid():
     Hero.bag = set()
+    game.canvas.delete(Hero.tk)
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;)
     x = random.randrange(15,50)
@@ -58,6 +59,7 @@ def restart_grid():
 
 def restart_grid_in_square():
     Hero.bag = set()
+    game.canvas.delete(Hero.tk)
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;)
     x = y = 15
@@ -75,7 +77,7 @@ path_button = tkinter.Button(
     text='15*15 grid',
     background='cyan',
     activebackground='black', activeforeground='cyan')
-game.canvas2.create_window(270, HEIGHT-60, anchor='nw', window=path_button)
+game.canvas2.create_window(330, HEIGHT-60, anchor='nw', window=path_button)
 
 while 1:
 
@@ -83,8 +85,8 @@ while 1:
     m = m + 1 if m <= limit else 0 
     a = [] ; all = []
     for i,j in V.a.items(): # all messgages to show
-        text = str(j[1])
-        all += [str(j[0])]
+        text = str(j[1]) # all text
+        all += [str(j[0])] if len(all) < 17 else [] # all increment
         if len(text) > 50: # if msg > width canvas
             if m > len(text) - 50:  # to stop for 50 loop the msh show
                 a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
@@ -94,7 +96,7 @@ while 1:
         else: a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
         limit = max(limit, len(text)) # limit = bigger msg
     if a[1:] != old_a[1:]: # if all msg the same, don't update the canvas
-        for i, j in zip(a, list_text_canvas):
+        for i, j in zip([a[0]] + a[:1:-1], list_text_canvas):
             game.canvas2.itemconfig( j, text=i)
     old_a = a
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
