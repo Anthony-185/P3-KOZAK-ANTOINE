@@ -66,19 +66,36 @@ def restart_grid_in_square():
     Path( x, y).by_path_generator()
     game.restart_tk()
 
-path_button = tkinter.Button(
+def loading_defaut_map():
+    Hero.bag = set()
+    game.canvas.delete(Hero.tk)
+    for case in Grid.all: game.canvas.delete(case.tk)
+    Grid.path = set() # better ;)
+    Path().by_load_defaut_map()
+    game.restart_tk()
+# _____________________________________________________________________________
+# button left
+path_button_1 = tkinter.Button(
     game.canvas2, command=restart_grid,
     text='random path',
     background='cyan',
     activebackground='black', activeforeground='cyan')
-game.canvas2.create_window(10, HEIGHT-60, anchor='nw', window=path_button)
-path_button = tkinter.Button(
+game.canvas2.create_window(10, HEIGHT-60, anchor='nw', window=path_button_1)
+# button right
+path_button_2 = tkinter.Button(
     game.canvas2, command=restart_grid_in_square,
     text='15*15 grid',
     background='cyan',
     activebackground='black', activeforeground='cyan')
-game.canvas2.create_window(330, HEIGHT-60, anchor='nw', window=path_button)
-
+game.canvas2.create_window(330, HEIGHT-60, anchor='nw', window=path_button_2)
+# middle button
+path_button_3 = tkinter.Button(
+    game.canvas2, command=loading_defaut_map,
+    text='load defaut map',
+    background='cyan',
+    activebackground='black', activeforeground='cyan')
+game.canvas2.create_window(117, HEIGHT-60, anchor='nw', window=path_button_3)
+# _____________________________________________________________________________
 while 1:
 
     

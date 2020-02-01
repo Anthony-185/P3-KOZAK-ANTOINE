@@ -76,7 +76,8 @@ class Game:
         i[0] = i[0] + 32 if i[0] < 16**3-2047 else -16**3+2048
         x = hex( abs( i[0]))[2:] ; x = f'{x:0>3}'
         self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 3 + 'fff')
-        self.canvas.itemconfig('item', fill= '#' + x * 3)
+        self.canvas.itemconfig('item',
+            fill= '#' + x * 3 if x[0] < '4' else '#'+ 'f' * 9)
         if Grid.row * Grid.column >= 666: return
         # pass this if big Grid
         self.canvas.itemconfig('wall', fill= '#0ff0ff' + x)

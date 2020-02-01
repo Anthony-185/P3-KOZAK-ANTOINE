@@ -1,6 +1,7 @@
 import random
 import string
 import time
+import json
 # _____________________________________________________________________________
 # [ ] improve class Grid as a iterator
 # [ ] Hero define in Path
@@ -35,6 +36,52 @@ class V:
 
         return f
 
+def generate_default_map():
+    ''' generate the defaut map, stocked in 'default_map.json' '''
+    d = '[\
+[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0],\
+[0], [0], [.], [0], [.], [.], [.], [.], [.], [0], [.], [0], [.], [.], [.],\
+[0], [0], [.], [0], [0], [0], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [.], [.], [.], [0], [.], [0], [.], [0], [.], [.], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [.], [.], [.], [.], [.], [.], [.], [.], [.], [.], [.], [.], [.], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [0], [.], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [.], [.], [.], [0], [.], [0], [.], [0], [.], [.], [0],\
+[0], [0], [.], [0], [0], [0], [0], [0], [.], [0], [.], [0], [.], [0], [0],\
+[0], [0], [.], [0], [.], [.], [.], [.], [.], [0], [.], [0], [.], [.], [.],\
+[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]\
+]'
+    for j,i in enumerate(d):
+        if i == '.':
+            d = d[:j] + '1' + d[j+1:]
+    d = json.JSONDecoder().decode(d)
+    grid = [ (x+1,y+1) for y in range(15) for x in range(15) ]
+    path = set()
+    for i, j in zip(d, grid):
+        if i[0]: path |= {j}
+    else: path = list(path)
+    start = (2,8)
+    final_goal = (14,8)
+    data = {
+    'start' : start,
+    'final_goal' : final_goal,
+    'path' : path }
+    with open('default_map.json', 'w') as f:
+        json.dump(data, f)
+    '''
+    start = json.JSONEncoder().encode(start)
+    final_goal = json.JSONEncoder().encode(final_goal)
+    path = json.JSONEncoder().encode(path)
+    with open('default_map.json', 'w') as f:
+        f.write(start)
+        f.write(final_goal)
+        f.write(path)
+    '''
+            
 
 class Grid: # transform this in a iterator
     row, column = 15, 15
@@ -71,8 +118,11 @@ class Hero(Case):
         elif new_pos in Grid.object:
             Hero.bag |= {new_pos}
         elif new_pos == Grid.dic['final_goal']:
-            if Hero.bag == Grid.object: print(12*'\n'+f'{"WIN": ^79}'+'\n')
+            if Hero.bag == Grid.object:
+                print(12*'\n'+f'{"WIN": ^79}'+'\n')
+                
             else: print(f'{"Game Over":X^79}'+3*'\n')
+
 
 
 class Path:
@@ -84,10 +134,34 @@ class Path:
             for x in ['start'] + list_item + ['final_goal']}
         Grid.column = column ; Grid.row = row
         Grid.all = {Case((x+1, y+1)) for y in range(column) for x in range(row)}
-        
+    
+    def restart_path(): # Destroy grid, prepare for restarting map
+        Hero.bag = set()
+        Grid.path = set() # better ;)
+        # Path( x, y).by_path_generator()
+    
     def by_load_defaut_map(self):
-        pass
-                
+        try : 
+            f = open('default_map.json', 'r')
+        except FileNotFoundError:
+            generate_default_map()
+            f = open('default_map.json', 'r')
+        
+        data = f.readline()
+        f.close()
+        map_def = json.loads(data)
+    
+        Grid.path = { tuple(i) for i in map_def['path'] }
+        Grid.dic['start'] = tuple( map_def['start'])
+        Grid.dic['final_goal'] = tuple( map_def['final_goal'])
+        
+        for i in range(1,4):
+            deja = set( Grid.dic.values())
+            Grid.dic['item_' + str(i)] = \
+                random.sample( Grid.path - deja, 1)[0]
+        else: Grid.object = { Grid.dic['item_'+str(i+1)] \
+            for i in range(len(Grid.dic)-2) }
+                        
     @staticmethod # take x, y as [0] --> return [X] like that #       [X]
     @V.for_vendetta
     def near_position(x, y):                                  #   [X] [O] [X]
@@ -182,8 +256,21 @@ class C:
         elif command == 'q' : Hero.move((-1, 0))
 
 if __name__ == '__main__':
-
-    Path(10,10).by_path_generator()
+        
+    try:
+        print('trying ... ', end = '')
+        f = open('default_map.json', 'x')
+        print('try done')
+    except FileExistsError:
+        print('failed, file existe')
+    else:
+        print('file created')
+        f.close()
+        generate_default_map()
+        print('map generated')
+    finally: print('executed')
+    
+    Path().by_load_defaut_map()
     Hero.pos = Grid.dic['start']
     playing = True
     while playing:
