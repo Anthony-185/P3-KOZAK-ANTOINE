@@ -19,8 +19,9 @@ class Game:
         Game.WIDTH = 550 ; Game.HEIGHT = 400 # ----------------> CANVAS SIZE
         Game.DX = Game.WIDTH // Grid.row # - 2 # ------+--------> case lenght
         Game.DY = Game.HEIGHT // Grid.column # - 2 # --+
-        Game.CX = Game.WIDTH % Grid.row // 2 # + Grid.row * 1 # -> removing marge
-        Game.CY = Game.HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
+        Game.DX = Game.DY = min(Game.DX, Game.DY)
+        Game.CX =(Game.WIDTH - Game.DX * Grid.row) //2 # ----+> removing marge
+        Game.CY =(Game.HEIGHT - Game.DY * Grid.column) //2 #-+
         self.tk = tkinter.Tk()
         self.tk.geometry('958x404+0-270') # ---------------------> Window size
         self.tk.title("MacGyver's Game")
@@ -96,10 +97,12 @@ class Game:
         
     @V.for_vendetta
     def restart_tk(self):
-        Game.DX = Game.WIDTH // Grid.row # - 2 # ------+--------------------> case lenght
+        Game.WIDTH = 550 ; Game.HEIGHT = 400 # ----------------> CANVAS SIZE
+        Game.DX = Game.WIDTH // Grid.row # - 2 # ------+--------> case lenght
         Game.DY = Game.HEIGHT // Grid.column # - 2 # --+
-        Game.CX = Game.WIDTH % Grid.row // 2 # + Grid.row * 1 # ------+-------------> removing marge
-        Game.CY = Game.HEIGHT % Grid.column // 2 # + Grid.column * 1 # --+
+        Game.DX = Game.DY = min(Game.DX, Game.DY)
+        Game.CX =(Game.WIDTH - Game.DX * Grid.row) //2 # ----+> removing marge
+        Game.CY =(Game.HEIGHT - Game.DY * Grid.column) //2 #-+
         for case in Grid.all:
             if   case == Grid.dic['start']:
                 a = {'fill':'green', 'tag': 'start'}
