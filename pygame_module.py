@@ -50,8 +50,7 @@ class Py_game_1():
 
     @V.for_vendetta
     def update_screen(self):
-        ''' draw all objects, in reverse because all specials items
-            are at the start of the list '''
+        ''' draw all objects '''
         self.screen.fill(black)
         for pos in Grid.all:
             color = (128,128,128)

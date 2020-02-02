@@ -1,6 +1,7 @@
 from grid_module import *
 from tkinter_module import *
 from pygame_module import *
+import os
 # from collection
 # _____________________________________________________________________________
 # [ ] MUST BE COOL
@@ -16,6 +17,15 @@ path = Path(42,42)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
+game.tk.geometry('958x754+10+10')
+game.tk.config(background='darkblue')
+# _____________________________________________________________________________
+frame_tk_for_pygame = tkinter.Frame(
+    game.tk, width=450, height=350, background='blue')
+frame_tk_for_pygame.grid(row=1, column=0)
+os.environ['SDL_WINDOWID'] = str(frame_tk_for_pygame.winfo_id())
+os.environ['SDL_VIDEODRIVER'] = 'windib'
+# _____________________________________________________________________________
 game_py = Py_game_1()
 # _____________________________________________________________________________
 WIDTH = 400 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
@@ -25,15 +35,14 @@ CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
 game.canvas2 = tkinter.Canvas(game.tk,
             width  = WIDTH,
             height = HEIGHT, bg='black')
-game.canvas2.grid(row=0, column=1)
+game.canvas2.grid(row=0, column=2)
 # _____________________________________________________________________________
 list_text_canvas = [] ;
 for y_space in range(0, WIDTH - 70 ,20):
     list_text_canvas.append( \
         game.canvas2.create_text( 10, y_space + 10,
             text='', fill='cyan', anchor='nw', activefill='white',
-            font = ('Terminal', -10), 
-            ))
+            font = ('Terminal', -10), ))
 # _____________________________________________________________________________
 end_canvas = [ 
     game.canvas2.create_text(
