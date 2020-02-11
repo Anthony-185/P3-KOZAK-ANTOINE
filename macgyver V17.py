@@ -2,6 +2,9 @@ from grid_module import *
 from tkinter_module import *
 from pygame_module import *
 import os
+
+print('init')# to rm
+
 # from collection
 # _____________________________________________________________________________
 # [ ] MUST BE COOL
@@ -13,18 +16,23 @@ import os
 # [X] log function in V in other canvas (can be improved)
 # [ ] a oblivion style, can be cool
 # _____________________________________________________________________________
+
 path = Path(42,42)
 path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
-game.tk.geometry('958x754+10+10')
+# _____________________________________________________________________________
+game.tk.geometry('958x704+10+10')
 game.tk.config(background='darkblue')
+game.canvas.grid(row=0, column=0, sticky='nwe')
 # _____________________________________________________________________________
 frame_tk_for_pygame = tkinter.Frame(
-    game.tk, width=450, height=350, background='blue')
-frame_tk_for_pygame.grid(row=1, column=0)
+    game.tk, width=300, height=300,
+    background='yellow', borderwidth=4, relief=None)
+frame_tk_for_pygame.grid(row=1, column=1, sticky='nswe')
 os.environ['SDL_WINDOWID'] = str(frame_tk_for_pygame.winfo_id())
 os.environ['SDL_VIDEODRIVER'] = 'windib'
+
 # _____________________________________________________________________________
 game_py = Py_game_1()
 # _____________________________________________________________________________
@@ -35,7 +43,7 @@ CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
 game.canvas2 = tkinter.Canvas(game.tk,
             width  = WIDTH,
             height = HEIGHT, bg='black')
-game.canvas2.grid(row=0, column=2)
+game.canvas2.grid(row=0, column=1, sticky='w')
 # _____________________________________________________________________________
 list_text_canvas = [] ;
 for y_space in range(0, WIDTH - 70 ,20):
@@ -44,7 +52,7 @@ for y_space in range(0, WIDTH - 70 ,20):
             text='', fill='cyan', anchor='nw', activefill='white',
             font = ('Terminal', -10), ))
 # _____________________________________________________________________________
-end_canvas = [ 
+end_canvas = [
     game.canvas2.create_text(
         10, HEIGHT - 30,
         text='', fill='cyan', anchor='nw', activefill='white',
@@ -53,7 +61,6 @@ end_canvas = [
         10, HEIGHT-10, WIDTH-10, HEIGHT-10,
         fill='cyan')
     ]
-old_a = [] ; m = 0 ; limit = 100 ; all = []
 # _____________________________________________________________________________
 def restart_grid():
     Hero.bag = set()
@@ -62,7 +69,7 @@ def restart_grid():
     Grid.path = set() # better ;)
     x = random.randrange(15,50)
     y = random.randrange(15,50)
-    item = random.randrange(3,10)
+    item = random.randrange(3,11)
     Path( x, y, item).by_path_generator()
     game.restart_tk()
 
@@ -82,6 +89,71 @@ def loading_defaut_map():
     Grid.path = set() # better ;)
     Path().by_load_defaut_map()
     game.restart_tk()
+# _____________________________________________________________________________
+frame_info = tkinter.Canvas(game.tk,
+    width = 500, height = 250, bg='orange')
+frame_info.grid(row=1, column=0)
+frame_info.grid_propagate(0)
+canvas_info = tkinter.Canvas(frame_info,
+    width = 480, height = 50, bg = 'black')
+canvas_info.grid(row = 0, column = 0, columnspan = 10, sticky = '')
+list_canvas_info = []
+def init_show_bag():
+    global list_canvas_info
+    list_canvas_info = []
+    x = len(Grid.dic) * 40 / 2
+    x = 240 - x + 5
+    for i, j in enumerate(Grid.dic):
+        color = 'white' if 'item' in j else None
+        if not color:
+            color = 'green' if j == 'start' else 'red'
+        list_canvas_info.append(
+            canvas_info.create_rectangle(
+                x + 40 * i     , 10,
+                x + 40 * i + 30, 40, outline = color ) )
+    return None
+    
+init_show_bag()
+    
+def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
+
+    global list_canvas_info
+    if old_bag[0] == None : old_bag[0] = {}  
+    
+    print('start ', old_bag[0], Hero.bag, end='')
+    
+    if deja_vu_grid[0] != Grid.dic: # if game has restart, re-initialize
+        print('ReInit')
+        for i in list_canvas_info: canvas_info.delete(i)
+        init_show_bag()
+        l = 0
+        for i in Hero.bag:
+            l += 1
+            canvas_info.itemconfig(list_canvas_info[l], fill = '')
+        deja_vu_grid[0] = Grid.dic.copy()
+        canvas_info.update()
+        return None
+
+    if old_bag[0] == Hero.bag:
+        print('pass')
+        return None # if nothing change, pass
+        
+    print('NotPass ', end = '')
+
+    
+    print('drowing')
+    l = 0
+    for i in Hero.bag:
+        l += 1
+        canvas_info.itemconfig(list_canvas_info[l], fill = 'white')
+    canvas_info.update()
+    old_bag[0] = Hero.bag.copy()
+    '''  
+    if Hero.pos in Grid.object:
+        l[0] += 1
+        canvas_info.itemconfig(list_canvas_info[l[0]], fill = 'white')
+    '''
+    return None
 # _____________________________________________________________________________
 # button left
 path_button_1 = tkinter.Button(
@@ -105,9 +177,12 @@ path_button_3 = tkinter.Button(
     activebackground='black', activeforeground='cyan')
 game.canvas2.create_window(117, HEIGHT-60, anchor='nw', window=path_button_3)
 # _____________________________________________________________________________
-while 1:
-
-    
+old_a = [] ; m = 0 ; limit = 100 ; all = []
+def print_log(intern_var = [None]):
+    if intern_var[0] == None:
+        intern_var[0] = {'m': 0, 'limit': 100, 'old_a': []}
+    m, limit, old_a = \
+        intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a']
     m = m + 1 if m <= limit else 0 
     a = [] ; all = []
     for i,j in V.a.items(): # all messgages to show
@@ -126,11 +201,17 @@ while 1:
             game.canvas2.itemconfig( j, text=i)
     old_a = a
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
-    
     # show progress of m
     loop_prog = m / limit * (WIDTH - 20)
     game.canvas2.coords(end_canvas[1],
         10, HEIGHT-10, 10 + loop_prog, HEIGHT-10)
+    intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a'] = \
+        m, limit, old_a
     
+    
+while 1:
+
+    print_log()
+    f_canvas_info()
     game.run()
     game_py.run()

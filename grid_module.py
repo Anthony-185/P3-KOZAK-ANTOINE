@@ -117,6 +117,7 @@ class Hero(Case):
         if   new_pos == Grid.dic['start']: return None
         elif new_pos in Grid.object:
             Hero.bag |= {new_pos}
+            Grid.object -= {new_pos}
         elif new_pos == Grid.dic['final_goal']:
             if Hero.bag == Grid.object:
                 print(12*'\n'+f'{"WIN": ^79}'+'\n')
