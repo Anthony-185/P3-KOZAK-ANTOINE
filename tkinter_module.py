@@ -87,6 +87,7 @@ class Game:
     def hero_move_in_canvas(self):
         pos = self.calcul_canvas_position(Hero.pos)
         self.canvas.coords(Hero.tk, pos)
+        
 
     @V.for_vendetta
     def run(self):

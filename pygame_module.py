@@ -19,7 +19,7 @@ class Py_game_1():
         self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
         self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
         Py_game_1.row, Py_game_1.column = Grid.row, Grid.column
-        screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
+        # screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
         pygame.init() # Pygame init =======
         self.screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
         self.clock = pygame.time.Clock()
@@ -49,8 +49,9 @@ class Py_game_1():
         return pressed_keys
 
     @V.for_vendetta
-    def update_screen(self):
+    def update_screen(self, deja_vu = [0,0]):
         ''' draw all objects '''
+        if deja_vu == [Grid.dic, Hero.pos]: return None
         self.screen.fill(black)
         for pos in Grid.all:
             color = (128,128,128)
@@ -61,6 +62,34 @@ class Py_game_1():
             elif pos == Grid.dic['start']: color = (0, 255, 0)            
             self.draw(pos[0] - 1, pos[1] - 1, color)
         pygame.display.flip()
+        deja_vu = [Grid.dic.copy(), Hero.pos]
+
+    # =========================================================================
+    # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+    # =========================================================================
+    @V.for_vendetta # Working on mini-map =====================================
+    def update_screen2(self, deja_vu = [0,0]):
+        ''' draw all objects '''
+        if deja_vu == [Grid.dic, Hero.pos]: return None
+        self.screen.fill(black)
+        l = []
+        for pos in Path.near_position(Hero.pos):
+            color = (128,128,128)
+            if pos in Grid.object: color = white
+            elif pos in Grid.path: color = (50,50,255)
+            if pos == Hero.pos: color = (0,0,200)
+            elif pos == Grid.dic['final_goal']: color = red
+            elif pos == Grid.dic['start']: color = (0, 255, 0)
+            l.append(color)
+            
+            pos = ()
+            pygame.draw.rect(self.screen, color, pos)
+            
+        pygame.display.flip()
+        deja_vu = [Grid.dic.copy(), Hero.pos]
+    # =========================================================================
+    # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+    # =========================================================================
 
     @V.for_vendetta
     def draw(self, x, y, color):
@@ -94,7 +123,7 @@ class Py_game_1():
         self.key_pressed()
         self.handleEvents()
         self.update_screen()
-        self.clock.tick(60)
+        # self.clock.tick(60)
         self.check_secure()
 
 if __name__ == '__main__':

@@ -9,7 +9,8 @@ print('init')# to rm
 # _____________________________________________________________________________
 # [ ] MUST BE COOL
 # [ ] run the game, can restart
-# [ ] Add Pygame module ?
+# [ ] //// //// Overide print() to print in main window tkinter label //// ////
+# [X] Add Pygame module ?
 # [X] Add Tkinter module
 # [ ] a SHOWDOWN mode, played by random (autotest)
 # [ ] external file for a lot of variable, parametrable 'settings.txt'
@@ -62,33 +63,48 @@ end_canvas = [
         fill='cyan')
     ]
 # _____________________________________________________________________________
-def restart_grid():
+def deleting_tk_grid():
     Hero.bag = set()
     game.canvas.delete(Hero.tk)
     for case in Grid.all: game.canvas.delete(case.tk)
-    Grid.path = set() # better ;)
+    Grid.path = set() # better ;) else: infinite loop in map generator
+# _____________________________________________________________________________
+def de_activate(x): # de activate all buttons
+    l = path_button_1, path_button_2, path_button_3
+    for i in l:
+        i['state'] = 'disabled'
+        i['background'] = 'orange'
+
+def re_activate(x): # re activate all buttons
+    l = path_button_1, path_button_2, path_button_3
+    for i in l:
+        i['background'] = 'cyan'
+        i['state'] = 'normal'
+# _____________________________________________________________________________
+def restart_grid():
+    de_activate(path_button_1)
+    deleting_tk_grid()
     x = random.randrange(15,50)
     y = random.randrange(15,50)
     item = random.randrange(3,11)
     Path( x, y, item).by_path_generator()
     game.restart_tk()
+    re_activate(path_button_1)
 
 def restart_grid_in_square():
-    Hero.bag = set()
-    game.canvas.delete(Hero.tk)
-    for case in Grid.all: game.canvas.delete(case.tk)
-    Grid.path = set() # better ;)
+    de_activate(path_button_2)
+    deleting_tk_grid()
     x = y = 15
     Path( x, y).by_path_generator()
     game.restart_tk()
+    re_activate(path_button_3)
 
 def loading_defaut_map():
-    Hero.bag = set()
-    game.canvas.delete(Hero.tk)
-    for case in Grid.all: game.canvas.delete(case.tk)
-    Grid.path = set() # better ;)
+    de_activate(path_button_3)
+    deleting_tk_grid()
     Path().by_load_defaut_map()
     game.restart_tk()
+    re_activate(path_button_3)
 # _____________________________________________________________________________
 frame_info = tkinter.Canvas(game.tk,
     width = 500, height = 250, bg='orange')
@@ -102,7 +118,7 @@ def init_show_bag():
     global list_canvas_info
     list_canvas_info = []
     x = len(Grid.dic) * 40 / 2
-    x = 240 - x + 5
+    x = 240 - x + 6
     for i, j in enumerate(Grid.dic):
         color = 'white' if 'item' in j else None
         if not color:
@@ -116,14 +132,9 @@ def init_show_bag():
 init_show_bag()
     
 def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
-
     global list_canvas_info
     if old_bag[0] == None : old_bag[0] = {}  
-    
-    print('start ', old_bag[0], Hero.bag, end='')
-    
     if deja_vu_grid[0] != Grid.dic: # if game has restart, re-initialize
-        print('ReInit')
         for i in list_canvas_info: canvas_info.delete(i)
         init_show_bag()
         l = 0
@@ -133,31 +144,20 @@ def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
         deja_vu_grid[0] = Grid.dic.copy()
         canvas_info.update()
         return None
-
     if old_bag[0] == Hero.bag:
-        print('pass')
         return None # if nothing change, pass
-        
-    print('NotPass ', end = '')
-
-    
-    print('drowing')
     l = 0
     for i in Hero.bag:
         l += 1
         canvas_info.itemconfig(list_canvas_info[l], fill = 'white')
     canvas_info.update()
     old_bag[0] = Hero.bag.copy()
-    '''  
-    if Hero.pos in Grid.object:
-        l[0] += 1
-        canvas_info.itemconfig(list_canvas_info[l[0]], fill = 'white')
-    '''
     return None
 # _____________________________________________________________________________
 # button left
 path_button_1 = tkinter.Button(
     game.canvas2, command=restart_grid,
+    disabledforeground='white',
     text='random path',
     background='cyan',
     activebackground='black', activeforeground='cyan')
@@ -165,6 +165,7 @@ game.canvas2.create_window(10, HEIGHT-60, anchor='nw', window=path_button_1)
 # button right
 path_button_2 = tkinter.Button(
     game.canvas2, command=restart_grid_in_square,
+    disabledforeground='white',
     text='15*15 grid',
     background='cyan',
     activebackground='black', activeforeground='cyan')
@@ -172,10 +173,25 @@ game.canvas2.create_window(330, HEIGHT-60, anchor='nw', window=path_button_2)
 # middle button
 path_button_3 = tkinter.Button(
     game.canvas2, command=loading_defaut_map,
+    disabledforeground='white',
     text='load defaut map',
     background='cyan',
     activebackground='black', activeforeground='cyan')
-game.canvas2.create_window(117, HEIGHT-60, anchor='nw', window=path_button_3)
+game.canvas2.create_window(97, HEIGHT-60, anchor='nw', window=path_button_3)
+# _____________________________________________________________________________
+def verbose_clean():
+    if activate_verbose.get(): return None
+    for i in list_text_canvas:
+        game.canvas2.itemconfig( i, text='')
+# _____________________________________________________________________________
+activate_verbose = tkinter.IntVar()
+activate_verbose.set(1)
+check_verbose = tkinter.Checkbutton(
+    game.canvas2, variable = activate_verbose, command = verbose_clean,
+    text='activate verbose',
+    background='cyan',
+    activebackground='black', activeforeground='cyan')
+game.canvas2.create_window(202, HEIGHT-60, anchor='nw', window=check_verbose)
 # _____________________________________________________________________________
 old_a = [] ; m = 0 ; limit = 100 ; all = []
 def print_log(intern_var = [None]):
@@ -185,26 +201,37 @@ def print_log(intern_var = [None]):
         intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a']
     m = m + 1 if m <= limit else 0 
     a = [] ; all = []
-    for i,j in V.a.items(): # all messgages to show
-        text = str(j[1]) # all text
-        all += [str(j[0])] if len(all) < 17 else [] # all increment
-        if len(text) > 50: # if msg > width canvas
-            if m > len(text) - 50:  # to stop for 50 loop the msh show
-                a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
-            else: # to advance the msg
-                a.append(f'{i[:10]: <10} : {text[m:m+50]:.>50}')
-        # if msg < width canvas
-        else: a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
-        limit = max(limit, len(text)) # limit = bigger msg
-    if a[1:] != old_a[1:]: # if all msg the same, don't update the canvas
-        for i, j in zip([a[0]] + a[:1:-1], list_text_canvas):
-            game.canvas2.itemconfig( j, text=i)
-    old_a = a
+    
+    if activate_verbose.get():
+    
+        for i,j in V.a.items(): # all messgages to show
+            text = str(j[1]) # all text
+            all += [str(j[0])] if len(all) < 17 else [] # all increment
+            if len(text) > 50: # if msg > width canvas
+                if m > len(text) - 50:  # to stop for 50 loop the msh show
+                    a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
+                else: # to advance the msg
+                    a.append(f'{i[:10]: <10} : {text[m:m+50]:.>50}')
+            # if msg < width canvas
+            else: a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
+            limit = max(limit, len(text)) # limit = bigger msg
+        if a[1:] != old_a[1:]: # if all msg the same, don't update the canvas
+            for i, j in zip([a[0]] + a[:1:-1], list_text_canvas):
+                game.canvas2.itemconfig( j, text=i)
+        old_a = a
+    
+    else:
+        for i,j in V.a.items():
+            all += [str(j[0])] if len(all) < 17 else [] # all increment
+
+    
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
     # show progress of m
     loop_prog = m / limit * (WIDTH - 20)
     game.canvas2.coords(end_canvas[1],
         10, HEIGHT-10, 10 + loop_prog, HEIGHT-10)
+    c = 'cyan' if m < limit - 50 else 'orange'
+    game.canvas2.itemconfig(end_canvas[1], fill = c)
     intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a'] = \
         m, limit, old_a
     
