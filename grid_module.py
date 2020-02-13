@@ -282,7 +282,7 @@ class C:
     @V.for_vendetta
     def console_print():
         separator = '|' # separator
-        if Grid.row >=40 or Grid.column >= 20: return None
+        if Grid.row > 30 or Grid.column > 20: return None
         print(80*"_" + "\n")
         for y in range(1,Grid.column+1):
             l = []
@@ -327,7 +327,7 @@ if __name__ == '__main__':
         print('map generated')
     finally: print('executed')
     
-    Path().by_load_defaut_map()
+    Path(20,30).by_load_defaut_map()
     Hero.pos = Grid.dic['start']
     playing = True
     while playing:

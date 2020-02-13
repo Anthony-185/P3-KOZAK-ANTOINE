@@ -47,7 +47,7 @@ class Game:
             case.tk = self.canvas.create_rectangle(pos, a)
             self.tk.update()
         pos = self.calcul_canvas_position(Hero.pos)
-        Hero.tk = self.canvas.create_rectangle(pos, fill='lightblue')
+        Hero.tk = self.canvas.create_rectangle(pos, fill='orange')
         self.canvas.bind_all('<KeyPress-Left>',  self.move__left) # + 1
         self.canvas.bind_all('<KeyPress-Right>', self.move_right) # + 2
         self.canvas.bind_all('<KeyPress-Up>',    self.move____up) # + 3
@@ -76,7 +76,7 @@ class Game:
     def funny_color(self, i = [0]):
         i[0] = i[0] + 32 if i[0] < 16**3-2047 else -16**3+2048
         x = hex( abs( i[0]))[2:] ; x = f'{x:0>3}'
-        self.canvas.itemconfig(Hero.tk, fill= '#' + x + '0' * 3 + 'fff')
+        self.canvas.itemconfig(Hero.tk, fill= '#' + 'fff' + '900' + x)
         self.canvas.itemconfig('item',
             fill= '#' + x * 3 if x[0] < '4' else '#'+ 'f' * 9)
         if Grid.row * Grid.column >= 666: return
@@ -121,7 +121,7 @@ class Game:
             case.tk = self.canvas.create_rectangle(pos, a)
             self.tk.update()
         pos = self.calcul_canvas_position(Hero.pos)
-        Hero.tk = self.canvas.create_rectangle(pos, fill='lightblue')
+        Hero.tk = self.canvas.create_rectangle(pos, fill='orange')
 
 # ___________________________________________________________________________ #
 if __name__ == '__main__':

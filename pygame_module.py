@@ -57,7 +57,7 @@ class Py_game_1():
             color = (128,128,128)
             if pos in Grid.object: color = white
             elif pos in Grid.path: color = (50,50,255)
-            if pos == Hero.pos: color = (0,0,200)
+            if pos == Hero.pos: color = (255,140,0)
             elif pos == Grid.dic['final_goal']: color = red
             elif pos == Grid.dic['start']: color = (0, 255, 0)            
             self.draw(pos[0] - 1, pos[1] - 1, color)
@@ -77,7 +77,7 @@ class Py_game_1():
             color = (128,128,128)
             if pos in Grid.object: color = white
             elif pos in Grid.path: color = (50,50,255)
-            if pos == Hero.pos: color = (0,0,200)
+            if pos == Hero.pos: color = (255,140,0)
             elif pos == Grid.dic['final_goal']: color = red
             elif pos == Grid.dic['start']: color = (0, 255, 0)
             l.append(color)
