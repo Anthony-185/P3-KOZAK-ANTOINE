@@ -13,12 +13,15 @@ import json
 # [ ] improve console print (shorter and faster program) Case.symbole = '.' ?
 # _____________________________________________________________________________
 
-
+print('in grid module, creating V')
 class V: 
     ''' class log, used to log called function
         used by macgyver V17'''
 
     a = {'All + Last':['total', 'last called']} ; i = [0] ; last = [0]
+    tk_ready = False
+    to_print = []
+    
     @staticmethod
     def for_vendetta(func):
 
@@ -26,15 +29,90 @@ class V:
 
             V.a['All + Last'][0] = V.i[0] = V.i[0] + 1
             V.a['All + Last'][1] = V.last[0] = [func.__name__, args, kvargs]
+            
             if func.__name__ in V.a: V.a[func.__name__][0] += 1
             else: V.a[func.__name__] = [0,'msg']
+            
             to_add = func, args, kvargs
             if not to_add in V.a[func.__name__]:
                 V.a[func.__name__].append( to_add)
+                
             V.a[func.__name__][1] = to_add
+            
             return func(*args, **kvargs)
-
         return f
+
+class file_like:
+    '''object create to simualte an output file for print:
+    >>> fake_file = file_like()
+    >>> print('try out', file = fake_file)
+    (if print not overwritten) '''
+    def __init__(self):
+        self.content = []
+    def write(self, msg):
+        self.content.append(msg)
+
+
+saved_print_function = print
+def print(*args, **kvargs):
+
+    if not V.tk_ready:
+        saved_print_function(*args, **kvargs)
+        return
+        
+    msg = file_like() # msg = fake_file
+    kvargs.update( {'file': msg}) # update kvargs of print with the fake file
+    saved_print_function(*args, **kvargs) # print to the fake file
+    
+    msg = ''.join(msg.content)
+    V.to_print.set(msg)
+    input()
+ 
+    '''
+    if intern_status[0] == None:
+        try:
+            V.to_print = tkinter.StringVar()
+        except NameError:
+            import tkinter
+            saved_print_function('NameError')
+        except AttributeError:
+            saved_print_function('NameError')
+        else:
+            intern_status[0] = True
+    if intern_status[0] == True:
+    
+
+    if intern_status[0] == None:
+        try:
+            global tki
+            V.to_print = tkinter.StringVar()
+        except AttributeError: # excepted tk to be not initialised
+            saved_print_function(*args, **kvargs) # normal print console
+            kvargs.update( {'file': intern_file[0]})
+            saved_print_function(*args, **kvargs) # save the print result
+            saved_print_function(1)
+            return
+        except NameError as e: # excpeted tkinter not imported
+            saved_print_function(*args, **kvargs) # normal print console
+            kvargs.update( {'file': intern_file[0]})
+            saved_print_function(*args, **kvargs) # save the print result
+            saved_print_function(2, e)
+            return
+        else:
+            intern_status[0] = True
+    if intern_status[0] == True:
+        try:
+            a = tkinter.StringVar() # check if tkinter still exist
+        except NameError:
+            intern_status[0] = None
+            input("Shuting Down ?????????????????? except ")
+        else: del(a)
+        kvargs.update( {'file': intern_file[0]})
+        saved_print_function(*args, **kvargs)
+        msg = ''.join(intern_file[0].content)
+        V.to_print.set(msg)
+    '''
+
 
 def generate_default_map():
     ''' generate the defaut map, stocked in 'default_map.json' '''

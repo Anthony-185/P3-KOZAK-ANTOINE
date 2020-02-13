@@ -23,37 +23,34 @@ path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
 # _____________________________________________________________________________
-game.tk.geometry('958x704+10+10')
+game.tk.geometry('958x704+10+10') #                           ==== Main Window
 game.tk.config(background='darkblue')
 game.canvas.grid(row=0, column=0, sticky='nwe')
 # _____________________________________________________________________________
-frame_tk_for_pygame = tkinter.Frame(
+frame_tk_for_pygame = tkinter.Frame( #                             ==== PYGAME
     game.tk, width=300, height=300,
     background='yellow', borderwidth=4, relief=None)
 frame_tk_for_pygame.grid(row=1, column=1, sticky='nswe')
 os.environ['SDL_WINDOWID'] = str(frame_tk_for_pygame.winfo_id())
 os.environ['SDL_VIDEODRIVER'] = 'windib'
-
-# _____________________________________________________________________________
-game_py = Py_game_1()
+game_py = Py_game_1() 
 # _____________________________________________________________________________
 WIDTH = 400 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
 DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
 CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
 # _____________________________________________________________________________
-game.canvas2 = tkinter.Canvas(game.tk,
+game.canvas2 = tkinter.Canvas(game.tk, #                  ==== canvas on right
             width  = WIDTH,
             height = HEIGHT, bg='black')
 game.canvas2.grid(row=0, column=1, sticky='w')
-# _____________________________________________________________________________
 list_text_canvas = [] ;
-for y_space in range(0, WIDTH - 70 ,20):
+for y_space in range(0, WIDTH - 110 ,20): # ---> define number of line printed
     list_text_canvas.append( \
         game.canvas2.create_text( 10, y_space + 10,
             text='', fill='cyan', anchor='nw', activefill='white',
             font = ('Terminal', -10), ))
 # _____________________________________________________________________________
-end_canvas = [
+end_canvas = [ #                  ==== the bottotm with called number function
     game.canvas2.create_text(
         10, HEIGHT - 30,
         text='', fill='cyan', anchor='nw', activefill='white',
@@ -69,13 +66,13 @@ def deleting_tk_grid():
     for case in Grid.all: game.canvas.delete(case.tk)
     Grid.path = set() # better ;) else: infinite loop in map generator
 # _____________________________________________________________________________
-def de_activate(x): # de activate all buttons
+def de_activate(x): #                             ==== de activate all buttons
     l = path_button_1, path_button_2, path_button_3
     for i in l:
         i['state'] = 'disabled'
         i['background'] = 'orange'
 
-def re_activate(x): # re activate all buttons
+def re_activate(x): #                             ==== re activate all buttons
     l = path_button_1, path_button_2, path_button_3
     for i in l:
         i['background'] = 'cyan'
@@ -106,27 +103,30 @@ def loading_defaut_map():
     game.restart_tk()
     re_activate(path_button_3)
 # _____________________________________________________________________________
-frame_info = tkinter.Canvas(game.tk,
+frame_info = tkinter.Frame(game.tk, # ====================== log console PRINT
     width = 500, height = 250, bg='orange')
 frame_info.grid(row=1, column=0)
 frame_info.grid_propagate(0)
-canvas_info = tkinter.Canvas(frame_info,
-    width = 480, height = 50, bg = 'black')
-canvas_info.grid(row = 0, column = 0, columnspan = 10, sticky = '')
+V.to_print = tkinter.StringVar() # --------------------> init string for print
+canvas_info = tkinter.Label(frame_info,
+    bg = 'black',textvariable = V.to_print, fg = 'cyan')
+V.tk_ready = True # ----------------------------------------> Enable print /!\
+canvas_info.grid(row = 0, column = 0)
+# _____________________________________________________________________________
 list_canvas_info = []
 def init_show_bag():
     global list_canvas_info
     list_canvas_info = []
-    x = len(Grid.dic) * 40 / 2
-    x = 240 - x + 6
+    x = len(Grid.dic) * 30 / 2
+    x = 400 / 2 - x + 6
     for i, j in enumerate(Grid.dic):
-        color = 'white' if 'item' in j else None
+        color = 'cyan' if 'item' in j else None
         if not color:
-            color = 'green' if j == 'start' else 'red'
+            color = 'lightgreen' if j == 'start' else 'red'
         list_canvas_info.append(
-            canvas_info.create_rectangle(
-                x + 40 * i     , 10,
-                x + 40 * i + 30, 40, outline = color ) )
+            game.canvas2.create_rectangle(
+                x + 30 * i     , 300 + 7,
+                x + 30 * i + 20, 300 + 27, outline = color ) )
     return None
     
 init_show_bag()
@@ -135,22 +135,22 @@ def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
     global list_canvas_info
     if old_bag[0] == None : old_bag[0] = {}  
     if deja_vu_grid[0] != Grid.dic: # if game has restart, re-initialize
-        for i in list_canvas_info: canvas_info.delete(i)
+        for i in list_canvas_info: game.canvas2.delete(i)
         init_show_bag()
         l = 0
         for i in Hero.bag:
             l += 1
-            canvas_info.itemconfig(list_canvas_info[l], fill = '')
+            game.canvas2.itemconfig(list_canvas_info[l], fill = '')
         deja_vu_grid[0] = Grid.dic.copy()
-        canvas_info.update()
+        game.canvas2.update()
         return None
     if old_bag[0] == Hero.bag:
         return None # if nothing change, pass
     l = 0
     for i in Hero.bag:
         l += 1
-        canvas_info.itemconfig(list_canvas_info[l], fill = 'white')
-    canvas_info.update()
+        game.canvas2.itemconfig(list_canvas_info[l], fill = 'white')
+    game.canvas2.update()
     old_bag[0] = Hero.bag.copy()
     return None
 # _____________________________________________________________________________
