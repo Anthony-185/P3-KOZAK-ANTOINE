@@ -19,6 +19,7 @@ class MAIN:
     def run(self):
         self.game1.run()
         self.game2.run()
+        if Grid.status != [None] : Grid.terminated()
     
 if __name__ == '__main__':
     

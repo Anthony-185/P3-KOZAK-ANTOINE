@@ -133,3 +133,4 @@ if __name__ == '__main__':
     game = Py_game_1()            
     while 1:
         game.run()
+        if Grid.status != [None] : Grid.terminated()

@@ -5,13 +5,15 @@ import json
 # _____________________________________________________________________________
 # [ ] improve class Grid as a iterator
 # [ ] Hero define in Path
-# [ ] list item customizable
+# [X] list item customizable
 # [ ] Add Game finish
 # [ ] Add Game restart
-# [ ] Add Game Path loading from a file
-# [ ] log function
-# [ ] improve console print (shorter and faster program) Case.symbole = '.' ?
+# [X] Add Game Path loading from a file
+# [X] log function
+# [X] improve console print (shorter and faster program) Case.symbole = '.' ?
 # _____________________________________________________________________________
+# _____________________________________________________________________________
+# code for log program (  >>> >>> game code begin at line 80 <<< <<<  )
 
 print('in grid module, creating V')
 class V: 
@@ -26,7 +28,6 @@ class V:
     def for_vendetta(func):
 
         def f(*args, **kvargs):
-
             V.a['All + Last'][0] = V.i[0] = V.i[0] + 1
             V.a['All + Last'][1] = V.last[0] = [func.__name__, args, kvargs]
             
@@ -41,6 +42,7 @@ class V:
             
             return func(*args, **kvargs)
         return f
+    # if lunched by Macgyver V17, caneva_update() will be created (for tkinter)
 
 class file_like:
     '''object create to simualte an output file for print:
@@ -51,69 +53,33 @@ class file_like:
         self.content = []
     def write(self, msg):
         self.content.append(msg)
-
-
+        
+# _____________________________________________________________________________
+#   /// /// /// /// /// /// print overwrite /// /// /// /// /// ///   <<<   /!\
 saved_print_function = print
-def print(*args, **kvargs):
+def print(*args, _intern_list = [''], **kvargs):
 
     if not V.tk_ready:
         saved_print_function(*args, **kvargs)
-        return
         
     msg = file_like() # msg = fake_file
     kvargs.update( {'file': msg}) # update kvargs of print with the fake file
     saved_print_function(*args, **kvargs) # print to the fake file
     
     msg = ''.join(msg.content)
-    V.to_print.set(msg)
-    input()
- 
-    '''
-    if intern_status[0] == None:
-        try:
-            V.to_print = tkinter.StringVar()
-        except NameError:
-            import tkinter
-            saved_print_function('NameError')
-        except AttributeError:
-            saved_print_function('NameError')
-        else:
-            intern_status[0] = True
-    if intern_status[0] == True:
+
+    _intern_list[0] = _intern_list[0] + msg
+    _intern_list[0] = _intern_list[0].split('\n')[-20:] # keep last 19 lines
+    _intern_list[0] = '\n'.join(_intern_list[0])
     
+    if V.tk_ready:
+        V.to_print.set(_intern_list[0])
+        V.caneva_update()
+    return None
 
-    if intern_status[0] == None:
-        try:
-            global tki
-            V.to_print = tkinter.StringVar()
-        except AttributeError: # excepted tk to be not initialised
-            saved_print_function(*args, **kvargs) # normal print console
-            kvargs.update( {'file': intern_file[0]})
-            saved_print_function(*args, **kvargs) # save the print result
-            saved_print_function(1)
-            return
-        except NameError as e: # excpeted tkinter not imported
-            saved_print_function(*args, **kvargs) # normal print console
-            kvargs.update( {'file': intern_file[0]})
-            saved_print_function(*args, **kvargs) # save the print result
-            saved_print_function(2, e)
-            return
-        else:
-            intern_status[0] = True
-    if intern_status[0] == True:
-        try:
-            a = tkinter.StringVar() # check if tkinter still exist
-        except NameError:
-            intern_status[0] = None
-            input("Shuting Down ?????????????????? except ")
-        else: del(a)
-        kvargs.update( {'file': intern_file[0]})
-        saved_print_function(*args, **kvargs)
-        msg = ''.join(intern_file[0].content)
-        V.to_print.set(msg)
-    '''
-
-
+# =========================================================================== #
+# >>>> >>>> >>>> >>>>  Main code for the game start here  <<<< <<<< <<<< <<<< #
+# =========================================================================== #
 def generate_default_map():
     ''' generate the defaut map, stocked in 'default_map.json' '''
     d = '[\
@@ -149,17 +115,7 @@ def generate_default_map():
     'final_goal' : final_goal,
     'path' : path }
     with open('default_map.json', 'w') as f:
-        json.dump(data, f)
-    '''
-    start = json.JSONEncoder().encode(start)
-    final_goal = json.JSONEncoder().encode(final_goal)
-    path = json.JSONEncoder().encode(path)
-    with open('default_map.json', 'w') as f:
-        f.write(start)
-        f.write(final_goal)
-        f.write(path)
-    '''
-            
+        json.dump(data, f)           
 
 class Grid: # transform this in a iterator
     row, column = 15, 15
@@ -167,8 +123,26 @@ class Grid: # transform this in a iterator
     all   = set()
     path  = set()
     object= {}
+    status = [None]
+    
+    @staticmethod
+    def terminated():
+        if   Grid.status == [True]:
+            print('\n *** Game Won! *** \n\n')
+        elif Grid.status == [False]:
+            print('\n |X| Game Over |X| \n\n')
+        print('re-starting in :')
+        for i in range(3,0,-1):
+            print(i)
+            time.sleep(1)
+        else: print('NOW')
+        if V.tk_ready: Grid.restart_grid()
+        else:
+            Hero.bag = set()
+            Grid.path = set()
+            Path().by_path_generator()
 
-class Case(tuple): # add __add__ and compare function !!!
+class Case(tuple): # add __add__ and compare function
     pass
 
 class Hero(Case):
@@ -197,12 +171,10 @@ class Hero(Case):
             Hero.bag |= {new_pos}
             Grid.object -= {new_pos}
         elif new_pos == Grid.dic['final_goal']:
-            if Hero.bag == Grid.object:
-                print(12*'\n'+f'{"WIN": ^79}'+'\n')
-                
-            else: print(f'{"Game Over":X^79}'+3*'\n')
-
-
+            if not Grid.object:
+                Grid.status = [True]
+            else:
+                Grid.status = [False]
 
 class Path:
     ''' path creator (~ map generator) '''
@@ -213,11 +185,11 @@ class Path:
             for x in ['start'] + list_item + ['final_goal']}
         Grid.column = column ; Grid.row = row
         Grid.all = {Case((x+1, y+1)) for y in range(column) for x in range(row)}
+        Grid.status = [None]
     
     def restart_path(): # Destroy grid, prepare for restarting map
         Hero.bag = set()
         Grid.path = set() # better ;)
-        # Path( x, y).by_path_generator()
     
     def by_load_defaut_map(self):
         try : 
@@ -225,7 +197,7 @@ class Path:
         except FileNotFoundError:
             generate_default_map()
             f = open('default_map.json', 'r')
-        
+
         data = f.readline()
         f.close()
         map_def = json.loads(data)
@@ -241,19 +213,20 @@ class Path:
         else: Grid.object = { Grid.dic['item_'+str(i+1)] \
             for i in range(len(Grid.dic)-2) }
                         
-    @staticmethod # take x, y as [0] --> return [X] like that #       [X]
-    @V.for_vendetta
-    def near_position(x, y):                                  #   [X] [O] [X]
-        return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) #       [X]
+    @staticmethod
+    @V.for_vendetta # take x, y as [0] -> return [X] like this #       [X]
+    def near_position(x, y):                                   #   [X] [O] [X]
+        return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)  #       [X]
 
     @staticmethod # create to define some space between the differents element
     @V.for_vendetta
     def some_space(chance = 97):
         '''
-        chance function which take size of the grid in internal parameter
+        chance function which take size of the grid
         
-        97 = 15 * 15 good chance value for grid size
-        99 = 25 * 25 good chance value for grid size
+        some chance value working fine:
+            97: 15 * 15
+            99: 25 * 25
         '''
         grid_size = Grid.row * Grid.column
         if grid_size < 225: return random.randrange(1, 101) >= 97
@@ -266,6 +239,7 @@ class Path:
         actual_position: 'x, y' = random.choice(list(Grid.all))
         Grid.dic[next(obj)] = actual_position
         Grid.path |= {actual_position}
+        Hero.pos = actual_position
         print('starting path generator main loop'); loop = 0
         while not Grid.dic['final_goal'] :
             if Grid.all == Grid.path:
@@ -307,21 +281,21 @@ class C:
     @staticmethod
     @V.for_vendetta
     def console_print():
-        if Grid.row >=60 or Grid.column >= 28: return None
-        print(4*"\n" + 80*"_" + "\n\n")
+        separator = '|' # separator
+        if Grid.row >=40 or Grid.column >= 20: return None
+        print(80*"_" + "\n")
         for y in range(1,Grid.column+1):
+            l = []
             for x in range(1,Grid.row+1):
-                if (x,y) == Hero.pos:                 symbol="|."
-                elif (x,y) == Grid.dic['start']:      symbol="|S"
-                elif (x,y) in Grid.object:            symbol="|o"
-                # elif (x,y) == Grid.dic['item_1']:     symbol="|o"
-                # elif (x,y) == Grid.dic['item_2']:     symbol="|o"
-                # elif (x,y) == Grid.dic['item_3']:     symbol="|o"
-                elif (x,y) == Grid.dic['final_goal']: symbol="|X"
-                elif (x,y) in Grid.path:              symbol="| "
-                elif (x,y) not in Grid.path:          symbol="|~"
-                print(symbol, end="")
-            print("|")
+                l.append(separator)
+                if (x,y) == Hero.pos:                 symbol="."
+                elif (x,y) == Grid.dic['start']:      symbol="S"
+                elif (x,y) in Grid.object:            symbol="o"
+                elif (x,y) == Grid.dic['final_goal']: symbol="X"
+                elif (x,y) in Grid.path:              symbol=" "
+                elif (x,y) not in Grid.path:          symbol="+"
+                l.append(symbol)
+            print("".join(l)+separator)
     
     @staticmethod
     @V.for_vendetta
@@ -334,9 +308,13 @@ class C:
         elif command == 's' : Hero.move((0, +1))
         elif command == 'q' : Hero.move((-1, 0))
 
+
+# =========================================================================== #
+#                               ( if main )                                   #
+# =========================================================================== #
 if __name__ == '__main__':
         
-    try:
+    try: # -----------------------------------> playing with the try statement
         print('trying ... ', end = '')
         f = open('default_map.json', 'x')
         print('try done')
@@ -355,3 +333,4 @@ if __name__ == '__main__':
     while playing:
         C.console_print()
         C.handle()
+        if Grid.status != [None] : Grid.terminated()

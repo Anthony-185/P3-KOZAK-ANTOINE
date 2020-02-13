@@ -7,15 +7,15 @@ print('init')# to rm
 
 # from collection
 # _____________________________________________________________________________
-# [ ] MUST BE COOL
-# [ ] run the game, can restart
-# [ ] //// //// Overide print() to print in main window tkinter label //// ////
+# [X] MUST BE COOL --> it is for me ;-)
+# [X] run the game, can restart
+# [X] //// //// Overide print() to print in main window tkinter label //// ////
 # [X] Add Pygame module ?
 # [X] Add Tkinter module
-# [ ] a SHOWDOWN mode, played by random (autotest)
-# [ ] external file for a lot of variable, parametrable 'settings.txt'
-# [X] log function in V in other canvas (can be improved)
-# [ ] a oblivion style, can be cool
+# [ ] a SHOWDOWN mode, played by random (autotest) <<<<<< difficult, need time
+# [ ] external file like 'settings.txt' <<<<<<<<<<<<<<<<<<<< medium, need time
+# [X] log function in V in other canvas, printed
+# [ ] a oblivion style, cool <<<<<<<<<<<<<<<< very difficult, need lot of time
 # _____________________________________________________________________________
 
 path = Path(42,42)
@@ -87,6 +87,7 @@ def restart_grid():
     Path( x, y, item).by_path_generator()
     game.restart_tk()
     re_activate(path_button_1)
+Grid.restart_grid = restart_grid # <- for restarting from Grid.terminated() ;-)
 
 def restart_grid_in_square():
     de_activate(path_button_2)
@@ -106,12 +107,16 @@ def loading_defaut_map():
 frame_info = tkinter.Frame(game.tk, # ====================== log console PRINT
     width = 500, height = 250, bg='orange')
 frame_info.grid(row=1, column=0)
-frame_info.grid_propagate(0)
+# frame_info.grid_propagate(0)
 V.to_print = tkinter.StringVar() # --------------------> init string for print
 canvas_info = tkinter.Label(frame_info,
-    bg = 'black',textvariable = V.to_print, fg = 'cyan')
+    bg = 'black', anchor='sw', width = 99, font = ('Terminal', -12),
+    textvariable = V.to_print, justify = 'left',
+    fg = 'cyan')
 V.tk_ready = True # ----------------------------------------> Enable print /!\
 canvas_info.grid(row = 0, column = 0)
+V.caneva_update = game.tk.update
+print('/////// print in tkinter initied ///////')
 # _____________________________________________________________________________
 list_canvas_info = []
 def init_show_bag():
@@ -128,7 +133,8 @@ def init_show_bag():
                 x + 30 * i     , 300 + 7,
                 x + 30 * i + 20, 300 + 27, outline = color ) )
     return None
-    
+
+print('init bag - ', end='') ; time.sleep(0.1)
 init_show_bag()
     
 def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
@@ -154,6 +160,7 @@ def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
     old_bag[0] = Hero.bag.copy()
     return None
 # _____________________________________________________________________________
+print('init buttons - ', end='') ; time.sleep(0.1)
 # button left
 path_button_1 = tkinter.Button(
     game.canvas2, command=restart_grid,
@@ -184,6 +191,7 @@ def verbose_clean():
     for i in list_text_canvas:
         game.canvas2.itemconfig( i, text='')
 # _____________________________________________________________________________
+print('init check verbose') ; time.sleep(0.1)
 activate_verbose = tkinter.IntVar()
 activate_verbose.set(1)
 check_verbose = tkinter.Checkbutton(
@@ -193,7 +201,7 @@ check_verbose = tkinter.Checkbutton(
     activebackground='black', activeforeground='cyan')
 game.canvas2.create_window(202, HEIGHT-60, anchor='nw', window=check_verbose)
 # _____________________________________________________________________________
-old_a = [] ; m = 0 ; limit = 100 ; all = []
+old_a = [] ; m = 0 ; limit = 100 ; all = [] #  ==== function (up right canvas)
 def print_log(intern_var = [None]):
     if intern_var[0] == None:
         intern_var[0] = {'m': 0, 'limit': 100, 'old_a': []}
@@ -215,9 +223,8 @@ def print_log(intern_var = [None]):
             # if msg < width canvas
             else: a.append(f'{i[:10]: <10} : {text[-50:]:.>50}')
             limit = max(limit, len(text)) # limit = bigger msg
-        if a[1:] != old_a[1:]: # if all msg the same, don't update the canvas
-            for i, j in zip([a[0]] + a[:1:-1], list_text_canvas):
-                game.canvas2.itemconfig( j, text=i)
+        for i, j in zip([a[0]] + a[:1:-1], list_text_canvas):
+            game.canvas2.itemconfig( j, text=i)
         old_a = a
     
     else:
@@ -235,9 +242,11 @@ def print_log(intern_var = [None]):
     intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a'] = \
         m, limit, old_a
     
-    
+# _____________________________________________________________________________
+print(' ==== starting main loop ==== ') ; time.sleep(0.1)
 while 1:
 
+    if Grid.status != [None] : Grid.terminated()
     print_log()
     f_canvas_info()
     game.run()

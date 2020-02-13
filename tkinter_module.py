@@ -2,8 +2,8 @@ import tkinter
 from grid_module import *
 
 # _____________________________________________________________________________
-# [ ] the area on the right as a useful verbose mode !!!!
-# [ ] log function
+# [X] the area on the right as a useful verbose mode !!!! (see Mac gyver V17)
+# [X] log function
 # [X] lag with 100x100 cases : escape funny_color if Gird > 1117
 # _____________________________________________________________________________
 class Game:
@@ -129,4 +129,6 @@ if __name__ == '__main__':
     Path(50,50).by_path_generator()
     Hero.pos = Grid.dic['start']
     game = Game()
-    while 1: game.run()
+    while 1:
+        game.run()
+        if Grid.status != [None] : Grid.terminated()
