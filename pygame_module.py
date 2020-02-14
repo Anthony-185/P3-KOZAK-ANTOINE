@@ -13,9 +13,70 @@ from grid_module import *
 if __name__ == '__main__': extend = True
 else: extend = False
 
-if extend:
-    surface = pygame.Surface((100, 100))
-    macgyver_img = pygame.image.load('MacGyver.png')
+size = (64, 48)
+small_size = (48, 36)
+
+macg_img = pygame.image.load('MacGyver.png') # ok 
+macg_img = pygame.transform.scale(macg_img, size)
+
+goal_img = pygame.image.load('Gardien.png')  # ok
+goal_img = pygame.transform.scale(goal_img, size)
+
+it_1_img = pygame.image.load('aiguille.png') # ok
+it_1_img = pygame.transform.scale(it_1_img, size)
+
+it_2_img = pygame.image.load('tube_plastique.png') # ok
+it_2_img = pygame.transform.scale(it_2_img, size)
+
+it_3_img = pygame.image.load('ether.png')    # ok
+it_3_img = pygame.transform.scale(it_3_img, size)
+
+it_4_img = pygame.image.load('seringue.png') # ok
+it_4_img = pygame.transform.scale(it_4_img, size)
+
+wall_img_original = pygame.image.load('floor-tiles-20x20.png') # ok
+wall_img = wall_img_original.subsurface((0, 0, 20, 20))
+wall_img = pygame.transform.scale(wall_img, size)
+
+path_img_original = pygame.image.load('floor-tiles-20x20.png') # ok
+path_img = path_img_original.subsurface((20, 20, 20, 20))
+path_img = pygame.transform.scale(path_img, size)
+
+def f_a_wall_img(y = [0], x = [0], change = False):
+    ''' return a pygame image cropped from original floor-tiles-20x20.png '''
+    possibility = [
+        [range(5,11), range(12,18)],
+        [range(0,4)],
+        [range(0,4)],
+        [range(0,4)],
+        [range(0,4)],
+        [range(0,4), range(8,14), range(14,20)]]
+    if x == [0] or change:
+        y[0] = random.randrange(len(possibility) - 1)
+        x[0] = random.choice(possibility[y[0]])
+        
+    global wall_img
+    wall_img = path_img_original.subsurface(
+        (random.choice(x[0]) * 20, y[0] * 20, 20, 20))
+    wall_img = pygame.transform.scale(wall_img, size)
+
+f_a_wall_img()
+
+
+def f_a_path_img(x = [0], change = False):
+    ''' return a pygame image cropped from original floor-tiles-20x20.png '''
+    possibility = [range(0,3), range(3,6), range(6,9)]
+    y = 12
+    if x == [0] or change:
+        x[0] = random.choice(possibility)
+        
+    global path_img
+    path_img = wall_img_original.subsurface(
+        (random.choice(x[0]) * 20, y * 20, 20, 20))
+    path_img = pygame.transform.scale(path_img, size)
+    
+f_a_path_img()
+
 # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
 
 
@@ -38,17 +99,16 @@ class Py_game_1():
         self.screen = pygame.display.set_mode(Py_game_1.BIG)
         self.clock = pygame.time.Clock()
         self.update_screen()
+        Grid.pygame_mode = 1
 
 # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //    
     def move_img_mac(self, x, y, old_pos = [0,0]):
         pos = old_pos[0] + x, old_pos[1] + y
         if (x != 0) or (y != 0): print(pos)
-        self.screen.blit(macgyver_img, pos)
+        self.screen.blit(macg_img, pos)
         old_pos[0] = pos[0]
         old_pos[1] = pos[1]
-# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
 
-# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
     def grid_15_per_15(self, x, y):
         return [(i, j) for i in range(x-2, x+3) for j in range(y-2, y+3)]
 # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
@@ -77,60 +137,94 @@ class Py_game_1():
         return pressed_keys
 
     @V.for_vendetta
-    def update_screen(self, deja_vu = [0,0]):
+    def update_screen(self, deja_vu = [0], mode = 0):
         ''' draw all objects '''
-        if deja_vu == [Grid.dic, Hero.pos]: return None
-        self.screen.fill(black)
-        for pos in Grid.all:
-            color = (128,128,128)
-            if pos in Grid.object: color = white
-            elif pos in Grid.path: color = (50,50,255)
-            if pos == Hero.pos: color = (255,140,0)
-            elif pos == Grid.dic['final_goal']: color = red
-            elif pos == Grid.dic['start']: color = (0, 255, 0)            
-            self.draw(pos[0] - 1, pos[1] - 1, color)
+        if deja_vu[0] == [Grid.dic, Hero.pos]: return None
+        self.screen.fill(black)    
+        if mode != 2:
+            for pos in Grid.all:
+                color = (128,128,128)
+                if pos in Grid.object: color = white
+                elif pos in Grid.path: color = (50,50,255)
+                if pos == Hero.pos: color = (255,140,0)
+                elif pos == Grid.dic['final_goal']: color = red
+                elif pos == Grid.dic['start']: color = (0, 255, 0)            
+                self.draw(pos[0] - 1, pos[1] - 1, color)
 # =============================================================================
 #   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //   //
 # =============================================================================
-        self.move_img_mac(0, 0)
+        if mode == 1: return
+        # self.move_img_mac(0, 0)
         list_pos = self.grid_15_per_15(0,0)
         for pos, real_pos in zip(self.grid_15_per_15(*Hero.pos), list_pos):
+            f_a_wall_img()
+            img = wall_img
             color = (128,128,128)
-            if pos in Grid.object: color = white
-            elif pos in Grid.path: color = (50,50,255)
-            if pos == Hero.pos: color = (255,140,0)
-            elif pos == Grid.dic['final_goal']: color = red
-            elif pos == Grid.dic['start']: color = (0, 255, 0)
-            self.draw(real_pos[0] - 1, real_pos[1] - 1, color, c = 2)
+            if pos in Grid.object:
+                color = white
+                if   pos == Grid.dic['item_1']: img = it_1_img
+                elif pos == Grid.dic['item_2']: img = it_2_img
+                elif pos == Grid.dic['item_3']: img = it_3_img
+                else:                           img = it_4_img
+            elif pos in Grid.path:
+                color = (50,50,255)
+                f_a_path_img()
+                img = path_img
+            if pos == Hero.pos:
+                color = (255,140,0)
+                img = macg_img
+            elif pos == Grid.dic['final_goal']:
+                color = red
+            elif pos == Grid.dic['start']:
+                color = (0, 255, 0)
+                img = it_4_img
+            self.draw(
+                real_pos[0] - 1, real_pos[1] - 1, color, c = 2, mode = mode)
+            self.screen.blit(img,
+                self.draw(real_pos[0] - 1, real_pos[1] - 1, c = 3, mode = mode))
             
         pygame.display.flip()
-        deja_vu = [Grid.dic.copy(), Hero.pos]
+        deja_vu[0] = [Grid.dic.copy(), Hero.pos]
 # =============================================================================
 #   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //   //
 # =============================================================================
 
     @V.for_vendetta
-    def draw(self, x, y, color, c = 1): # ------------> add c
+    def draw(self, x, y, color = (0,0,0), c = 1, mode = 0): # ------------> add c
         ''' just draw a rectangle, take x, y, and color 
             it's x - 1 and y - 1 already converted /!\ '''
-        if c == 1:
+        if mode != 2:
+            x_align = 600 ; y_align = 150
+        else: 
+            x_align = 200 ; y_align = 150
+        if c == 1: # to draw in left area
             pos = (x * self.DX + self.CX + 1, 
                    y * self.DY + self.CY + 1, 
                    self.DX - 2, 
                    self.DY - 2)
-        elif c == 2:
-            pos = (x * self.DX * 4 + self.CX + 1 + 600, 
-                   y * self.DY * 4 + self.CY + 1 + 150, 
+        elif c == 2: # to draw in right area
+            pos = (x * self.DX * 4 + self.CX + 1 + x_align, 
+                   y * self.DY * 4 + self.CY + 1 + y_align, 
                    self.DX * 4 - 2, 
                    self.DY * 4 - 2)
             # pos = pos[0] + 600, pos[1] + 150, *pos[2:]
+        elif c == 3: # used as a calcul function, return c = 2 position
+            return(x * self.DX * 4 + self.CX + 1 + x_align, 
+                   y * self.DY * 4 + self.CY + 1 + y_align, 
+                   self.DX * 4 - 2, 
+                   self.DY * 4 - 2)
         pygame.draw.rect(self.screen, color, pos)
                    
     @V.for_vendetta
-    def check_secure(self):
+    def check_secure(self, old_grid = [None]):
         '''
         in case of restarting game, redefine the variables which
         defines x and y alinement (purely graphics adjustement) '''
+        if old_grid[0] != Grid.dic.copy():
+            f_a_path_img(change=True)
+            f_a_wall_img(change=True)
+            old_grid[0] = Grid.dic.copy()
+            self.update_screen(deja_vu=[False])
         if  Py_game_1.row    == Grid.row \
         and Py_game_1.column == Grid.column:
             return None # must be fast if all ok
@@ -139,6 +233,7 @@ class Py_game_1():
             self.DY = Py_game_1.RESOLUTION[1] // Grid.column
             self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
             self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
+            f_a_wall_img(change = True)
             
     
     @V.for_vendetta

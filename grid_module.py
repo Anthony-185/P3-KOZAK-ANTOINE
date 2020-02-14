@@ -140,7 +140,7 @@ class Grid: # transform this in a iterator
         else:
             Hero.bag = set()
             Grid.path = set()
-            Path().by_path_generator()
+            Path(25,25).by_path_generator()
 
 class Case(tuple): # add __add__ and compare function
     pass
