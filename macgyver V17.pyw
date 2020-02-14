@@ -33,7 +33,7 @@ frame_tk_for_pygame = tkinter.Frame( #                             ==== PYGAME
 frame_tk_for_pygame.grid(row=1, column=1, sticky='nswe')
 os.environ['SDL_WINDOWID'] = str(frame_tk_for_pygame.winfo_id())
 os.environ['SDL_VIDEODRIVER'] = 'windib'
-game_py = Py_game_1() 
+game_py = Py_game_1(mode = 2) 
 # _____________________________________________________________________________
 WIDTH = 400 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
 DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
@@ -150,9 +150,11 @@ def f_canvas_info(old_bag = [None], deja_vu_grid = [None]):
         deja_vu_grid[0] = Grid.dic.copy()
         game.canvas2.update()
         return None
+    if Grid.status != [None] :
+        game.canvas2.itemconfig(list_canvas_info[-1], fill = 'red')    
     if old_bag[0] == Hero.bag:
         return None # if nothing change, pass
-    l = 0
+    l = 0 ; game.canvas2.itemconfig(list_canvas_info[l], fill = 'green')
     for i in Hero.bag:
         l += 1
         game.canvas2.itemconfig(list_canvas_info[l], fill = 'white')
@@ -246,8 +248,8 @@ def print_log(intern_var = [None]):
 print(' ==== starting main loop ==== ') ; time.sleep(0.1)
 while 1:
 
-    if Grid.status != [None] : Grid.terminated()
     print_log()
     f_canvas_info()
+    if Grid.status != [None] : Grid.terminated()
     game.run()
-    game_py.run()
+    game_py.run(mode_run=2)

@@ -4,7 +4,7 @@ from grid_module import *
 # ___________________________________________________________________________ #
 # [X] Bug: if one key maintain pressed and pressing others, doing mayhem !
 # [ ] venv requirement.txt
-# [ ] load png.files
+# [X] load png.files
 # [ ] doc pdf
 # ___________________________________________________________________________ #
 
@@ -13,7 +13,7 @@ from grid_module import *
 if __name__ == '__main__': extend = True
 else: extend = False
 
-size = (64, 48)
+size = (60, 80)
 small_size = (48, 36)
 
 macg_img = pygame.image.load('MacGyver.png') # ok 
@@ -89,7 +89,7 @@ class Py_game_1():
     else: BIG = RESOLUTION
 
     @V.for_vendetta
-    def __init__(self):
+    def __init__(self, mode = 0):
         self.DX = Py_game_1.RESOLUTION[0] // Grid.row
         self.DY = Py_game_1.RESOLUTION[1] // Grid.column
         self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
@@ -98,8 +98,8 @@ class Py_game_1():
         pygame.init() # Pygame init =======
         self.screen = pygame.display.set_mode(Py_game_1.BIG)
         self.clock = pygame.time.Clock()
-        self.update_screen()
-        Grid.pygame_mode = 1
+        self.update_screen(mode = mode)
+        Grid.pygame_mode = mode
 
 # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //    
     def move_img_mac(self, x, y, old_pos = [0,0]):
@@ -175,9 +175,11 @@ class Py_game_1():
                 img = macg_img
             elif pos == Grid.dic['final_goal']:
                 color = red
+                img = goal_img
             elif pos == Grid.dic['start']:
                 color = (0, 255, 0)
-                img = it_4_img
+                img = path_img_original.subsurface((80, 100, 20, 20))
+                img = pygame.transform.scale(img, size)
             self.draw(
                 real_pos[0] - 1, real_pos[1] - 1, color, c = 2, mode = mode)
             self.screen.blit(img,
@@ -203,16 +205,21 @@ class Py_game_1():
                    self.DX - 2, 
                    self.DY - 2)
         elif c == 2: # to draw in right area
-            pos = (x * self.DX * 4 + self.CX + 1 + x_align, 
-                   y * self.DY * 4 + self.CY + 1 + y_align, 
-                   self.DX * 4 - 2, 
-                   self.DY * 4 - 2)
+            pos = (x * 60 + x_align, y * 80 + y_align,
+                   60, 80)
+#           pos = (x * self.DX * 4 + self.CX + 1 + x_align, 
+#                  y * self.DY * 4 + self.CY + 1 + y_align, 
+#                  self.DX * 4 - 2, 
+#                  self.DY * 4 - 2)
             # pos = pos[0] + 600, pos[1] + 150, *pos[2:]
         elif c == 3: # used as a calcul function, return c = 2 position
-            return(x * self.DX * 4 + self.CX + 1 + x_align, 
-                   y * self.DY * 4 + self.CY + 1 + y_align, 
-                   self.DX * 4 - 2, 
-                   self.DY * 4 - 2)
+            return(x * 60 + x_align, y * 80 + y_align,
+                   60, 80)
+
+#           return(x * self.DX * 4 + self.CX + 1 + x_align, 
+#                  y * self.DY * 4 + self.CY + 1 + y_align, 
+#                  self.DX * 4 - 2, 
+#                  self.DY * 4 - 2)
         pygame.draw.rect(self.screen, color, pos)
                    
     @V.for_vendetta
@@ -224,7 +231,7 @@ class Py_game_1():
             f_a_path_img(change=True)
             f_a_wall_img(change=True)
             old_grid[0] = Grid.dic.copy()
-            self.update_screen(deja_vu=[False])
+            self.update_screen(deja_vu=[False], mode = Grid.pygame_mode)
         if  Py_game_1.row    == Grid.row \
         and Py_game_1.column == Grid.column:
             return None # must be fast if all ok
@@ -233,17 +240,18 @@ class Py_game_1():
             self.DY = Py_game_1.RESOLUTION[1] // Grid.column
             self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
             self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
-            f_a_wall_img(change = True)
+            # f_a_wall_img(change = True)
             
     
     @V.for_vendetta
-    def run(self):
+    def run(self, mode_run = 3):
         ''' main function of the game,
             run everything in game '''
         self.key_pressed()
         self.handleEvents()
         # self.update_screen2()
-        self.update_screen()
+        if mode_run == 4: self.update_screen()
+        else: self.update_screen(mode=mode_run)
         # self.clock.tick(60)
         self.check_secure()
 
