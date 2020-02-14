@@ -3,14 +3,29 @@ from pygame.locals import *
 from grid_module import *
 # ___________________________________________________________________________ #
 # [X] Bug: if one key maintain pressed and pressing others, doing mayhem !
-# [ ] Ugly !!!!!
-# [ ] use the near function to know the case to draw
-#     so you dont have to draw all the grid, just the near cases
+# [ ] venv requirement.txt
+# [ ] load png.files
+# [ ] doc pdf
 # ___________________________________________________________________________ #
+
+
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+if __name__ == '__main__': extend = True
+else: extend = False
+
+if extend:
+    surface = pygame.Surface((100, 100))
+    macgyver_img = pygame.image.load('MacGyver.png')
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+
+
 white, black, red, blue = (255,)*3, (0,)*3, (255,0,0), (0,0,255)
 class Py_game_1():
     row = column = 0
     RESOLUTION = (400,300)
+    if extend:
+        BIG = (800, 300)
+    else: BIG = RESOLUTION
 
     @V.for_vendetta
     def __init__(self):
@@ -19,12 +34,25 @@ class Py_game_1():
         self.CX = Py_game_1.RESOLUTION[0] % Grid.row // 2 # -----+
         self.CY = Py_game_1.RESOLUTION[1] % Grid.column // 2 # --+------> removing marge
         Py_game_1.row, Py_game_1.column = Grid.row, Grid.column
-        # screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
         pygame.init() # Pygame init =======
-        self.screen = pygame.display.set_mode(Py_game_1.RESOLUTION)
+        self.screen = pygame.display.set_mode(Py_game_1.BIG)
         self.clock = pygame.time.Clock()
         self.update_screen()
-            
+
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //    
+    def move_img_mac(self, x, y, old_pos = [0,0]):
+        pos = old_pos[0] + x, old_pos[1] + y
+        if (x != 0) or (y != 0): print(pos)
+        self.screen.blit(macgyver_img, pos)
+        old_pos[0] = pos[0]
+        old_pos[1] = pos[1]
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+    def grid_15_per_15(self, x, y):
+        return [(i, j) for i in range(x-2, x+3) for j in range(y-2, y+3)]
+# /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+    
     @V.for_vendetta
     def handleEvents(self):
         ''' only handle quit pygame, not working well... '''
@@ -41,10 +69,10 @@ class Py_game_1():
             it's a list so it can be keep in memory inside the function '''
         pressed_keys = pygame.key.get_pressed()
         if not hold[0] == pressed_keys:
-            if   pressed_keys[K_LEFT]:  Hero.move((-1, 0))
-            elif pressed_keys[K_RIGHT]: Hero.move((+1, 0))
-            elif pressed_keys[K_UP]:    Hero.move((0, -1))
-            elif pressed_keys[K_DOWN]:  Hero.move((0, +1))
+            if   pressed_keys[K_LEFT]:  Hero.move((-1, 0)) # ; self.move_img_mac(-1, 0)
+            elif pressed_keys[K_RIGHT]: Hero.move((+1, 0)) # ; self.move_img_mac(+1, 0)
+            elif pressed_keys[K_UP]:    Hero.move((0, -1)) # ; self.move_img_mac(0, -1)
+            elif pressed_keys[K_DOWN]:  Hero.move((0, +1)) # ; self.move_img_mac(0, +1)
         hold.pop() ; hold.append(pressed_keys)
         return pressed_keys
 
@@ -61,44 +89,41 @@ class Py_game_1():
             elif pos == Grid.dic['final_goal']: color = red
             elif pos == Grid.dic['start']: color = (0, 255, 0)            
             self.draw(pos[0] - 1, pos[1] - 1, color)
-        pygame.display.flip()
-        deja_vu = [Grid.dic.copy(), Hero.pos]
-
-    # =========================================================================
-    # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
-    # =========================================================================
-    @V.for_vendetta # Working on mini-map =====================================
-    def update_screen2(self, deja_vu = [0,0]):
-        ''' draw all objects '''
-        if deja_vu == [Grid.dic, Hero.pos]: return None
-        self.screen.fill(black)
-        l = []
-        for pos in Path.near_position(Hero.pos):
+# =============================================================================
+#   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //   //
+# =============================================================================
+        self.move_img_mac(0, 0)
+        list_pos = self.grid_15_per_15(0,0)
+        for pos, real_pos in zip(self.grid_15_per_15(*Hero.pos), list_pos):
             color = (128,128,128)
             if pos in Grid.object: color = white
             elif pos in Grid.path: color = (50,50,255)
             if pos == Hero.pos: color = (255,140,0)
             elif pos == Grid.dic['final_goal']: color = red
             elif pos == Grid.dic['start']: color = (0, 255, 0)
-            l.append(color)
-            
-            pos = ()
-            pygame.draw.rect(self.screen, color, pos)
+            self.draw(real_pos[0] - 1, real_pos[1] - 1, color, c = 2)
             
         pygame.display.flip()
         deja_vu = [Grid.dic.copy(), Hero.pos]
-    # =========================================================================
-    # /  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
-    # =========================================================================
+# =============================================================================
+#   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //   //
+# =============================================================================
 
     @V.for_vendetta
-    def draw(self, x, y, color):
+    def draw(self, x, y, color, c = 1): # ------------> add c
         ''' just draw a rectangle, take x, y, and color 
             it's x - 1 and y - 1 already converted /!\ '''
-        pos = (x * self.DX + self.CX + 1, 
-               y * self.DY + self.CY + 1, 
-               self.DX - 2, 
-               self.DY - 2)
+        if c == 1:
+            pos = (x * self.DX + self.CX + 1, 
+                   y * self.DY + self.CY + 1, 
+                   self.DX - 2, 
+                   self.DY - 2)
+        elif c == 2:
+            pos = (x * self.DX * 4 + self.CX + 1 + 600, 
+                   y * self.DY * 4 + self.CY + 1 + 150, 
+                   self.DX * 4 - 2, 
+                   self.DY * 4 - 2)
+            # pos = pos[0] + 600, pos[1] + 150, *pos[2:]
         pygame.draw.rect(self.screen, color, pos)
                    
     @V.for_vendetta
@@ -122,6 +147,7 @@ class Py_game_1():
             run everything in game '''
         self.key_pressed()
         self.handleEvents()
+        # self.update_screen2()
         self.update_screen()
         # self.clock.tick(60)
         self.check_secure()
@@ -130,7 +156,10 @@ if __name__ == '__main__':
 
     Path(25,25).by_path_generator()
     Hero.pos = Grid.dic['start']
-    game = Py_game_1()            
+    game = Py_game_1()
+#   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+    game.move_img_mac(600,150)
+#   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
     while 1:
         game.run()
         if Grid.status != [None] : Grid.terminated()
