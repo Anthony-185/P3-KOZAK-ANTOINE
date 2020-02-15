@@ -28,7 +28,12 @@ game.tk.config(background="darkblue")
 game.canvas.grid(row=0, column=0, sticky="nwe")
 # _____________________________________________________________________________
 frame_tk_for_pygame = tkinter.Frame(  # ================================ PYGAME
-    game.tk, width=300, height=300, background="yellow", borderwidth=4, relief=None
+    game.tk,
+    width=300,
+    height=300,
+    background="yellow",
+    borderwidth=4,
+    relief=None,
 )
 frame_tk_for_pygame.grid(row=1, column=1, sticky="nswe")
 os.environ["SDL_WINDOWID"] = str(frame_tk_for_pygame.winfo_id())
@@ -71,9 +76,10 @@ end_canvas = [  # ===================== the bottotm with called number function
         activefill="white",
         font=("Terminal", -8),
     ),
-    game.canvas2.create_line(10, HEIGHT - 10, WIDTH - 10, HEIGHT - 10, fill="cyan"),
+    game.canvas2.create_line(
+        10, HEIGHT - 10, WIDTH - 10, HEIGHT - 10, fill="cyan"
+    ),
 ]
-# _____________________________________________________________________________
 
 
 def deleting_tk_grid():
@@ -84,22 +90,20 @@ def deleting_tk_grid():
     Grid.path = set()  # better ;) else: infinite loop in map generator
 
 
-# _____________________________________________________________________________
-def de_activate(x):  #                             ==== de activate all buttons
+def de_activate(x):  # ================================ de activate all buttons
     l = path_button_1, path_button_2, path_button_3
     for i in l:
         i["state"] = "disabled"
         i["background"] = "orange"
 
 
-def re_activate(x):  #                             ==== re activate all buttons
+def re_activate(x):  # ================================ re activate all buttons
     l = path_button_1, path_button_2, path_button_3
     for i in l:
         i["background"] = "cyan"
         i["state"] = "normal"
 
 
-# _____________________________________________________________________________
 def restart_grid():
     de_activate(path_button_1)
     deleting_tk_grid()
@@ -111,7 +115,9 @@ def restart_grid():
     re_activate(path_button_1)
 
 
-Grid.restart_grid = restart_grid  # <- for restarting from Grid.terminated() ;-)
+Grid.restart_grid = (
+    restart_grid  # <- for restarting from Grid.terminated() ;-)
+)
 
 
 def restart_grid_in_square():
@@ -131,7 +137,6 @@ def loading_defaut_map():
     re_activate(path_button_3)
 
 
-# _____________________________________________________________________________
 frame_info = tkinter.Frame(
     game.tk,  # ====================== log console PRINT
     width=500,
@@ -155,7 +160,6 @@ V.tk_ready = True  # ----------------------------------------> Enable print /!\
 canvas_info.grid(row=0, column=0)
 V.caneva_update = game.tk.update
 print("/////// print in tkinter initied ///////")
-# _____________________________________________________________________________
 list_canvas_info = []
 
 
@@ -210,7 +214,6 @@ def f_canvas_info(old_bag=[None], deja_vu_grid=[None]):
     return None
 
 
-# _____________________________________________________________________________
 print("init buttons - ", end="")
 time.sleep(0.1)
 # button left
@@ -279,7 +282,11 @@ all = []  #  ==== function (up right canvas)
 def print_log(intern_var=[None]):
     if intern_var[0] == None:
         intern_var[0] = {"m": 0, "limit": 100, "old_a": []}
-    m, limit, old_a = intern_var[0]["m"], intern_var[0]["limit"], intern_var[0]["old_a"]
+    m, limit, old_a = (
+        intern_var[0]["m"],
+        intern_var[0]["limit"],
+        intern_var[0]["old_a"],
+    )
     m = m + 1 if m <= limit else 0
     a = []
     all = []
@@ -309,13 +316,18 @@ def print_log(intern_var=[None]):
     game.canvas2.itemconfig(end_canvas[0], text=" ".join(all))
     # show progress of m
     loop_prog = m / limit * (WIDTH - 20)
-    game.canvas2.coords(end_canvas[1], 10, HEIGHT - 10, 10 + loop_prog, HEIGHT - 10)
+    game.canvas2.coords(
+        end_canvas[1], 10, HEIGHT - 10, 10 + loop_prog, HEIGHT - 10
+    )
     c = "cyan" if m < limit - 50 else "orange"
     game.canvas2.itemconfig(end_canvas[1], fill=c)
-    intern_var[0]["m"], intern_var[0]["limit"], intern_var[0]["old_a"] = m, limit, old_a
+    intern_var[0]["m"], intern_var[0]["limit"], intern_var[0]["old_a"] = (
+        m,
+        limit,
+        old_a,
+    )
 
 
-# _____________________________________________________________________________
 print(" ==== starting main loop ==== ")
 time.sleep(0.1)
 while 1:

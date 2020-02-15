@@ -146,6 +146,7 @@ class Case(tuple): # add __add__ and compare function
     pass
 
 class Hero(Case):
+    tk = None
     name = 'Mac_gyver'
     pos = [1, 1]
     bag = set()
