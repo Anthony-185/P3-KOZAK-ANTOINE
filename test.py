@@ -1,6 +1,7 @@
 from grid_module import *
 from pygame_module import *
 from tkinter_module import *
+
 # _____________________________________________________________________________
 # [X] MUST BE THE MAIN MODULE
 # [ ] run the game, with or wthout tkinter or pygame
@@ -11,6 +12,7 @@ from tkinter_module import *
 # [ ] log function
 # _____________________________________________________________________________
 
+
 class MAIN:
     def __init__(self):
         self.game1 = Py_game_1()
@@ -19,14 +21,16 @@ class MAIN:
     def run(self):
         self.game1.run()
         self.game2.run()
-        if Grid.status != [None] : Grid.terminated()
-    
-if __name__ == '__main__':
-    
+        if Grid.status != [None]:
+            Grid.terminated()
+
+
+if __name__ == "__main__":
+
     path = Path()
     path.by_path_generator()
-    Hero.pos = Grid.dic['start']
-    
+    Hero.pos = Grid.dic["start"]
+
     game = MAIN()
     while 1:
         game.run()

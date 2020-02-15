@@ -27,18 +27,18 @@ macgyver V17.py | old version of the game, first step in this program (17 becaus
 Tasks ask by openClassRoom:
 - [x] running on pygame
 - [x] size of map (15x15)
-- [ ] map load from a file (actually generated)
+- [x] map load from a file (actually generated)
 - [x] items position random
 - [x] 3 items to collect, and go to the end of map
 
 Tasks by me:
-- [ ] **Improve UI** *(very simple actually :D)*
+- [x] **Improve UI** *(very simple actually :D)*
 - [x] all files can be lunched by itself all contains a `if '__name__' == __main__` statement
 - [x] map random, generate by the program itself
 - [x] running on pygame, tkinter, console
-- [ ] random size of map
+- [x] random size of map
 - [ ] multi generator functions (only one actually)
-- [ ] map load from a file ( a Defaut map)
+- [x] map load from a file ( a Defaut map)
 - [x] items position random
 - [x] verbose mode -incomplete
 

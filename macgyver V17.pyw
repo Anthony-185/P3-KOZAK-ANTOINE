@@ -7,12 +7,12 @@ print('init')# to rm
 
 # from collection
 # _____________________________________________________________________________
+# [X] //// //// Override print() to print in main window tkinter label //// ////
 # [X] MUST BE COOL --> it is for me ;-)
 # [X] run the game, can restart
-# [X] //// //// Overide print() to print in main window tkinter label //// ////
 # [X] Add Pygame module ?
 # [X] Add Tkinter module
-# [ ] a SHOWDOWN mode, played by random (autotest) <<<<<< difficult, need time
+# [ ] a SHOWDOWN mode, played by random (auto-test) <<<<<< difficult, need time
 # [ ] external file like 'settings.txt' <<<<<<<<<<<<<<<<<<<< medium, need time
 # [X] log function in V in other canvas, printed
 # [ ] a oblivion style, cool <<<<<<<<<<<<<<<< very difficult, need lot of time
@@ -23,11 +23,11 @@ path.by_path_generator()
 Hero.pos = Grid.dic['start']
 game = Game()
 # _____________________________________________________________________________
-game.tk.geometry('958x704+10+10') #                           ==== Main Window
+game.tk.geometry('958x704+10+10')  # ============================== Main Window
 game.tk.config(background='darkblue')
 game.canvas.grid(row=0, column=0, sticky='nwe')
 # _____________________________________________________________________________
-frame_tk_for_pygame = tkinter.Frame( #                             ==== PYGAME
+frame_tk_for_pygame = tkinter.Frame(  # ================================ PYGAME
     game.tk, width=300, height=300,
     background='yellow', borderwidth=4, relief=None)
 frame_tk_for_pygame.grid(row=1, column=1, sticky='nswe')
@@ -35,13 +35,12 @@ os.environ['SDL_WINDOWID'] = str(frame_tk_for_pygame.winfo_id())
 os.environ['SDL_VIDEODRIVER'] = 'windib'
 game_py = Py_game_1(mode = 2) 
 # _____________________________________________________________________________
-WIDTH = 400 ; HEIGHT = 400 # ------------------------------------> CANVAS SIZE
-DX, DY = WIDTH // 15, HEIGHT // 15 # ----------------------------> case lenght
-CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2 # -----------------> removing marge
+DX, DY = WIDTH // 15, HEIGHT // 15  # ---------------------------> case lenght
+CX, CY = WIDTH % 15 // 2, HEIGHT % 15 // 2  # ----------------> removing marge
+WIDTH = 400 ; HEIGHT = 400  # -----------------------------------> CANVAS SIZE
 # _____________________________________________________________________________
-game.canvas2 = tkinter.Canvas(game.tk, #                  ==== canvas on right
-            width  = WIDTH,
-            height = HEIGHT, bg='black')
+game.canvas2 = tkinter.Canvas(game.tk,  # ===================== canvas on right
+    width=WIDTH, height=HEIGHT, bg='black')
 game.canvas2.grid(row=0, column=1, sticky='w')
 list_text_canvas = [] ;
 for y_space in range(0, WIDTH - 110 ,20): # ---> define number of line printed
@@ -233,7 +232,6 @@ def print_log(intern_var = [None]):
         for i,j in V.a.items():
             all += [str(j[0])] if len(all) < 17 else [] # all increment
 
-    
     game.canvas2.itemconfig(end_canvas[0], text = ' '.join(all))
     # show progress of m
     loop_prog = m / limit * (WIDTH - 20)
@@ -243,7 +241,8 @@ def print_log(intern_var = [None]):
     game.canvas2.itemconfig(end_canvas[1], fill = c)
     intern_var[0]['m'], intern_var[0]['limit'], intern_var[0]['old_a'] = \
         m, limit, old_a
-    
+
+
 # _____________________________________________________________________________
 print(' ==== starting main loop ==== ') ; time.sleep(0.1)
 while 1:
