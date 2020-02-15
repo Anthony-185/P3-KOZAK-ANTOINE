@@ -273,14 +273,8 @@ check_verbose = tkinter.Checkbutton(
 game.canvas2.create_window(202, HEIGHT - 60, anchor="nw", window=check_verbose)
 
 
-def print_log(intern_var=[None]):
-    if intern_var[0] is None:
-        intern_var[0] = {"m": 0, "limit": 100, "old_a": []}
-    m, limit, old_a = (
-        intern_var[0]["m"],
-        intern_var[0]["limit"],
-        intern_var[0]["old_a"],
-    )
+def print_log(intern_var=[[0, 0, 0]]):
+    m, limit, old_a = intern_var[0]
     m = m + 1 if m <= limit else 0
     a = []
     all = []
@@ -315,11 +309,7 @@ def print_log(intern_var=[None]):
     )
     c = "cyan" if m < limit - 50 else "orange"
     game.canvas2.itemconfig(end_canvas[1], fill=c)
-    intern_var[0]["m"], intern_var[0]["limit"], intern_var[0]["old_a"] = (
-        m,
-        limit,
-        old_a,
-    )
+    intern_var[0] = m, limit, old_a
 
 
 print(" ==== starting main loop ==== ")
