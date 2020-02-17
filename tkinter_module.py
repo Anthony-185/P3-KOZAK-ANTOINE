@@ -18,6 +18,7 @@ class Game:
 
     @V.for_vendetta
     def __init__(self):
+        ''' init tkinter '''
         Game.WIDTH = 550
         Game.HEIGHT = 400  # ----------------> CANVAS SIZE
         Game.DX = Game.WIDTH // Grid.row  # - 2 # ------+--------> case lenght
@@ -64,23 +65,28 @@ class Game:
 
     @V.for_vendetta
     def move__left(self, event):
+        ''' call Hero.move with canvas.bind '''
         Hero.move((-1, 0))
 
     @V.for_vendetta
     def move_right(self, event):
+        ''' call Hero.move with canvas.bind '''
         Hero.move((+1, 0))
 
     @V.for_vendetta
     def move____up(self, event):
+        ''' call Hero.move with canvas.bind '''
         Hero.move((0, -1))
 
     @V.for_vendetta
     def move__down(self, event):
+        ''' call Hero.move with canvas.bind '''
         Hero.move((0, +1))
 
     @staticmethod
     @V.for_vendetta
     def calcul_canvas_position(case):
+        ''' center the case to be goodin the grid '''
         pos = [case[0] * Game.DX, case[1] * Game.DY]  # ----> general position
         pos = [
             pos[0] - Game.DX + 2 + Game.CX + 1,  # pos - case corner up-left
@@ -94,6 +100,7 @@ class Game:
 
     @V.for_vendetta
     def funny_color(self, i=[0]):
+        ''' function to draw the color'''
         i[0] = i[0] + 32 if i[0] < 16 ** 3 - 2047 else -(16 ** 3) + 2048
         x = hex(abs(i[0]))[2:]
         x = f"{x:0>3}"
@@ -108,11 +115,13 @@ class Game:
 
     @V.for_vendetta
     def hero_move_in_canvas(self):
+        ''' move hero in tkinter canvas '''
         pos = self.calcul_canvas_position(Hero.pos)
         self.canvas.coords(Hero.tk, pos)
 
     @V.for_vendetta
     def run(self):
+        '''main function loop '''
         self.funny_color()
         self.hero_move_in_canvas()
         self.tk.update_idletasks()
@@ -120,6 +129,7 @@ class Game:
 
     @V.for_vendetta
     def restart_tk(self):
+        ''' to restart grid '''
         Game.WIDTH = 550
         Game.HEIGHT = 400  # ----------------> CANVAS SIZE
         Game.DX = Game.WIDTH // Grid.row  # - 2 # ------+--------> case lenght
