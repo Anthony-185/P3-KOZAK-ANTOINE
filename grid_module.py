@@ -30,7 +30,9 @@ class V:
 
     @staticmethod
     def for_vendetta(func):
+        ''' function wrapper for logging function '''
         def f(*args, **kvargs):
+            ''' log the function '''
             V.a["All + Last"][0] = V.i[0] = V.i[0] + 1
             V.a["All + Last"][1] = V.last[0] = [func.__name__, args, kvargs]
 
@@ -59,11 +61,12 @@ class Filelike:
     (if print not overwritten) """
 
     def __init__(self):
+        ''' just create a .content parameter which is a list '''
         self.content = []
 
     def write(self, msg):
+        ''' adding the writting to the self.content parameter '''
         self.content.append(msg)
-
 
 # _____________________________________________________________________________
 #   /// /// /// /// /// /// print overwrite /// /// /// /// /// ///   <<<   /!\
@@ -71,7 +74,7 @@ saved_print_function = print
 
 
 def print(*args, _intern_list=[""], **kvargs):
-
+    ''' over-ridding print for tkinter purpose '''
     if not V.tk_ready:
         saved_print_function(*args, **kvargs)
 
@@ -253,7 +256,6 @@ class Path:
     def some_space():
         """
         chance function which take size of the grid
-        
         some chance value working fine:
             97: 15 * 15
             99: 25 * 25
@@ -329,9 +331,9 @@ class C:
             x_range = range(1, Grid.row + 1)
         print(80 * "_" + "\n")
         for y in y_range:
-            l = []
+            line = []
             for x in x_range:
-                l.append(separator)
+                line.append(separator)
                 if (x, y) == Hero.pos:
                     symbol = "."
                 elif (x, y) == Grid.dic["start"]:
@@ -344,8 +346,8 @@ class C:
                     symbol = " "
                 elif (x, y) not in Grid.path:
                     symbol = "+"
-                l.append(symbol)
-            print("".join(l) + separator)
+                line.append(symbol)
+            print("".join(line) + separator)
 
     @staticmethod
     @V.for_vendetta

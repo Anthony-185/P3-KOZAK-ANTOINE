@@ -165,19 +165,19 @@ def init_show_bag():
     x = len(Grid.dic) * 30 / 2
     x = 400 / 2 - x + 6
     for index, name in enumerate(Grid.dic):
-        if name == 'start':
-            color = 'lightgreen'
-        elif 'item' in name:
-            color = 'cyan'
+        if name == "start":
+            color = "lightgreen"
+        elif "item" in name:
+            color = "cyan"
         else:
-            color = 'red'
+            color = "red"
         list_canvas_info.append(
             game.canvas2.create_rectangle(
                 x + 30 * index,
                 300 + 7,
                 x + 30 * index + 20,
                 300 + 27,
-                outline=color
+                outline=color,
             )
         )
     return None

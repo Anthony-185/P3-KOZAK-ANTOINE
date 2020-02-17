@@ -9,6 +9,7 @@ from grid_module import *
 
 
 class Game:
+    ''' instance of a game in tkinter environnement '''
     DX = 0
     DY = 0
     CX = 0
@@ -39,28 +40,24 @@ class Game:
         )  # ---> place the canvas in the window
         for case in Grid.all:
             if case == Grid.dic["start"]:
-                a = {"fill": "green", "tag": "start"}
-            elif (
-                case == Grid.dic["item_1"]
-                or case == Grid.dic["item_2"]
-                or case == Grid.dic["item_3"]
-            ):
-                a = {"fill": "white", "tag": "item"}
+                argument = {"fill": "green", "tag": "start"}
+            elif case in Grid.object:
+                argument = {"fill": "white", "tag": "item"}
             elif case == Grid.dic["final_goal"]:
-                a = {"fill": "red", "tag": "final_goal"}
+                argument = {"fill": "red", "tag": "final_goal"}
             elif case in Grid.path:
-                a = {"fill": "blue", "tag": "path", "outline": "lightblue"}
+                argument = {"fill": "blue", "tag": "path", "outline": "lightblue"}
             else:
-                a = {"fill": "black", "tag": "wall", "outline": "darkorange"}
-            a["activefill"] = "white"
+                argument = {"fill": "black", "tag": "wall", "outline": "darkorange"}
+            argument["activefill"] = "white"
             pos = self.calcul_canvas_position(case)
-            case.tk = self.canvas.create_rectangle(pos, a)
+            case.tk = self.canvas.create_rectangle(pos, argument)
             self.tk.update()
         pos = self.calcul_canvas_position(Hero.pos)
         Hero.tk = self.canvas.create_rectangle(pos, fill="orange")
         self.canvas.bind_all("<KeyPress-Left>", self.move__left)
         self.canvas.bind_all("<KeyPress-Right>", self.move_right)
-        self.canvas.bind_all("<KeyPress-Up>", self.move____up) 
+        self.canvas.bind_all("<KeyPress-Up>", self.move____up)
         self.canvas.bind_all("<KeyPress-Down>", self.move__down)
 
     @V.for_vendetta
@@ -102,16 +99,16 @@ class Game:
     def funny_color(self, i=[0]):
         ''' function to draw the color'''
         i[0] = i[0] + 32 if i[0] < 16 ** 3 - 2047 else -(16 ** 3) + 2048
-        x = hex(abs(i[0]))[2:]
-        x = f"{x:0>3}"
-        self.canvas.itemconfig(Hero.tk, fill="#" + "fff" + "900" + x)
+        hex_color = hex(abs(i[0]))[2:]
+        hex_color = f"{hex_color:0>3}"
+        self.canvas.itemconfig(Hero.tk, fill="#" + "fff" + "900" + hex_color)
         self.canvas.itemconfig(
-            "item", fill="#" + x * 3 if x[0] < "4" else "#" + "f" * 9
+            "item",
+            fill="#" + hex_color * 3 if hex_color[0] < "4" else "#" + "f" * 9
         )
         if Grid.row * Grid.column >= 666:
-            return
-        # pass this if big Grid
-        self.canvas.itemconfig("wall", fill="#0ff0ff" + x)
+            return  # pass this if big Grid
+        self.canvas.itemconfig("wall", fill="#0ff0ff" + hex_color)
 
     @V.for_vendetta
     def hero_move_in_canvas(self):
@@ -169,3 +166,4 @@ if __name__ == "__main__":
         game.run()
         if Grid.status != [None]:
             Grid.terminated()
+            game.restart_tk() # small bug here, lag
