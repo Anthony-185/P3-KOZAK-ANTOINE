@@ -52,9 +52,9 @@ class V:
     # if lunched by Macgyver V17, caneva_update() will be created (for tkinter)
 
 
-class file_like:
+class Filelike:
     """object create to simualte an output file for print:
-    >>> fake_file = file_like()
+    >>> fake_file = Filelike()
     >>> print('try out', file = fake_file)
     (if print not overwritten) """
 
@@ -75,7 +75,7 @@ def print(*args, _intern_list=[""], **kvargs):
     if not V.tk_ready:
         saved_print_function(*args, **kvargs)
 
-    msg = file_like()  # msg = fake_file
+    msg = Filelike()  # msg = fake_file
     kvargs.update({"file": msg})  # update kvargs of print with the fake file
     saved_print_function(*args, **kvargs)  # print to the fake file
 
@@ -115,7 +115,7 @@ def generate_default_map():
 ]"
     for j, i in enumerate(d):
         if i == ".":
-            d = d[:j] + "1" + d[j + 1 :]
+            d = d[:j] + "1" + d[j + 1:]
     d = json.JSONDecoder().decode(d)
     grid = [(x + 1, y + 1) for y in range(15) for x in range(15)]
     path = set()
@@ -127,8 +127,8 @@ def generate_default_map():
     start = (2, 8)
     final_goal = (14, 8)
     data = {"start": start, "final_goal": final_goal, "path": path}
-    with open("default_map.json", "w") as f:
-        json.dump(data, f)
+    with open("default_map.json", "w") as file:
+        json.dump(data, file)
 
 
 class Grid:  # transform this in a iterator
@@ -165,7 +165,7 @@ class Case(tuple):  # add __add__ and compare function
 
 class Hero(Case):
     tk = None
-    name = "Mac_gyver"
+    name = "MacGyver"
     pos = [1, 1]
     bag = set()
 
@@ -212,10 +212,13 @@ class Path:
         }
         Grid.status = [None]
 
+    @staticmethod
+    @V.for_vendetta
     def restart_path():  # Destroy grid, prepare for restarting map
         Hero.bag = set()
         Grid.path = set()  # better ;)
 
+    @V.for_vendetta
     def by_load_defaut_map(self):
         try:
             f = open("default_map.json", "r")
@@ -242,12 +245,12 @@ class Path:
 
     @staticmethod
     @V.for_vendetta  # take x, y as [0] -> return [X] like this #       [X]
-    def near_position(x, y):  #   [X] [O] [X]
-        return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)  #       [X]
+    def near_position(x, y):  #                                     [X] [O] [X]
+        return (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)  #        [X]
 
     @staticmethod  # create to define some space between the differents element
     @V.for_vendetta
-    def some_space(chance=97):
+    def some_space():
         """
         chance function which take size of the grid
         
@@ -321,10 +324,13 @@ class C:
         separator = "|"  # separator
         if Grid.row > 30 or Grid.column > 20:
             return None
+        else:
+            y_range = range(1, Grid.column + 1)
+            x_range = range(1, Grid.row + 1)
         print(80 * "_" + "\n")
-        for y in range(1, Grid.column + 1):
+        for y in y_range:
             l = []
-            for x in range(1, Grid.row + 1):
+            for x in x_range:
                 l.append(separator)
                 if (x, y) == Hero.pos:
                     symbol = "."

@@ -136,19 +136,19 @@ class Py_game_1:
         old_pos[1] = pos[1]
 
     def grid_15_per_15(self, x, y):
-        return [
-            (i, j) for i in range(x - 2, x + 3) for j in range(y - 2, y + 3)
-        ]
+        x_list = range(x - 2, x + 3)
+        y_list = range(y - 2, y + 3)
+        return [(i, j) for i in x_list for j in y_list]
 
     @V.for_vendetta
     def handleEvents(self):
         """ only handle quit pygame, not working well... """
-        List_event = pygame.event.get()
-        for event in List_event:
+        list_event = pygame.event.get()
+        for event in list_event:
             if event.type == QUIT:
                 pygame.quit()
                 quit()
-        return List_event
+        return list_event
 
     @V.for_vendetta
     def key_pressed(self, hold=[[]]):
@@ -301,8 +301,6 @@ if __name__ == "__main__":
     Path().by_load_defaut_map()
     Hero.pos = Grid.dic["start"]
     game = Py_game_1()
-    #   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
-    #   //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
     while 1:
         game.run()
         if Grid.status != [None]:

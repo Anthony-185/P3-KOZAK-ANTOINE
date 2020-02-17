@@ -6,6 +6,8 @@ from grid_module import *
 # [X] log function
 # [X] lag with 100x100 cases : escape funny_color if Gird > 1117
 # _____________________________________________________________________________
+
+
 class Game:
     DX = 0
     DY = 0

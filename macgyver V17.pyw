@@ -199,13 +199,13 @@ def f_canvas_info(old_bag=[None], deja_vu_grid=[None]):
         for sqr in list_canvas_info:
             game.canvas2.itemconfig(sqr, fill="")
         deja_vu_grid[0] = Grid.dic.copy()
+        game.canvas2.itemconfig(list_canvas_info[0], fill="green")
         game.canvas2.update()
         return None
     if Grid.status != [None]:
         game.canvas2.itemconfig(list_canvas_info[-1], fill="red")
     if old_bag[0] == Hero.bag:
         return None  # if nothing change, pass
-    game.canvas2.itemconfig(list_canvas_info[l], fill="green")
     for index in range(1, len(Hero.bag) + 1):
         game.canvas2.itemconfig(list_canvas_info[index], fill="white")
     game.canvas2.update()
